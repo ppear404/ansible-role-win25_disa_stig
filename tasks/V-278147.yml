@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278147 - Windows Server 2025 directory service must be configured to terminate LDAP-based network connections
+    to the directory server after five minutes of inactivity.
+  when:
+    - win25_stig_v_278147 | bool
+    - win25_stig_is_dc
+    - '''V-278147'' not in win25_stig_exceptions'
+  tags:
+    - V-278147
+    - CAT3
+  block:
+    - name: V-278147 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278147''] }}'

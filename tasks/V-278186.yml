@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278186 - The Windows Server 2025 "Deny log on as a service" user right on domain-joined member servers
+    must be configured to prevent access from highly privileged domain accounts. No other groups or accounts must
+    be assigned this right.
+  when:
+    - win25_stig_v_278186 | bool
+    - not win25_stig_is_dc
+    - not win25_stig_domain_joined or (win25_stig_domain_sid | length > 0 and win25_stig_forest_root_sid | length
+      > 0)
+    - '''V-278186'' not in win25_stig_exceptions'
+  tags:
+    - V-278186
+    - CAT2
+  block:
+    - name: V-278186 - Configure member-server deny rights
+      ansible.windows.win_user_right:
+        name: SeDenyServiceLogonRight
+        users: '{{ [] + (([win25_stig_domain_sid + ''-512'', win25_stig_forest_root_sid + ''-519'']) if win25_stig_domain_joined
+          else []) }}'
+        action: set

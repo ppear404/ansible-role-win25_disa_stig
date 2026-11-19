@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Inspect Windows version and installed roles
+  ansible.windows.win_powershell:
+    script: |
+      $Ansible.Changed = $false
+      $os = Get-CimInstance Win32_OperatingSystem
+      $computer = Get-CimInstance Win32_ComputerSystem
+      $features = @(Get-WindowsFeature)
+      $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+      $principal = [Security.Principal.WindowsPrincipal]::new($identity)
+      $Ansible.Result = @{
+          caption = $os.Caption
+          build = [int]$os.BuildNumber
+          product_type = [int]$os.ProductType
+          domain_joined = [bool]$computer.PartOfDomain
+          is_dc = ([int]$computer.DomainRole -in @(4,5))
+          administrator = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+          features = @($features | Select-Object -ExpandProperty Name)
+          hyperv = [bool]($features | Where-Object { $_.Name -eq 'Hyper-V' -and $_.Installed })
+      }
+  register: win25_stig_probe
+  check_mode: false
+  changed_when: false
+- name: Require an elevated Windows Server 2025 session
+  ansible.builtin.assert:
+    that:
+      - win25_stig_probe.result.product_type | int != 1
+      - win25_stig_probe.result.build | int == 26100
+      - '''2025'' in win25_stig_probe.result.caption'
+      - win25_stig_probe.result.administrator | bool
+    fail_msg: This role requires Windows Server 2025 and an elevated administrator connection.
+- name: Initialize host applicability and report
+  ansible.builtin.set_fact:
+    win25_stig_is_dc: '{{ win25_stig_probe.result.is_dc }}'
+    win25_stig_domain_joined: '{{ win25_stig_probe.result.domain_joined }}'
+    win25_stig_available_features: '{{ win25_stig_probe.result.features }}'
+    win25_stig_hyperv: '{{ win25_stig_probe.result.hyperv }}'
+    win25_stig_pending_controls: []
+    win25_stig_restart_required: false
+- name: Load benchmark control manifest
+  ansible.builtin.include_vars: '{{ role_path }}/vars/control_manifest.yml'
+- name: Validate exception references
+  ansible.builtin.assert:
+    that:
+      - item.key in win25_stig_control_manifest
+      - item.value is string
+      - item.value | length > 0
+    fail_msg: Exceptions require a benchmark vulnerability ID and a documented reason.
+  loop: '{{ win25_stig_exceptions | dict2items }}'

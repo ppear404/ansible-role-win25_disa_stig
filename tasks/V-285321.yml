@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-285321 - Windows Server 2025 OpenSSH private host key files must conform to minimum requirements.
+  when:
+    - win25_stig_v_285321 | bool
+    - '''V-285321'' not in win25_stig_exceptions'
+  tags:
+    - V-285321
+    - CAT2
+  block:
+    - name: Windows Server 2025 OpenSSH private host key files must conform to minimum requirements.
+      ansible.windows.win_powershell:
+        script: |-
+          [CmdletBinding(SupportsShouldProcess)]
+          param()
+          $Ansible.Changed = $false
+          Get-ChildItem -Path (Join-Path $env:ProgramData 'ssh') -Filter 'ssh_host_*_key' -File | ForEach-Object {
+              $file = $_.FullName
+              $acl = Get-Acl -LiteralPath $file
+              $desired = New-Object Security.AccessControl.FileSecurity
+              $desired.SetOwner([Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))
+              $desired.SetAccessRuleProtection($true, $false)
+              foreach ($sid in @('S-1-5-18', 'S-1-5-32-544')) {
+                  $desired.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new(
+                      [Security.Principal.SecurityIdentifier]::new($sid), 'FullControl', 'Allow'))
+              }
+              $accessSections = [Security.AccessControl.AccessControlSections]::Access
+              $actualAccess = $acl.GetSecurityDescriptorSddlForm($accessSections) -replace 'D:P?AI', 'D:P'
+              $expectedAccess = $desired.GetSecurityDescriptorSddlForm($accessSections) -replace 'D:P?AI', 'D:P'
+              $sidType = [Security.Principal.SecurityIdentifier]
+              $sameOwner = $acl.GetOwner($sidType).Value -eq $desired.GetOwner($sidType).Value
+              if (-not ($sameOwner -and $acl.AreAccessRulesProtected -and $actualAccess -eq $expectedAccess)) {
+                  $Ansible.Changed = $true
+                  if ($PSCmdlet.ShouldProcess($file, 'Restrict SSH file ACL')) { Set-Acl -LiteralPath $file -AclObject $desired }
+              }
+          }

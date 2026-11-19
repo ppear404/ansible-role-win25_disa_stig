@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Include category 2 controls part 1
+  ansible.builtin.import_tasks: cat2_1.yml
+- name: Include category 2 controls part 2
+  ansible.builtin.import_tasks: cat2_2.yml
+- name: Include category 2 controls part 3
+  ansible.builtin.import_tasks: cat2_3.yml
+- name: Include category 2 controls part 4
+  ansible.builtin.import_tasks: cat2_4.yml

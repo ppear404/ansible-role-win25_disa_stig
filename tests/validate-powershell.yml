@@ -1,0 +1,86 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Validate embedded PowerShell on Windows
+  hosts: win25
+  gather_facts: false
+  vars_files:
+    - ../defaults/main.yml
+  tasks:
+    - name: Initialize script source collection
+      ansible.builtin.set_fact:
+        win25_stig_script_sources: []
+
+    - name: Collect embedded scripts from control files
+      ansible.builtin.set_fact:
+        win25_stig_script_sources: >-
+          {%- set collected = namespace(scripts=[]) -%}
+          {%- for task in (lookup('ansible.builtin.file', item) | from_yaml)[0].block -%}
+          {%- if 'ansible.windows.win_powershell' in task -%}
+          {%- set collected.scripts = collected.scripts + [task['ansible.windows.win_powershell']['script']] -%}
+          {%- endif -%}
+          {%- endfor -%}
+          {{ win25_stig_script_sources + collected.scripts }}
+      loop: "{{ lookup('ansible.builtin.fileglob', playbook_dir + '/../tasks/V-*.yml', wantlist=True) }}"
+      loop_control:
+        label: '{{ item | basename }}'
+
+    - name: Require actual embedded script sources
+      ansible.builtin.assert:
+        that:
+          - win25_stig_script_sources is not string
+          - win25_stig_script_sources | length >= 10
+
+    - name: Parse scripts and exercise SSH Match-block preservation
+      ansible.windows.win_powershell:
+        parameters:
+          Sources: '{{ win25_stig_script_sources }}'
+        script: |
+          param([string[]]$Sources)
+          $Ansible.Changed = $false
+          if ($Sources.Count -lt 10) { throw 'Expected embedded scripts were not collected.' }
+          $transcriptFunction = $null
+          foreach ($source in $Sources) {
+              $tokens = $null
+              $parseErrors = $null
+              # Site-variable expressions are replaced only for syntactic validation.
+              $source = [regex]::Replace($source, ('{' + '{.*?}' + '}'), 'TestValue')
+              $ast = [System.Management.Automation.Language.Parser]::ParseInput(
+                  $source, [ref]$tokens, [ref]$parseErrors)
+              if ($parseErrors.Count) { throw ($parseErrors | Out-String) }
+              $function = $ast.Find({ param($node)
+                  $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+                      $node.Name -eq 'Get-TranscriptAccessRules'
+              }, $true)
+              if ($function) { $transcriptFunction = $function.Extent.Text }
+          }
+          $fixture = "# global`r`nPubkeyAuthentication no`r`nMatch Group administrators`r`n  X yes`r`nMatch User test`r`n  Y no`r`n"
+          $parts = [regex]::new('(?im)(?=^Match\s)').Split($fixture, 2)
+          if ($parts.Count -ne 2 -or [regex]::Matches($parts[1], '(?im)^Match\s').Count -ne 2) {
+              throw 'SSH Match blocks were lost.'
+          }
+          if (-not $transcriptFunction) { throw 'Transcript ACL comparison helper was not collected.' }
+          . ([scriptblock]::Create($transcriptFunction))
+          $allowed = '(A;;FA;;;SY)(A;;FA;;;BA)(A;;0x100006;;;AU)(A;;0x100006;;;BU)'
+          $direct = New-Object Security.AccessControl.FileSecurity
+          $direct.SetSecurityDescriptorSddlForm('O:BAG:BAD:P' + $allowed)
+          $inherited = New-Object Security.AccessControl.FileSecurity
+          $inherited.SetSecurityDescriptorSddlForm('O:BAG:BAD:AI' + $allowed.Replace('(A;', '(A;ID'))
+          if ((Get-TranscriptAccessRules $direct) -ne (Get-TranscriptAccessRules $inherited)) {
+              throw 'Equivalent inherited transcript permissions caused ACL churn.'
+          }
+          $readable = New-Object Security.AccessControl.FileSecurity
+          $unsafe = $allowed.Replace('0x100006;;;AU', '0x1200a9;;;AU').Replace('(A;', '(A;ID')
+          $readable.SetSecurityDescriptorSddlForm('O:BAG:BAD:AI' + $unsafe)
+          if ((Get-TranscriptAccessRules $direct) -eq (Get-TranscriptAccessRules $readable)) {
+              throw 'Unsafe transcript read permissions were not detected.'
+          }
+          $Ansible.Result = @{
+              parsed_scripts = $Sources.Count
+              ssh_match_fixture = 'passed'
+              transcript_acl_fixture = 'passed'
+          }
+      register: win25_stig_powershell_validation
+
+    - name: Report PowerShell validation results
+      ansible.builtin.debug:
+        var: win25_stig_powershell_validation.result

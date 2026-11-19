@@ -1,0 +1,66 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Validate certificate payload rejection and effective stores over SSH
+  hosts: win25
+  gather_facts: false
+  vars_files:
+    - ../defaults/main.yml
+    - ../vars/certificates.yml
+  tasks:
+    - name: Exercise payload validator with authentic and altered identities
+      ansible.windows.win_powershell:
+        parameters:
+          Directory: '{{ win25_stig_certificate_directory }}'
+          Metadata: '{{ win25_stig_certificates | to_json }}'
+          Validator: >-
+            {{ (lookup('ansible.builtin.file', playbook_dir + '/../tasks/certificates_prepare.yml')
+                | from_yaml)[-1]['ansible.windows.win_powershell']['script'] }}
+        script: |
+          param([string]$Directory, [string]$Metadata, [string]$Validator)
+          $Ansible.Changed = $false
+          $check = [scriptblock]::Create($Validator)
+          & $check -Directory $Directory -Metadata $Metadata
+          foreach ($property in @('sha256', 'thumbprint', 'subject_cn', 'issuer_cn', 'kind')) {
+              $altered = @($Metadata | ConvertFrom-Json)[0]
+              $altered.$property = 'invalid'
+              $rejected = $false
+              try { & $check -Directory $Directory -Metadata (ConvertTo-Json @($altered) -Compress) }
+              catch { $rejected = $true }
+              if (-not $rejected) { throw "Validator accepted altered $property" }
+              Write-Output "Rejected altered $property"
+          }
+
+    - name: Verify all pinned certificates and trust separation in the effective stores
+      ansible.windows.win_powershell:
+        parameters:
+          Metadata: '{{ win25_stig_certificates | to_json }}'
+        script: |
+          param([string]$Metadata)
+          $Ansible.Changed = $false
+          foreach ($item in ($Metadata | ConvertFrom-Json)) {
+              $locations = @('LocalMachine')
+              $store = 'Root'
+              if ($item.kind -eq 'cross') {
+                  $locations += 'CurrentUser'
+                  $store = 'Disallowed'
+              }
+              foreach ($location in $locations) {
+                  $path = "Cert:\$location\$store\$($item.thumbprint)"
+                  if (-not (Test-Path -LiteralPath $path)) { throw "Missing $path" }
+                  if ((Get-Item -LiteralPath $path).NotAfter -le (Get-Date)) { throw "Expired $path" }
+                  if ($item.kind -eq 'cross') {
+                      foreach ($trusted in @('Root', 'CA')) {
+                          if (Test-Path -LiteralPath "Cert:\$location\$trusted\$($item.thumbprint)") {
+                              throw "Managed cross-certificate remains trusted in $location/$trusted"
+                          }
+                      }
+                  }
+                  Write-Output "$path present and valid"
+              }
+          }
+          $Ansible.Result = @{
+              sshd = (Get-Service sshd).Status.ToString()
+              public_host_keys = @(Get-ChildItem 'C:\ProgramData\ssh\ssh_host_*_key.pub' |
+                  Get-FileHash -Algorithm SHA256 | Select-Object Path, Hash)
+          }
+          if ($Ansible.Result.sshd -ne 'Running') { throw 'sshd is not running' }

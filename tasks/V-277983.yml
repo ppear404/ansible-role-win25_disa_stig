@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-277983 - Windows Server 2025 must prohibit the use or connection of unauthorized hardware components.
+  when:
+    - win25_stig_v_277983 | bool
+    - '''V-277983'' not in win25_stig_exceptions'
+  tags:
+    - V-277983
+    - CAT2
+  block:
+    - name: V-277983 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-277983''] }}'
+      when: not (win25_stig_manual_reviews.get('V-277983', {}).get('Valid', false) | bool)

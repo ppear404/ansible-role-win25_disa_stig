@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: 'V-278211 - The Windows Server 2025 setting Microsoft network client: Digitally sign communications (if
+    server agrees) must be configured to Enabled.'
+  when:
+    - win25_stig_v_278211 | bool
+    - '''V-278211'' not in win25_stig_exceptions'
+  tags:
+    - V-278211
+    - CAT2
+  block:
+    - name: 'The Windows Server 2025 setting Microsoft network client: Digitally sign communications (if server
+        agrees) must be configured to Enabled.'
+      ansible.windows.win_regedit:
+        path: HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+        name: EnableSecuritySignature
+        data: 1
+        type: dword
+      notify: Record Windows restart requirement

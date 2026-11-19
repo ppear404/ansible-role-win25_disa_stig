@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278070 - Windows Server 2025 must be configured to audit Privilege Use - Sensitive Privilege Use successes.
+  when:
+    - win25_stig_v_278070 | bool
+    - '''V-278070'' not in win25_stig_exceptions'
+  tags:
+    - V-278070
+    - CAT2
+  block:
+    - name: Windows Server 2025 must be configured to audit Privilege Use - Sensitive Privilege Use successes.
+      ansible.windows.win_audit_policy_system:
+        subcategory: Sensitive Privilege Use
+        audit_type:
+          - failure
+          - success

@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Record Windows restart requirement
+  ansible.builtin.set_fact:
+    win25_stig_restart_required: true
+- name: Validate OpenSSH configuration
+  ansible.windows.win_command: C:\Windows\System32\OpenSSH\sshd.exe -t
+  changed_when: false
+  listen: Validate and restart OpenSSH
+- name: Restart OpenSSH with validated configuration
+  ansible.windows.win_service:
+    name: sshd
+    state: restarted
+  async: "{{ 0 if ansible_check_mode else 45 }}"
+  poll: 0
+  register: win25_stig_sshd_restart
+  listen: Validate and restart OpenSSH
+
+- name: Reset the SSH connection after the service restart
+  ansible.builtin.meta: reset_connection
+  listen: Validate and restart OpenSSH
+
+- name: Verify management access after restarting OpenSSH
+  ansible.builtin.wait_for_connection:
+    delay: 3
+    timeout: 120
+  listen: Validate and restart OpenSSH
+
+- name: Verify the asynchronous SSH restart completed
+  ansible.builtin.async_status:
+    jid: '{{ win25_stig_sshd_restart.ansible_job_id }}'
+  register: win25_stig_sshd_restart_status
+  until: win25_stig_sshd_restart_status.finished
+  retries: 15
+  delay: 2
+  when: not ansible_check_mode
+  listen: Validate and restart OpenSSH
+
+- name: Restart Windows Time
+  ansible.windows.win_service:
+    name: W32Time
+    state: restarted

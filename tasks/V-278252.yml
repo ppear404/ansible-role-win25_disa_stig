@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278252 - The Windows Server 2025 "Generate security audits" user right must only be assigned to Local
+    Service and Network Service.
+  when:
+    - win25_stig_v_278252 | bool
+    - '''V-278252'' not in win25_stig_exceptions'
+  tags:
+    - V-278252
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Generate security audits" user right must only be assigned to Local Service
+        and Network Service.
+      ansible.windows.win_user_right:
+        name: SeAuditPrivilege
+        users:
+          - S-1-5-19
+          - S-1-5-20
+        action: set

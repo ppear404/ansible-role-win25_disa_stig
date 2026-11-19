@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278185 - Windows Server 2025 Deny log on as a batch job user right on domain-joined member servers must
+    be configured to prevent access from highly privileged domain accounts and from unauthenticated access on all
+    systems.
+  when:
+    - win25_stig_v_278185 | bool
+    - not win25_stig_is_dc
+    - not win25_stig_domain_joined or (win25_stig_domain_sid | length > 0 and win25_stig_forest_root_sid | length
+      > 0)
+    - '''V-278185'' not in win25_stig_exceptions'
+  tags:
+    - V-278185
+    - CAT2
+  block:
+    - name: V-278185 - Configure member-server deny rights
+      ansible.windows.win_user_right:
+        name: SeDenyBatchLogonRight
+        users: '{{ [''S-1-5-32-546''] + (([win25_stig_domain_sid + ''-512'', win25_stig_forest_root_sid + ''-519''])
+          if win25_stig_domain_joined else []) }}'
+        action: add

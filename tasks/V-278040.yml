@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278040 - Windows Server 2025 reversible password encryption must be disabled.
+  when:
+    - win25_stig_v_278040 | bool
+    - '''V-278040'' not in win25_stig_exceptions'
+  tags:
+    - V-278040
+    - CAT1
+  block:
+    - name: Windows Server 2025 reversible password encryption must be disabled.
+      community.windows.win_security_policy:
+        section: System Access
+        key: ClearTextPassword
+        value: 0
+      when: not win25_stig_is_dc
+    - name: V-278040 - Report required domain GPO configuration
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278040 (configure domain account policy
+          in the authoritative GPO)''] }}'
+      when: win25_stig_is_dc

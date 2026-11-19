@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278259 - The Windows Server 2025 "Perform volume maintenance tasks" user right must only be assigned to
+    the Administrators group.
+  when:
+    - win25_stig_v_278259 | bool
+    - '''V-278259'' not in win25_stig_exceptions'
+  tags:
+    - V-278259
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Perform volume maintenance tasks" user right must only be assigned to the Administrators
+        group.
+      ansible.windows.win_user_right:
+        name: SeManageVolumePrivilege
+        users:
+          - S-1-5-32-544
+        action: set

@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278166 - The Windows Server 2025 "Add workstations to domain" user right must only be assigned to the
+    Administrators group on domain controllers.
+  when:
+    - win25_stig_v_278166 | bool
+    - win25_stig_is_dc
+    - '''V-278166'' not in win25_stig_exceptions'
+  tags:
+    - V-278166
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Add workstations to domain" user right must only be assigned to the Administrators
+        group on domain controllers.
+      ansible.windows.win_user_right:
+        name: SeMachineAccountPrivilege
+        users:
+          - S-1-5-32-544
+        action: set

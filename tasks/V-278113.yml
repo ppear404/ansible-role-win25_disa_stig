@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278113 - Windows Server 2025 Remote Desktop Services must prevent drive redirection.
+  when:
+    - win25_stig_v_278113 | bool
+    - '''V-278113'' not in win25_stig_exceptions'
+  tags:
+    - V-278113
+    - CAT2
+  block:
+    - name: Windows Server 2025 Remote Desktop Services must prevent drive redirection.
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+        name: fDisableCdm
+        data: 1
+        type: dword
+      notify: Record Windows restart requirement

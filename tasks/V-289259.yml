@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-289259 - Windows Server 2025 must be maintained at a supported servicing level.
+  when:
+    - win25_stig_v_289259 | bool
+    - '''V-289259'' not in win25_stig_exceptions'
+  tags:
+    - V-289259
+    - CAT2
+  block:
+    - name: V-289259 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-289259''] }}'

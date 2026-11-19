@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278062 - Windows Server 2025 must be configured to audit Object Access - Other Object Access Events successes.
+  when:
+    - win25_stig_v_278062 | bool
+    - '''V-278062'' not in win25_stig_exceptions'
+  tags:
+    - V-278062
+    - CAT2
+  block:
+    - name: Windows Server 2025 must be configured to audit Object Access - Other Object Access Events successes.
+      ansible.windows.win_audit_policy_system:
+        subcategory: Other Object Access Events
+        audit_type:
+          - failure
+          - success

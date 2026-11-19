@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278209 - The Windows Server 2025 Smart Card removal option must be configured to Force Logoff or Lock
+    Workstation.
+  when:
+    - win25_stig_v_278209 | bool
+    - '''V-278209'' not in win25_stig_exceptions'
+  tags:
+    - V-278209
+    - CAT2
+  block:
+    - name: The Windows Server 2025 Smart Card removal option must be configured to Force Logoff or Lock Workstation.
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
+        name: scremoveoption
+        data: '1'
+        type: string
+      notify: Record Windows restart requirement

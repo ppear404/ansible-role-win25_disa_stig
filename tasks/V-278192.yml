@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278192 - Windows Server 2025 must have the DoW Root Certificate Authority (CA) certificates installed
+    in the Trusted Root Store.
+  when:
+    - win25_stig_v_278192 | bool
+    - '''V-278192'' not in win25_stig_exceptions'
+    - win25_stig_unclassified | bool
+  tags:
+    - V-278192
+    - CAT2
+  block:
+    - name: V-278192 - Prepare validated public certificates
+      ansible.builtin.import_tasks: certificates_prepare.yml
+      vars:
+        win25_stig_certificate_control: V-278192
+    - name: V-278192 - Install certificates in the required stores
+      ansible.windows.win_certificate_store:
+        path: '{{ win25_stig_certificate_directory }}\{{ item.0.file }}'
+        store_location: '{{ item.1 }}'
+        store_name: Root
+        state: present
+      loop: '{{ win25_stig_selected_certificates | product([''LocalMachine'']) | list }}'
+      loop_control:
+        label: '{{ item.0.file }} / {{ item.1 }}'

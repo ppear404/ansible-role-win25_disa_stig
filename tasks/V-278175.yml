@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278175 - The Windows Server 2025 "Enable computer and user accounts to be trusted for delegation" user
+    right must only be assigned to the Administrators group on domain controllers.
+  when:
+    - win25_stig_v_278175 | bool
+    - win25_stig_is_dc
+    - '''V-278175'' not in win25_stig_exceptions'
+  tags:
+    - V-278175
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Enable computer and user accounts to be trusted for delegation" user right
+        must only be assigned to the Administrators group on domain controllers.
+      ansible.windows.win_user_right:
+        name: SeEnableDelegationPrivilege
+        users:
+          - S-1-5-32-544
+        action: set

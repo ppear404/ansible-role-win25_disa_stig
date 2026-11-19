@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278022 - Windows Server 2025 must not have the TFTP Client installed.
+  when:
+    - win25_stig_v_278022 | bool
+    - '''V-278022'' not in win25_stig_exceptions'
+  tags:
+    - V-278022
+    - CAT2
+  block:
+    - name: Windows Server 2025 must not have the TFTP Client installed.
+      ansible.windows.win_feature:
+        name: '{{ item }}'
+        state: absent
+      loop:
+        - TFTP-Client
+      when: item in win25_stig_available_features
+      notify: Record Windows restart requirement

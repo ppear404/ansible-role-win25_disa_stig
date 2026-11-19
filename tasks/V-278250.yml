@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278250 - The Windows Server 2025 "Debug programs" user right must only be assigned to the Administrators
+    group.
+  when:
+    - win25_stig_v_278250 | bool
+    - '''V-278250'' not in win25_stig_exceptions'
+  tags:
+    - V-278250
+    - CAT1
+  block:
+    - name: The Windows Server 2025 "Debug programs" user right must only be assigned to the Administrators group.
+      ansible.windows.win_user_right:
+        name: SeDebugPrivilege
+        users:
+          - S-1-5-32-544
+        action: set

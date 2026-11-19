@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278003 - Outdated or unused accounts on Windows Server 2025 must be removed or disabled.
+  when:
+    - win25_stig_v_278003 | bool
+    - '''V-278003'' not in win25_stig_exceptions'
+  tags:
+    - V-278003
+    - CAT2
+  block:
+    - name: V-278003 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278003''] }}'

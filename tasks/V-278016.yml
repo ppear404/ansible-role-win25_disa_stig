@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278016 - Windows Server 2025 must not have the Microsoft FTP service installed unless required by the
+    organization.
+  when:
+    - win25_stig_v_278016 | bool
+    - not win25_stig_ftp_required
+    - '''V-278016'' not in win25_stig_exceptions'
+  tags:
+    - V-278016
+    - CAT2
+  block:
+    - name: Windows Server 2025 must not have the Microsoft FTP service installed unless required by the organization.
+      ansible.windows.win_feature:
+        name: '{{ item }}'
+        state: absent
+      loop:
+        - Web-Ftp-Server
+      when: item in win25_stig_available_features
+      notify: Record Windows restart requirement

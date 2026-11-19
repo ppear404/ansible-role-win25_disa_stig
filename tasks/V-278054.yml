@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278054 - Windows Server 2025 must be configured to audit Detailed Tracking - Process Creation successes.
+  when:
+    - win25_stig_v_278054 | bool
+    - '''V-278054'' not in win25_stig_exceptions'
+  tags:
+    - V-278054
+    - CAT2
+  block:
+    - name: Windows Server 2025 must be configured to audit Detailed Tracking - Process Creation successes.
+      ansible.windows.win_audit_policy_system:
+        subcategory: Process Creation
+        audit_type:
+          - success

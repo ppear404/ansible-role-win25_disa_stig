@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278156 - Windows Server 2025 must be configured to audit DS Access - Directory Service Access failures.
+  when:
+    - win25_stig_v_278156 | bool
+    - win25_stig_is_dc
+    - '''V-278156'' not in win25_stig_exceptions'
+  tags:
+    - V-278156
+    - CAT2
+  block:
+    - name: Windows Server 2025 must be configured to audit DS Access - Directory Service Access failures.
+      ansible.windows.win_audit_policy_system:
+        subcategory: Directory Service Access
+        audit_type:
+          - failure
+          - success

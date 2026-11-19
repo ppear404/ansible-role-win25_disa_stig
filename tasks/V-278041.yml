@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278041 - Windows Server 2025 audit records must be backed up to a different system or media than the system
+    being audited.
+  when:
+    - win25_stig_v_278041 | bool
+    - '''V-278041'' not in win25_stig_exceptions'
+  tags:
+    - V-278041
+    - CAT2
+  block:
+    - name: V-278041 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278041''] }}'
+      when: not (win25_stig_manual_reviews.get('V-278041', {}).get('Valid', false) | bool)

@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278038 - Windows Server 2025 minimum password age must be configured to at least one day.
+  when:
+    - win25_stig_v_278038 | bool
+    - '''V-278038'' not in win25_stig_exceptions'
+  tags:
+    - V-278038
+    - CAT2
+  block:
+    - name: Windows Server 2025 minimum password age must be configured to at least one day.
+      community.windows.win_security_policy:
+        section: System Access
+        key: MinimumPasswordAge
+        value: 1
+      when: not win25_stig_is_dc
+    - name: V-278038 - Report required domain GPO configuration
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278038 (configure domain account policy
+          in the authoritative GPO)''] }}'
+      when: win25_stig_is_dc

@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-285317 - Windows Server 2025 OpenSSH must force a frequent session key renegotiation for SSH connections
+    to the server.
+  when:
+    - win25_stig_v_285317 | bool
+    - '''V-285317'' not in win25_stig_exceptions'
+  tags:
+    - V-285317
+    - CAT2
+  block:
+    - name: Windows Server 2025 OpenSSH must force a frequent session key renegotiation for SSH connections to the
+        server.
+      ansible.windows.win_powershell:
+        script: |-
+          [CmdletBinding(SupportsShouldProcess)]
+          param()
+          $Ansible.Changed = $false
+          $path = Join-Path $env:ProgramData 'ssh\sshd_config'
+          $text = [IO.File]::ReadAllText($path)
+          $parts = [regex]::new('(?im)(?=^Match\s)').Split($text, 2)
+          $global = $parts[0]
+          $desired = 'RekeyLimit 1G 1h'
+          $pattern = '(?im)^\s*#?\s*RekeyLimit\s+[^\r\n]*(?:\r?\n|$)'
+          $updated = [regex]::Replace($global, $pattern, '')
+          $updated = $desired + "`r`n" + $updated
+          if ($parts.Count -gt 1) { $updated += $parts[1] }
+          # Compare effective global directives to avoid rewriting unchanged files.
+          $active = @([regex]::Matches($global, '(?im)^\s*RekeyLimit\s+([^\r\n]+)'))
+          if ($active.Count -ne 1 -or $active[0].Groups[1].Value.Trim() -ne '1G 1h') {
+              $Ansible.Changed = $true
+              if ($PSCmdlet.ShouldProcess($path, 'Set global SSH RekeyLimit')) {
+                  [IO.File]::WriteAllText($path, $updated, [Text.UTF8Encoding]::new($false))
+              }
+          }
+      notify: Validate and restart OpenSSH

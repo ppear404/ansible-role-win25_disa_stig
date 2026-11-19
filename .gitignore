@@ -1,0 +1,29 @@
+# Local inventory, credentials and connection configuration.
+inventory_win25/
+inventory.local*
+ansible.cfg
+.env
+.env.*
+!.env.example
+*.retry
+*.key
+*.pfx
+*.p12
+id_rsa*
+id_ed25519*
+
+# Private assessments and validation evidence.
+.files/
+files/cklbs/
+tests/evidence/
+
+# Locally supplied upstream reference/evaluator distributions.
+files/disa_stigs/
+files/evaluate-stig-*.tar.gz
+
+# Local caches and publication output.
+.ansible/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.release/

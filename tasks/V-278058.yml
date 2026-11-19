@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278058 - Windows Server 2025 must be configured to audit logoff successes.
+  when:
+    - win25_stig_v_278058 | bool
+    - '''V-278058'' not in win25_stig_exceptions'
+  tags:
+    - V-278058
+    - CAT2
+  block:
+    - name: Windows Server 2025 must be configured to audit logoff successes.
+      ansible.windows.win_audit_policy_system:
+        subcategory: Logoff
+        audit_type:
+          - success

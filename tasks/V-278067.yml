@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278067 - Windows Server 2025 must be configured to audit Policy Change - Audit Policy Change failures.
+  when:
+    - win25_stig_v_278067 | bool
+    - '''V-278067'' not in win25_stig_exceptions'
+  tags:
+    - V-278067
+    - CAT2
+  block:
+    - name: Windows Server 2025 must be configured to audit Policy Change - Audit Policy Change failures.
+      ansible.windows.win_audit_policy_system:
+        subcategory: Audit Policy Change
+        audit_type:
+          - failure
+          - success

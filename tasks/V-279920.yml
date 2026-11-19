@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-279920 - Windows Server 2025 must be configured to audit registry failures.
+  when:
+    - win25_stig_v_279920 | bool
+    - '''V-279920'' not in win25_stig_exceptions'
+  tags:
+    - V-279920
+    - CAT2
+  block:
+    - name: V-279920 - Configure audit subcategory
+      ansible.windows.win_audit_policy_system:
+        subcategory: Registry
+        audit_type:
+          - success
+          - failure

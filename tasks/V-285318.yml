@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-285318 - Windows Server 2025 OpenSSH must be configured so that all network connections associated with
+    SSH traffic terminate after becoming unresponsive.
+  when:
+    - win25_stig_v_285318 | bool
+    - '''V-285318'' not in win25_stig_exceptions'
+  tags:
+    - V-285318
+    - CAT2
+  block:
+    - name: Windows Server 2025 OpenSSH must be configured so that all network connections associated with SSH traffic
+        terminate after becoming unresponsive.
+      ansible.windows.win_powershell:
+        script: |-
+          [CmdletBinding(SupportsShouldProcess)]
+          param()
+          $Ansible.Changed = $false
+          $path = Join-Path $env:ProgramData 'ssh\sshd_config'
+          $text = [IO.File]::ReadAllText($path)
+          $parts = [regex]::new('(?im)(?=^Match\s)').Split($text, 2)
+          $global = $parts[0]
+          $desired = 'ClientAliveCountMax 1'
+          $pattern = '(?im)^\s*#?\s*ClientAliveCountMax\s+[^\r\n]*(?:\r?\n|$)'
+          $updated = [regex]::Replace($global, $pattern, '')
+          $updated = $desired + "`r`n" + $updated
+          if ($parts.Count -gt 1) { $updated += $parts[1] }
+          # Compare effective global directives to avoid rewriting unchanged files.
+          $active = @([regex]::Matches($global, '(?im)^\s*ClientAliveCountMax\s+([^\r\n]+)'))
+          if ($active.Count -ne 1 -or $active[0].Groups[1].Value.Trim() -ne '1') {
+              $Ansible.Changed = $true
+              if ($PSCmdlet.ShouldProcess($path, 'Set global SSH ClientAliveCountMax')) {
+                  [IO.File]::WriteAllText($path, $updated, [Text.UTF8Encoding]::new($false))
+              }
+          }
+      notify: Validate and restart OpenSSH

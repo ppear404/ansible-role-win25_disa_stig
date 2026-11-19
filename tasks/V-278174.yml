@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278174 - The Windows Server 2025 "Deny log on through Remote Desktop Services" user right on domain controllers
+    must be configured to prevent unauthenticated access.
+  when:
+    - win25_stig_v_278174 | bool
+    - win25_stig_is_dc
+    - '''V-278174'' not in win25_stig_exceptions'
+  tags:
+    - V-278174
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Deny log on through Remote Desktop Services" user right on domain controllers
+        must be configured to prevent unauthenticated access.
+      ansible.windows.win_user_right:
+        name: SeDenyRemoteInteractiveLogonRight
+        users:
+          - S-1-5-32-546
+        action: add

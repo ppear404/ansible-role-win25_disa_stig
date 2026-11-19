@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-285313 - Windows Server 2025 networked systems must have and implement OpenSSH to protect the confidentiality
+    and integrity of transmitted and received information, as well as information during preparation for transmission.
+  when:
+    - win25_stig_v_285313 | bool
+    - '''V-285313'' not in win25_stig_exceptions'
+  tags:
+    - V-285313
+    - CAT2
+  block:
+    - name: Windows Server 2025 networked systems must have and implement OpenSSH to protect the confidentiality
+        and integrity of transmitted and received information, as well as information during preparation for transmission.
+      ansible.windows.win_powershell:
+        script: |-
+          [CmdletBinding(SupportsShouldProcess)]
+          param()
+          $Ansible.Changed = $false
+          $cap = Get-WindowsCapability -Online -Name 'OpenSSH.Server~~~~0.0.1.0'
+          if ($cap.State -ne 'Installed') {
+              $Ansible.Changed = $true
+              if ($PSCmdlet.ShouldProcess('OpenSSH.Server', 'Install capability')) {
+                  Add-WindowsCapability -Online -Name $cap.Name | Out-Null
+              }
+          }
+    - name: Windows Server 2025 networked systems must have and implement OpenSSH to protect the confidentiality
+        and integrity of transmitted and received information, as well as information during preparation for transmission.
+      ansible.windows.win_service:
+        name: sshd
+        state: started
+        start_mode: auto
+    - name: Permit required OpenSSH traffic before restricting other management transports
+      ansible.windows.win_firewall_rule:
+        name: Ansible STIG OpenSSH
+        direction: in
+        action: allow
+        enabled: true
+        protocol: tcp
+        localport: '22'
+        remoteip: '{{ win25_stig_management_remote_addresses }}'
+        profiles: [domain, private, public]
+        state: present

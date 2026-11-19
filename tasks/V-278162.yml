@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278162 - Windows Server 2025 Active Directory (AD) user accounts, including administrators, must be configured
+    to require the use of a common access card (CAC), Personal Identity Verification (PIV)-compliant hardware token,
+    or Alternate Logon Token (ALT) for user authentication.
+  when:
+    - win25_stig_v_278162 | bool
+    - win25_stig_is_dc
+    - '''V-278162'' not in win25_stig_exceptions'
+  tags:
+    - V-278162
+    - CAT2
+  block:
+    - name: V-278162 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278162''] }}'

@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278085 - Windows Server 2025 must be configured to ignore NetBIOS name release requests except from WINS
+    servers.
+  when:
+    - win25_stig_v_278085 | bool
+    - '''V-278085'' not in win25_stig_exceptions'
+  tags:
+    - V-278085
+    - CAT3
+  block:
+    - name: Windows Server 2025 must be configured to ignore NetBIOS name release requests except from WINS servers.
+      ansible.windows.win_regedit:
+        path: HKLM:\SYSTEM\CurrentControlSet\Services\Netbt\Parameters
+        name: NoNameReleaseOnDemand
+        data: 1
+        type: dword
+      notify: Record Windows restart requirement

@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278247 - The Windows Server 2025 "Create global objects" user right must only be assigned to Administrators,
+    Service, Local Service, and Network Service.
+  when:
+    - win25_stig_v_278247 | bool
+    - '''V-278247'' not in win25_stig_exceptions'
+  tags:
+    - V-278247
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Create global objects" user right must only be assigned to Administrators,
+        Service, Local Service, and Network Service.
+      ansible.windows.win_user_right:
+        name: SeCreateGlobalPrivilege
+        users:
+          - S-1-5-32-544
+          - S-1-5-6
+          - S-1-5-19
+          - S-1-5-20
+        action: set

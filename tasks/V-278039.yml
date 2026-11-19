@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278039 - Windows Server 2025 must have the built-in Windows password complexity policy enabled.
+  when:
+    - win25_stig_v_278039 | bool
+    - '''V-278039'' not in win25_stig_exceptions'
+  tags:
+    - V-278039
+    - CAT2
+  block:
+    - name: Windows Server 2025 must have the built-in Windows password complexity policy enabled.
+      community.windows.win_security_policy:
+        section: System Access
+        key: PasswordComplexity
+        value: 1
+      when: not win25_stig_is_dc
+    - name: V-278039 - Report required domain GPO configuration
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278039 (configure domain account policy
+          in the authoritative GPO)''] }}'
+      when: win25_stig_is_dc

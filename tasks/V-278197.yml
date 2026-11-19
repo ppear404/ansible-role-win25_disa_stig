@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278197 - The Windows Server 2025 built-in administrator account must be renamed.
+  when:
+    - win25_stig_v_278197 | bool
+    - '''V-278197'' not in win25_stig_exceptions'
+  tags:
+    - V-278197
+    - CAT2
+  block:
+    - name: The Windows Server 2025 built-in administrator account must be renamed.
+      community.windows.win_security_policy:
+        section: System Access
+        key: NewAdministratorName
+        value: '{{ win25_stig_administrator_name }}'

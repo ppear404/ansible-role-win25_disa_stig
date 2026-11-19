@@ -1,0 +1,113 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Test manual-control answer validation on Windows
+  hosts: win25
+  gather_facts: false
+  tasks:
+    - name: Stage generated self-contained validator fixtures
+      ansible.windows.win_copy:
+        src: '../files/answer_files/manual/checks.json'
+        dest: 'C:\ProgramData\win25-stig\Policy\ManualChecks.fixture.json'
+    - name: Parse embedded validators and exercise positive and negative review fixtures
+      ansible.windows.win_powershell:
+        parameters:
+          ChecksPath: 'C:\ProgramData\win25-stig\Policy\ManualChecks.fixture.json'
+          Source: "{{ lookup('ansible.builtin.file', playbook_dir + '/../files/answer_files/manual/ManualChecks.ps1') }}"
+          Controls: "{{ (lookup('ansible.builtin.file', playbook_dir + '/../files/answer_files/manual/policies.json') | from_json).keys() | list | to_json }}"
+        script: |
+          param([string]$Source, [string]$Controls, [string]$ChecksPath)
+          $Ansible.Changed = $false
+          $tokens=$null; $errors=$null
+          $null=[System.Management.Automation.Language.Parser]::ParseInput($Source, [ref]$tokens, [ref]$errors)
+          if ($errors.Count) { throw ($errors | Out-String) }
+          $generated=Get-Content -LiteralPath $ChecksPath -Raw | ConvertFrom-Json
+          foreach ($entry in $generated.PSObject.Properties) {
+              $tokens=$null; $errors=$null
+              $null=[System.Management.Automation.Language.Parser]::ParseInput($entry.Value, [ref]$tokens, [ref]$errors)
+              if ($errors.Count) { throw ($errors | Out-String) }
+          }
+          foreach ($id in @('V-277991','V-278041')) {
+              $native=& (Join-Path $PSHOME 'powershell.exe') -NoProfile -Command ([scriptblock]::Create($generated.$id))
+              if ($LASTEXITCODE -ne 0 -or $native.Valid -isnot [bool] -or $native.Results -isnot [string]) {
+                  throw "Evaluator-style subprocess validation failed: $id"
+              }
+              if ($id -eq 'V-277991' -and -not $native.Valid) { throw $native.Results }
+          }
+          . ([scriptblock]::Create($Source))
+          $policy=@{hardware_control_procedure=$true; separate_admin_accounts=$true; service_password_minimum=15;
+              service_password_provisioning_check=$true; rotate_on_departure=$true; shared_accounts_used=$false;
+              temporary_accounts_used=$false; emergency_accounts_used=$false}
+          $fields=@{
+              'V-277982'=@('AutoUpdateEnabled','RecentPatch'); 'V-277983'=@('HardwareInventoried');
+              'V-277985'=@('AdminsApproved'); 'V-277987'=@('AdminInternetBlocked'); 'V-277989'=@();
+              'V-277990'=@('ServicePasswordsCurrent'); 'V-277991'=@(); 'V-277992'=@('AllowlistEnforced');
+              'V-277996'=@('HostIDPSActive'); 'V-278006'=@('FIMBaselineAndWeeklyComparison');
+              'V-278009'=@('DatastoreEncryptionDeclaration'); 'V-278010'=@('DocumentedProtectedTransferPaths');
+              'V-278011'=@('FeaturesMatchRegister'); 'V-278013'=@(); 'V-278014'=@();
+              'V-278029'=@('ApprovedTimeSource'); 'V-278041'=@('UniversalForwarderInstalled');
+              'V-278042'=@('UniversalForwarderInstalled'); 'V-278106'=@('SecurityEventsForwarded');
+              'V-278177'=@('AdminsApproved'); 'V-278240'=@('AllProfilesPreserveZone')}
+          $ids=$Controls | ConvertFrom-Json
+          if ($ids.Count -ne 21 -or @($ids | Where-Object { -not $fields.ContainsKey($_) }).Count) {
+              throw 'Fixture coverage does not match the 21 scoped controls'
+          }
+          $positive=0; $negative=0
+          foreach ($control in $fields.Keys) {
+              $evidence=@{}; foreach ($field in $fields[$control]) { $evidence[$field]=$true }
+              if (-not (Test-ManualControlEvidence $control $evidence $policy).Valid) { throw "Positive fixture failed: $control" }
+              $positive++
+              if ((Test-ManualControlEvidence $control @{} @{}).Valid) { throw "Missing evidence accepted: $control" }
+              $negative++
+              foreach ($field in $fields[$control]) {
+                  $bad=$evidence.Clone(); $bad[$field]=$false
+                  if ((Test-ManualControlEvidence $control $bad $policy).Valid) { throw "Negative fixture accepted: $control/$field" }
+                  $negative++
+              }
+          }
+          if (-not (Test-ManualControlEvidence 'V-277987' @{NonInternetFacingDeclaration=$true} $policy).Valid) {
+              throw 'Owner-declared non-Internet-facing policy determination was rejected'
+          }
+          $positive++
+          $ntpCases=@(
+              @{Peers='ntp.example.test,0x8'; Approved=@('ntp.example.test'); Running=$true; Expected=$true},
+              @{Peers='10.1.2.3,0x8'; Approved=@('10.1.2.3'); Running=$true; Expected=$true},
+              @{Peers='time.windows.com,0x8'; Approved=@(); Running=$true; Expected=$false},
+              @{Peers='other.example.test,0x8'; Approved=@('ntp.example.test'); Running=$true; Expected=$false},
+              @{Peers='ntp.example.test,0x8 other.example.test,0x8'; Approved=@('ntp.example.test'); Running=$true; Expected=$false},
+              @{Peers=''; Approved=@('ntp.example.test'); Running=$true; Expected=$false},
+              @{Peers='ntp.example.test,0x8'; Approved=@('ntp.example.test'); Running=$false; Expected=$false})
+          foreach ($case in $ntpCases) {
+              $actual=Test-ConfiguredTimeSource -Type NTP -Peers $case.Peers -ApprovedSources $case.Approved `
+                  -DomainJoined $false -DomainRole 2 -ServiceRunning $case.Running
+              if ($actual -ne $case.Expected) { throw 'NTP matching fixture failed' }
+              if ($case.Expected) { $positive++ } else { $negative++ }
+          }
+          $short=$policy.Clone(); $short.service_password_minimum=14
+          if ((Test-ManualControlEvidence 'V-277989' @{} $short).Valid) { throw 'Short service password policy accepted' }
+          $negative++
+          foreach ($control in @('V-277991','V-278013','V-278014')) {
+              if ((Test-ManualControlEvidence $control @{ContradictoryAccount=$true} $policy).Valid) {
+                  throw "Account declaration overrode a contradiction: $control"
+              }
+              $negative++
+          }
+          if ((Test-ManualControlEvidence 'V-278106' @{UniversalForwarderInstalled=$true} $policy).Valid) {
+              throw 'Forwarder installation alone incorrectly waived Security-log retention'
+          }
+          $negative++
+          $unsupported=$false
+          try { $null=Test-ManualControlEvidence 'V-000000' @{} $policy } catch { $unsupported=$true }
+          if (-not $unsupported) { throw 'Unsupported control was accepted' }
+          $negative++
+          $wrongHost=Invoke-ScopedManualReview -Control 'V-277991' -Policy @{computer_name='UNREGISTERED-HOST'}
+          if ($wrongHost.Valid) { throw 'Wrong host scope was accepted' }
+          $wrongSID=Invoke-ScopedManualReview -Control 'V-277991' -Policy @{
+              computer_name=$env:COMPUTERNAME; machine_sid='S-1-5-21-invalid'}
+          if ($wrongSID.Valid) { throw 'Wrong machine SID scope was accepted' }
+          $negative+=2
+          $Ansible.Result=@{positive_cases=$positive; negative_cases=$negative; review_controls=$ids.Count}
+
+    - name: Remove generated validator fixture staging file
+      ansible.windows.win_file:
+        path: 'C:\ProgramData\win25-stig\Policy\ManualChecks.fixture.json'
+        state: absent

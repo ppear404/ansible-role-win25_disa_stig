@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278074 - Windows Server 2025 must be configured to audit System - Other System Events successes.
+  when:
+    - win25_stig_v_278074 | bool
+    - '''V-278074'' not in win25_stig_exceptions'
+  tags:
+    - V-278074
+    - CAT2
+  block:
+    - name: Windows Server 2025 must be configured to audit System - Other System Events successes.
+      ansible.windows.win_audit_policy_system:
+        subcategory: Other System Events
+        audit_type:
+          - failure
+          - success

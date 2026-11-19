@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278048 - Windows Server 2025 must be configured to audit Account Logon - Credential Validation failures.
+  when:
+    - win25_stig_v_278048 | bool
+    - '''V-278048'' not in win25_stig_exceptions'
+  tags:
+    - V-278048
+    - CAT2
+  block:
+    - name: Windows Server 2025 must be configured to audit Account Logon - Credential Validation failures.
+      ansible.windows.win_audit_policy_system:
+        subcategory: Credential Validation
+        audit_type:
+          - failure
+          - success

@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278182 - Windows Server 2025 must restrict remote calls to the Security Account Manager (SAM) to Administrators
+    on domain-joined member servers and stand-alone or nondomain-joined systems.
+  when:
+    - win25_stig_v_278182 | bool
+    - not win25_stig_is_dc
+    - '''V-278182'' not in win25_stig_exceptions'
+  tags:
+    - V-278182
+    - CAT2
+  block:
+    - name: Windows Server 2025 must restrict remote calls to the Security Account Manager (SAM) to Administrators
+        on domain-joined member servers and stand-alone or nondomain-joined systems.
+      ansible.windows.win_regedit:
+        path: HKLM:\SYSTEM\CurrentControlSet\Control\Lsa
+        name: RestrictRemoteSAM
+        data: O:BAG:BAD:(A;;RC;;;BA)
+        type: string
+      notify: Record Windows restart requirement

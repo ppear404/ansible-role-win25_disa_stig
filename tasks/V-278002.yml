@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278002 - Windows Server 2025 nonadministrative accounts or groups must only have print permissions on
+    printer shares.
+  when:
+    - win25_stig_v_278002 | bool
+    - '''V-278002'' not in win25_stig_exceptions'
+  tags:
+    - V-278002
+    - CAT3
+  block:
+    - name: V-278002 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278002''] }}'

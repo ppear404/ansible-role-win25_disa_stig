@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278189 - The Windows Server 2025 "Enable computer and user accounts to be trusted for delegation" user
+    right must not be assigned to any groups or accounts on domain-joined member servers and stand-alone or nondomain-joined
+    systems.
+  when:
+    - win25_stig_v_278189 | bool
+    - not win25_stig_is_dc
+    - '''V-278189'' not in win25_stig_exceptions'
+  tags:
+    - V-278189
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Enable computer and user accounts to be trusted for delegation" user right
+        must not be assigned to any groups or accounts on domain-joined member servers and stand-alone or nondomain-joined
+        systems.
+      ansible.windows.win_user_right:
+        name: SeEnableDelegationPrivilege
+        users: []
+        action: set

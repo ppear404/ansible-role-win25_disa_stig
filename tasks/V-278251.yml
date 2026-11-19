@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278251 - The Windows Server 2025 "Force shutdown from a remote system" user right must only be assigned
+    to the Administrators group.
+  when:
+    - win25_stig_v_278251 | bool
+    - '''V-278251'' not in win25_stig_exceptions'
+  tags:
+    - V-278251
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Force shutdown from a remote system" user right must only be assigned to the
+        Administrators group.
+      ansible.windows.win_user_right:
+        name: SeRemoteShutdownPrivilege
+        users:
+          - S-1-5-32-544
+        action: set

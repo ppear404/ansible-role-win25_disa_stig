@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278178 - Windows Server 2025 local administrator accounts must have their privileged token filtered to
+    prevent elevated privileges from being used over the network on domain-joined member servers.
+  when:
+    - win25_stig_v_278178 | bool
+    - not win25_stig_is_dc
+    - win25_stig_domain_joined
+    - win25_stig_enforce_remote_uac
+    - '''V-278178'' not in win25_stig_exceptions'
+  tags:
+    - V-278178
+    - CAT2
+  block:
+    - name: Windows Server 2025 local administrator accounts must have their privileged token filtered to prevent
+        elevated privileges from being used over the network on domain-joined member servers.
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+        name: LocalAccountTokenFilterPolicy
+        data: 0
+        type: dword
+      notify: Record Windows restart requirement

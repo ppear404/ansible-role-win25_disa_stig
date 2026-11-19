@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-277989 - Windows Server 2025 manually managed application account passwords must be at least 15 characters
+    in length.
+  when:
+    - win25_stig_v_277989 | bool
+    - '''V-277989'' not in win25_stig_exceptions'
+  tags:
+    - V-277989
+    - CAT2
+  block:
+    - name: V-277989 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-277989''] }}'
+      when: not (win25_stig_manual_reviews.get('V-277989', {}).get('Valid', false) | bool)

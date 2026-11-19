@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278170 - The Windows Server 2025 "Deny log on as a service" user right must be configured to include no
+    accounts or groups (blank) on domain controllers.
+  when:
+    - win25_stig_v_278170 | bool
+    - win25_stig_is_dc
+    - '''V-278170'' not in win25_stig_exceptions'
+  tags:
+    - V-278170
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Deny log on as a service" user right must be configured to include no accounts
+        or groups (blank) on domain controllers.
+      ansible.windows.win_user_right:
+        name: SeDenyServiceLogonRight
+        users: []
+        action: set

@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278010 - Windows Server 2025 must implement protection methods such as TLS, encrypted VPNs, or IPsec if
+    the data owner has a strict requirement for ensuring data integrity and confidentiality is maintained at every
+    step of the data transfer and handling process.
+  when:
+    - win25_stig_v_278010 | bool
+    - '''V-278010'' not in win25_stig_exceptions'
+  tags:
+    - V-278010
+    - CAT2
+  block:
+    - name: V-278010 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278010''] }}'
+      when: not (win25_stig_manual_reviews.get('V-278010', {}).get('Valid', false) | bool)

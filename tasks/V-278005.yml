@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278005 - Windows Server 2025 passwords must be configured to expire.
+  when:
+    - win25_stig_v_278005 | bool
+    - not win25_stig_is_dc
+    - win25_stig_manage_local_password_flags
+    - '''V-278005'' not in win25_stig_exceptions'
+  tags:
+    - V-278005
+    - CAT2
+  block:
+    - name: Windows Server 2025 passwords must be configured to expire.
+      ansible.windows.win_powershell:
+        script: |-
+          [CmdletBinding(SupportsShouldProcess)]
+          param()
+          $Ansible.Changed = $false
+          $exceptions = @({{ win25_stig_password_exempt_accounts | map('to_json') | join(',') }})
+          Get-LocalUser | Where-Object { $_.Enabled -and $_.Name -notin $exceptions } | ForEach-Object {
+              $user = $_
+              $needsChange = $null -eq $user.PasswordExpires
+              if ($needsChange) {
+                  $Ansible.Changed = $true
+                  if ($PSCmdlet.ShouldProcess($user.Name, 'Set PasswordNeverExpires')) {
+                      Set-LocalUser -Name $user.Name -PasswordNeverExpires $false
+                  }
+              }
+          }

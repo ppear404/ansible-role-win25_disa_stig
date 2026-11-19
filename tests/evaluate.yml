@@ -1,0 +1,120 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Run Windows Server 2025 Evaluate-STIG and fetch assessment artifacts
+  hosts: win25
+  gather_facts: false
+  vars:
+    win25_eval_version: '1.2610.1'
+    win25_eval_root: 'C:\ProgramData\Evaluate-STIG'
+    win25_eval_script: >-
+      {{ win25_eval_root }}\evaluate-stig-{{ win25_eval_version }}\Src\Evaluate-STIG\Evaluate-STIG.ps1
+    win25_eval_answer_directory: '{{ win25_eval_root }}\AnswerFiles'
+    win25_eval_answer_source: '{{ playbook_dir }}/../templates/WinServer2025_AnswerFile.xml.j2'
+    win25_eval_archive: '{{ playbook_dir }}/../files/evaluate-stig-{{ win25_eval_version }}.tar.gz'
+    win25_eval_run_id: '{{ now(utc=true, fmt="%Y%m%dT%H%M%SZ") }}'
+    win25_eval_local_results: '{{ playbook_dir }}/../.files/{{ inventory_hostname }}'
+  tasks:
+    - name: Validate the approved environment time source before rendering answers
+      ansible.builtin.assert:
+        that:
+          - (win25_stig_time_source | default('')) is string
+          - (win25_stig_time_source | default('')) | length == 0 or
+            (win25_stig_time_source | default('')) is match('^[A-Za-z0-9][A-Za-z0-9.:-]*$')
+    - name: Freeze the assessment timestamp
+      ansible.builtin.set_fact:
+        win25_eval_timestamp: '{{ win25_eval_run_id }}'
+
+    - name: Set unique assessment result paths
+      ansible.builtin.set_fact:
+        win25_eval_output: '{{ win25_eval_root }}\results\{{ win25_eval_timestamp }}'
+        win25_eval_result_archive: '{{ win25_eval_root }}\results-{{ win25_eval_timestamp }}.zip'
+
+    - name: Create evaluator and result directories
+      ansible.windows.win_file:
+        path: '{{ item }}'
+        state: directory
+      loop:
+        - '{{ win25_eval_root }}'
+        - '{{ win25_eval_output }}'
+        - '{{ win25_eval_answer_directory }}'
+        - '{{ win25_eval_output }}\AnswerFiles'
+
+    - name: Copy the supplied evaluator package
+      ansible.windows.win_copy:
+        src: '{{ win25_eval_archive }}'
+        dest: '{{ win25_eval_root }}\evaluate-stig-{{ win25_eval_version }}.tar.gz'
+
+    - name: Extract the evaluator package
+      ansible.windows.win_command:
+        argv:
+          - tar.exe
+          - -xzf
+          - '{{ win25_eval_root }}\evaluate-stig-{{ win25_eval_version }}.tar.gz'
+          - -C
+          - '{{ win25_eval_root }}'
+        creates: '{{ win25_eval_script }}'
+
+    - name: Deploy and archive the conditional Windows Server answer file
+      ansible.windows.win_template:
+        src: '{{ win25_eval_answer_source }}'
+        dest: '{{ item }}\WinServer2025_AnswerFile.xml'
+      loop:
+        - '{{ win25_eval_answer_directory }}'
+        - '{{ win25_eval_output }}\AnswerFiles'
+
+    - name: Run the Windows Server 2025 V1R4 assessment
+      ansible.windows.win_shell: |
+        $ErrorActionPreference = 'Stop'
+        $scan = @{
+            SelectSTIG = 'WinServer2025'
+            Output = @('CKLB', 'CSV', 'XCCDF', 'Summary')
+            OutputPath = '{{ win25_eval_output }}'
+            AFPath = '{{ win25_eval_answer_directory }}'
+            AnswerKey = 'DEFAULT'
+        }
+        & '{{ win25_eval_script }}' @scan *>&1 |
+            Out-File -LiteralPath '{{ win25_eval_output }}\assessment-console.log' -Encoding utf8
+        if (-not $?) { throw 'Evaluate-STIG failed; inspect assessment-console.log.' }
+      async: 7200
+      poll: 30
+      register: win25_eval_execution
+      failed_when: false
+
+    - name: Find generated checklist files
+      ansible.windows.win_find:
+        paths: '{{ win25_eval_output }}'
+        patterns: ['*.cklb']
+        recurse: true
+      register: win25_eval_checklists
+
+    - name: Archive all assessment reports and logs
+      ansible.windows.win_powershell:
+        parameters:
+          ResultDirectory: '{{ win25_eval_output }}'
+          ArchivePath: '{{ win25_eval_result_archive }}'
+        script: |
+          param([string]$ResultDirectory, [string]$ArchivePath)
+          Compress-Archive -Path (Join-Path $ResultDirectory '*') -DestinationPath $ArchivePath -Force
+
+    - name: Fetch the complete assessment archive
+      ansible.builtin.fetch:
+        src: '{{ win25_eval_result_archive }}'
+        dest: '{{ win25_eval_local_results }}/{{ win25_eval_timestamp }}/'
+        flat: true
+
+    - name: Fetch individual checklists
+      ansible.builtin.fetch:
+        src: '{{ item.path }}'
+        dest: '{{ win25_eval_local_results }}/{{ win25_eval_timestamp }}/'
+        flat: true
+      loop: '{{ win25_eval_checklists.files }}'
+      loop_control:
+        label: '{{ item.filename }}'
+
+    - name: Require successful evaluation and checklist generation
+      ansible.builtin.assert:
+        that:
+          - win25_eval_execution.rc | default(1) == 0
+          - win25_eval_checklists.matched | int > 0
+        fail_msg: Assessment did not finish successfully; fetched archive contains diagnostic logs.
+        success_msg: 'Assessment fetched to {{ win25_eval_local_results }}/{{ win25_eval_timestamp }}'

@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278046 - Windows Server 2025 Event Viewer must be protected from unauthorized modification and deletion.
+  when:
+    - win25_stig_v_278046 | bool
+    - '''V-278046'' not in win25_stig_exceptions'
+  tags:
+    - V-278046
+    - CAT2
+  block:
+    - name: V-278046 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278046''] }}'

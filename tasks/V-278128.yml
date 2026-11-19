@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278128 - Windows Server 2025 Windows Remote Management (WinRM) service must not use Basic authentication.
+  when:
+    - win25_stig_v_278128 | bool
+    - '''V-278128'' not in win25_stig_exceptions'
+  tags:
+    - V-278128
+    - CAT1
+  block:
+    - name: Windows Server 2025 Windows Remote Management (WinRM) service must not use Basic authentication.
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service
+        name: AllowBasic
+        data: 0
+        type: dword
+      notify: Record Windows restart requirement

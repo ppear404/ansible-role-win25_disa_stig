@@ -1,0 +1,128 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Run Windows Server 2025 preflight
+  ansible.builtin.import_tasks: preflight.yml
+  tags:
+    - always
+- name: Deploy procedures and review controls requiring site evidence
+  ansible.builtin.import_tasks: manual_reviews.yml
+  tags:
+    - CAT1
+    - CAT2
+    - CAT3
+    - V-277982
+    - V-277983
+    - V-277985
+    - V-277987
+    - V-277989
+    - V-277990
+    - V-277991
+    - V-277992
+    - V-277996
+    - V-278006
+    - V-278009
+    - V-278010
+    - V-278011
+    - V-278013
+    - V-278014
+    - V-278029
+    - V-278041
+    - V-278042
+    - V-278106
+    - V-278177
+    - V-278240
+
+- name: Install OpenSSH before configuring SSH controls
+  ansible.builtin.import_tasks: V-285313.yml
+  when: (win25_stig_cat1 | bool and win25_stig_v_285316 | bool) or win25_stig_cat2 | bool
+  tags:
+    - CAT1
+    - CAT2
+    - V-285313
+    - V-285314
+    - V-285315
+    - V-285316
+    - V-285317
+    - V-285318
+    - V-285319
+    - V-285320
+    - V-285321
+    - V-285322
+    - V-285323
+
+- name: Apply security-policy imports before registry and audit remediation
+  ansible.builtin.import_tasks: security_policy.yml
+
+- name: Enforce advanced audit policy before configuring auditing
+  ansible.builtin.import_tasks: V-278199.yml
+  when: win25_stig_cat2 | bool
+  tags:
+    - CAT2
+    - V-278199
+    - V-278047
+    - V-278048
+    - V-278049
+    - V-278050
+    - V-278051
+    - V-278052
+    - V-278053
+    - V-278054
+    - V-278055
+    - V-278056
+    - V-278057
+    - V-278058
+    - V-278059
+    - V-278060
+    - V-278061
+    - V-278062
+    - V-278063
+    - V-278064
+    - V-278065
+    - V-278066
+    - V-278067
+    - V-278068
+    - V-278069
+    - V-278070
+    - V-278071
+    - V-278072
+    - V-278073
+    - V-278074
+    - V-278075
+    - V-278076
+    - V-278077
+    - V-278078
+    - V-278079
+    - V-278154
+    - V-278155
+    - V-278156
+    - V-278157
+    - V-278158
+    - V-279918
+    - V-279920
+    - V-279921
+    - V-279922
+    - V-279923
+
+- name: Include category 1 controls
+  ansible.builtin.import_tasks: cat1.yml
+  when: win25_stig_cat1 | bool
+  tags:
+    - CAT1
+- name: Include category 2 controls
+  ansible.builtin.import_tasks: cat2.yml
+  when: win25_stig_cat2 | bool
+  tags:
+    - CAT2
+- name: Include category 3 controls
+  ansible.builtin.import_tasks: cat3.yml
+  when: win25_stig_cat3 | bool
+  tags:
+    - CAT3
+- name: Apply pending handlers before reporting restart requirements
+  ansible.builtin.meta: flush_handlers
+  tags:
+    - always
+- name: Report remaining site requirements
+  ansible.builtin.import_tasks: report.yml
+  tags:
+    - always

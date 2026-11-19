@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278190 - Windows Server 2025 must be running Credential Guard on domain-joined member servers.
+  when:
+    - win25_stig_v_278190 | bool
+    - win25_stig_domain_joined
+    - not win25_stig_is_dc
+    - not win25_stig_exchange_server
+    - win25_stig_enable_credential_guard_uefi_lock
+    - '''V-278190'' not in win25_stig_exceptions'
+  tags:
+    - V-278190
+    - CAT1
+  block:
+    - name: Windows Server 2025 must be running Credential Guard on domain-joined member servers.
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard
+        name: LsaCfgFlags
+        data: 1
+        type: dword
+      notify: Record Windows restart requirement

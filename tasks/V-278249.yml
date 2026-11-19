@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278249 - The Windows Server 2025 "Create symbolic links" user right must only be assigned to the Administrators
+    group.
+  when:
+    - win25_stig_v_278249 | bool
+    - '''V-278249'' not in win25_stig_exceptions'
+  tags:
+    - V-278249
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Create symbolic links" user right must only be assigned to the Administrators
+        group.
+      ansible.windows.win_user_right:
+        name: SeCreateSymbolicLinkPrivilege
+        users: '{{ [''S-1-5-32-544''] + ([''S-1-5-83-0''] if win25_stig_hyperv else []) }}'
+        action: set

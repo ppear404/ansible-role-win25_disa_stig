@@ -1,0 +1,402 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278070 - Include control tasks
+  ansible.builtin.import_tasks: V-278070.yml
+  tags:
+    - V-278070
+    - CAT2
+- name: V-278071 - Include control tasks
+  ansible.builtin.import_tasks: V-278071.yml
+  tags:
+    - V-278071
+    - CAT2
+- name: V-278072 - Include control tasks
+  ansible.builtin.import_tasks: V-278072.yml
+  tags:
+    - V-278072
+    - CAT2
+- name: V-278073 - Include control tasks
+  ansible.builtin.import_tasks: V-278073.yml
+  tags:
+    - V-278073
+    - CAT2
+- name: V-278074 - Include control tasks
+  ansible.builtin.import_tasks: V-278074.yml
+  tags:
+    - V-278074
+    - CAT2
+- name: V-278075 - Include control tasks
+  ansible.builtin.import_tasks: V-278075.yml
+  tags:
+    - V-278075
+    - CAT2
+- name: V-278076 - Include control tasks
+  ansible.builtin.import_tasks: V-278076.yml
+  tags:
+    - V-278076
+    - CAT2
+- name: V-278077 - Include control tasks
+  ansible.builtin.import_tasks: V-278077.yml
+  tags:
+    - V-278077
+    - CAT2
+- name: V-278078 - Include control tasks
+  ansible.builtin.import_tasks: V-278078.yml
+  tags:
+    - V-278078
+    - CAT2
+- name: V-278079 - Include control tasks
+  ansible.builtin.import_tasks: V-278079.yml
+  tags:
+    - V-278079
+    - CAT2
+- name: V-278080 - Include control tasks
+  ansible.builtin.import_tasks: V-278080.yml
+  tags:
+    - V-278080
+    - CAT2
+- name: V-278086 - Include control tasks
+  ansible.builtin.import_tasks: V-278086.yml
+  tags:
+    - V-278086
+    - CAT2
+- name: V-278087 - Include control tasks
+  ansible.builtin.import_tasks: V-278087.yml
+  tags:
+    - V-278087
+    - CAT2
+- name: V-278088 - Include control tasks
+  ansible.builtin.import_tasks: V-278088.yml
+  tags:
+    - V-278088
+    - CAT2
+- name: V-278089 - Include control tasks
+  ansible.builtin.import_tasks: V-278089.yml
+  tags:
+    - V-278089
+    - CAT2
+- name: V-278090 - Include control tasks
+  ansible.builtin.import_tasks: V-278090.yml
+  tags:
+    - V-278090
+    - CAT2
+- name: V-278091 - Include control tasks
+  ansible.builtin.import_tasks: V-278091.yml
+  tags:
+    - V-278091
+    - CAT2
+- name: V-278092 - Include control tasks
+  ansible.builtin.import_tasks: V-278092.yml
+  tags:
+    - V-278092
+    - CAT2
+- name: V-278093 - Include control tasks
+  ansible.builtin.import_tasks: V-278093.yml
+  tags:
+    - V-278093
+    - CAT2
+- name: V-278094 - Include control tasks
+  ansible.builtin.import_tasks: V-278094.yml
+  tags:
+    - V-278094
+    - CAT2
+- name: V-278095 - Include control tasks
+  ansible.builtin.import_tasks: V-278095.yml
+  tags:
+    - V-278095
+    - CAT2
+- name: V-278096 - Include control tasks
+  ansible.builtin.import_tasks: V-278096.yml
+  tags:
+    - V-278096
+    - CAT2
+- name: V-278097 - Include control tasks
+  ansible.builtin.import_tasks: V-278097.yml
+  tags:
+    - V-278097
+    - CAT2
+- name: V-278102 - Include control tasks
+  ansible.builtin.import_tasks: V-278102.yml
+  tags:
+    - V-278102
+    - CAT2
+- name: V-278103 - Include control tasks
+  ansible.builtin.import_tasks: V-278103.yml
+  tags:
+    - V-278103
+    - CAT2
+- name: V-278105 - Include control tasks
+  ansible.builtin.import_tasks: V-278105.yml
+  tags:
+    - V-278105
+    - CAT2
+- name: V-278106 - Include control tasks
+  ansible.builtin.import_tasks: V-278106.yml
+  tags:
+    - V-278106
+    - CAT2
+- name: V-278107 - Include control tasks
+  ansible.builtin.import_tasks: V-278107.yml
+  tags:
+    - V-278107
+    - CAT2
+- name: V-278108 - Include control tasks
+  ansible.builtin.import_tasks: V-278108.yml
+  tags:
+    - V-278108
+    - CAT2
+- name: V-278109 - Include control tasks
+  ansible.builtin.import_tasks: V-278109.yml
+  tags:
+    - V-278109
+    - CAT2
+- name: V-278111 - Include control tasks
+  ansible.builtin.import_tasks: V-278111.yml
+  tags:
+    - V-278111
+    - CAT2
+- name: V-278112 - Include control tasks
+  ansible.builtin.import_tasks: V-278112.yml
+  tags:
+    - V-278112
+    - CAT2
+- name: V-278113 - Include control tasks
+  ansible.builtin.import_tasks: V-278113.yml
+  tags:
+    - V-278113
+    - CAT2
+- name: V-278114 - Include control tasks
+  ansible.builtin.import_tasks: V-278114.yml
+  tags:
+    - V-278114
+    - CAT2
+- name: V-278115 - Include control tasks
+  ansible.builtin.import_tasks: V-278115.yml
+  tags:
+    - V-278115
+    - CAT2
+- name: V-278116 - Include control tasks
+  ansible.builtin.import_tasks: V-278116.yml
+  tags:
+    - V-278116
+    - CAT2
+- name: V-278117 - Include control tasks
+  ansible.builtin.import_tasks: V-278117.yml
+  tags:
+    - V-278117
+    - CAT2
+- name: V-278118 - Include control tasks
+  ansible.builtin.import_tasks: V-278118.yml
+  tags:
+    - V-278118
+    - CAT2
+- name: V-278119 - Include control tasks
+  ansible.builtin.import_tasks: V-278119.yml
+  tags:
+    - V-278119
+    - CAT2
+- name: V-278120 - Include control tasks
+  ansible.builtin.import_tasks: V-278120.yml
+  tags:
+    - V-278120
+    - CAT2
+- name: V-278122 - Include control tasks
+  ansible.builtin.import_tasks: V-278122.yml
+  tags:
+    - V-278122
+    - CAT2
+- name: V-278123 - Include control tasks
+  ansible.builtin.import_tasks: V-278123.yml
+  tags:
+    - V-278123
+    - CAT2
+- name: V-278124 - Include control tasks
+  ansible.builtin.import_tasks: V-278124.yml
+  tags:
+    - V-278124
+    - CAT2
+- name: V-278126 - Include control tasks
+  ansible.builtin.import_tasks: V-278126.yml
+  tags:
+    - V-278126
+    - CAT2
+- name: V-278127 - Include control tasks
+  ansible.builtin.import_tasks: V-278127.yml
+  tags:
+    - V-278127
+    - CAT2
+- name: V-278129 - Include control tasks
+  ansible.builtin.import_tasks: V-278129.yml
+  tags:
+    - V-278129
+    - CAT2
+- name: V-278130 - Include control tasks
+  ansible.builtin.import_tasks: V-278130.yml
+  tags:
+    - V-278130
+    - CAT2
+- name: V-278131 - Include control tasks
+  ansible.builtin.import_tasks: V-278131.yml
+  tags:
+    - V-278131
+    - CAT2
+- name: V-278133 - Include control tasks
+  ansible.builtin.import_tasks: V-278133.yml
+  tags:
+    - V-278133
+    - CAT2
+- name: V-278134 - Include control tasks
+  ansible.builtin.import_tasks: V-278134.yml
+  tags:
+    - V-278134
+    - CAT2
+- name: V-278135 - Include control tasks
+  ansible.builtin.import_tasks: V-278135.yml
+  tags:
+    - V-278135
+    - CAT2
+- name: V-278136 - Include control tasks
+  ansible.builtin.import_tasks: V-278136.yml
+  tags:
+    - V-278136
+    - CAT2
+- name: V-278137 - Include control tasks
+  ansible.builtin.import_tasks: V-278137.yml
+  tags:
+    - V-278137
+    - CAT2
+- name: V-278143 - Include control tasks
+  ansible.builtin.import_tasks: V-278143.yml
+  tags:
+    - V-278143
+    - CAT2
+- name: V-278144 - Include control tasks
+  ansible.builtin.import_tasks: V-278144.yml
+  tags:
+    - V-278144
+    - CAT2
+- name: V-278145 - Include control tasks
+  ansible.builtin.import_tasks: V-278145.yml
+  tags:
+    - V-278145
+    - CAT2
+- name: V-278148 - Include control tasks
+  ansible.builtin.import_tasks: V-278148.yml
+  tags:
+    - V-278148
+    - CAT2
+- name: V-278149 - Include control tasks
+  ansible.builtin.import_tasks: V-278149.yml
+  tags:
+    - V-278149
+    - CAT2
+- name: V-278150 - Include control tasks
+  ansible.builtin.import_tasks: V-278150.yml
+  tags:
+    - V-278150
+    - CAT2
+- name: V-278151 - Include control tasks
+  ansible.builtin.import_tasks: V-278151.yml
+  tags:
+    - V-278151
+    - CAT2
+- name: V-278152 - Include control tasks
+  ansible.builtin.import_tasks: V-278152.yml
+  tags:
+    - V-278152
+    - CAT2
+- name: V-278153 - Include control tasks
+  ansible.builtin.import_tasks: V-278153.yml
+  tags:
+    - V-278153
+    - CAT2
+- name: V-278154 - Include control tasks
+  ansible.builtin.import_tasks: V-278154.yml
+  tags:
+    - V-278154
+    - CAT2
+- name: V-278155 - Include control tasks
+  ansible.builtin.import_tasks: V-278155.yml
+  tags:
+    - V-278155
+    - CAT2
+- name: V-278156 - Include control tasks
+  ansible.builtin.import_tasks: V-278156.yml
+  tags:
+    - V-278156
+    - CAT2
+- name: V-278157 - Include control tasks
+  ansible.builtin.import_tasks: V-278157.yml
+  tags:
+    - V-278157
+    - CAT2
+- name: V-278158 - Include control tasks
+  ansible.builtin.import_tasks: V-278158.yml
+  tags:
+    - V-278158
+    - CAT2
+- name: V-278159 - Include control tasks
+  ansible.builtin.import_tasks: V-278159.yml
+  tags:
+    - V-278159
+    - CAT2
+- name: V-278162 - Include control tasks
+  ansible.builtin.import_tasks: V-278162.yml
+  tags:
+    - V-278162
+    - CAT2
+- name: V-278163 - Include control tasks
+  ansible.builtin.import_tasks: V-278163.yml
+  tags:
+    - V-278163
+    - CAT2
+- name: V-278164 - Include control tasks
+  ansible.builtin.import_tasks: V-278164.yml
+  tags:
+    - V-278164
+    - CAT2
+- name: V-278165 - Include control tasks
+  ansible.builtin.import_tasks: V-278165.yml
+  tags:
+    - V-278165
+    - CAT2
+- name: V-278166 - Include control tasks
+  ansible.builtin.import_tasks: V-278166.yml
+  tags:
+    - V-278166
+    - CAT2
+- name: V-278167 - Include control tasks
+  ansible.builtin.import_tasks: V-278167.yml
+  tags:
+    - V-278167
+    - CAT2
+- name: V-278168 - Include control tasks
+  ansible.builtin.import_tasks: V-278168.yml
+  tags:
+    - V-278168
+    - CAT2
+- name: V-278169 - Include control tasks
+  ansible.builtin.import_tasks: V-278169.yml
+  tags:
+    - V-278169
+    - CAT2
+- name: V-278170 - Include control tasks
+  ansible.builtin.import_tasks: V-278170.yml
+  tags:
+    - V-278170
+    - CAT2
+- name: V-278171 - Include control tasks
+  ansible.builtin.import_tasks: V-278171.yml
+  tags:
+    - V-278171
+    - CAT2
+- name: V-278173 - Include control tasks
+  ansible.builtin.import_tasks: V-278173.yml
+  tags:
+    - V-278173
+    - CAT2
+- name: V-278174 - Include control tasks
+  ansible.builtin.import_tasks: V-278174.yml
+  tags:
+    - V-278174
+    - CAT2

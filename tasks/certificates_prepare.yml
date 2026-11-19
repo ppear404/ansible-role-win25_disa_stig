@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Load pinned public certificate metadata
+  ansible.builtin.include_vars: '{{ role_path }}/vars/certificates.yml'
+- name: Select certificates for this control
+  ansible.builtin.set_fact:
+    win25_stig_selected_certificates: >-
+      {{ win25_stig_certificates | selectattr('control', 'equalto', win25_stig_certificate_control) | list }}
+# Public staging is allowed during check mode so native store modules can inspect the payload.
+# Store changes themselves retain normal check-mode semantics.
+- name: Create public certificate staging directory
+  ansible.windows.win_file:
+    path: '{{ win25_stig_certificate_directory }}'
+    state: directory
+  check_mode: false
+- name: Stage pinned public certificate payloads
+  ansible.windows.win_copy:
+    src: 'certificates/{{ item.file }}'
+    dest: '{{ win25_stig_certificate_directory }}\{{ item.file }}'
+  loop: '{{ win25_stig_selected_certificates }}'
+  loop_control:
+    label: '{{ item.file }}'
+  check_mode: false
+- name: Validate certificate identity validity and CA constraints before changing stores
+  check_mode: false
+  ansible.windows.win_powershell:
+    parameters:
+      Directory: '{{ win25_stig_certificate_directory }}'
+      Metadata: '{{ win25_stig_selected_certificates | to_json }}'
+    script: |
+      [CmdletBinding(SupportsShouldProcess)]
+      param([string]$Directory, [string]$Metadata)
+      $Ansible.Changed = $false
+      foreach ($item in ($Metadata | ConvertFrom-Json)) {
+          $path = Join-Path $Directory $item.file
+          if ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ne $item.sha256) {
+              throw "Certificate SHA256 mismatch: $($item.file)"
+          }
+          $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($path)
+          try {
+              $now = [DateTime]::UtcNow
+              $basic = $cert.Extensions | Where-Object { $_.Oid.Value -eq '2.5.29.19' }
+              $usage = $cert.Extensions | Where-Object { $_.Oid.Value -eq '2.5.29.15' }
+              if ($cert.Thumbprint -ne $item.thumbprint -or $cert.HasPrivateKey -or
+                  $now -lt $cert.NotBefore.ToUniversalTime() -or $now -ge $cert.NotAfter.ToUniversalTime() -or
+                  -not $basic.CertificateAuthority -or -not ($usage.KeyUsages -band 4) -or
+                  $cert.GetNameInfo('SimpleName', $false) -ne $item.subject_cn -or
+                  $cert.GetNameInfo('SimpleName', $true) -ne $item.issuer_cn) {
+                  throw "Certificate identity, validity or CA constraints failed: $($item.file)"
+              }
+              if (($item.kind -eq 'root') -ne ($cert.Subject -eq $cert.Issuer)) {
+                  throw "Certificate root/cross classification mismatch: $($item.file)"
+              }
+              Write-Output "$($item.file): $($cert.Thumbprint), expires $($cert.NotAfter.ToUniversalTime().ToString('o'))"
+          } finally { $cert.Dispose() }
+      }

@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278154 - Windows Server 2025 must be configured to audit Account Management - Computer Account Management
+    successes.
+  when:
+    - win25_stig_v_278154 | bool
+    - win25_stig_is_dc
+    - '''V-278154'' not in win25_stig_exceptions'
+  tags:
+    - V-278154
+    - CAT2
+  block:
+    - name: Windows Server 2025 must be configured to audit Account Management - Computer Account Management successes.
+      ansible.windows.win_audit_policy_system:
+        subcategory: Computer Account Management
+        audit_type:
+          - success

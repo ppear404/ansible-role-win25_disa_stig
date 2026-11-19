@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278057 - Windows Server 2025 must be configured to audit Logon/Logoff - Group Membership successes.
+  when:
+    - win25_stig_v_278057 | bool
+    - '''V-278057'' not in win25_stig_exceptions'
+  tags:
+    - V-278057
+    - CAT2
+  block:
+    - name: Windows Server 2025 must be configured to audit Logon/Logoff - Group Membership successes.
+      ansible.windows.win_audit_policy_system:
+        subcategory: Group Membership
+        audit_type:
+          - success

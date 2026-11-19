@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278165 - The Windows Server 2025 "Access this computer from the network" user right must only be assigned
+    to the Administrators, Authenticated Users, and Enterprise Domain Controllers groups on domain controllers.
+  when:
+    - win25_stig_v_278165 | bool
+    - win25_stig_is_dc
+    - '''V-278165'' not in win25_stig_exceptions'
+  tags:
+    - V-278165
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Access this computer from the network" user right must only be assigned to
+        the Administrators, Authenticated Users, and Enterprise Domain Controllers groups on domain controllers.
+      ansible.windows.win_user_right:
+        name: SeNetworkLogonRight
+        users:
+          - S-1-5-32-544
+          - S-1-5-11
+          - S-1-5-9
+        action: set

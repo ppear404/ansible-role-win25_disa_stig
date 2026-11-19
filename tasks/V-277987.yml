@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-277987 - Windows Server 2025 administrative accounts must not be used with applications that access the
+    internet, such as web browsers, or with potential internet sources, such as email.
+  when:
+    - win25_stig_v_277987 | bool
+    - '''V-277987'' not in win25_stig_exceptions'
+  tags:
+    - V-277987
+    - CAT1
+  block:
+    - name: V-277987 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-277987''] }}'
+      when: not (win25_stig_manual_reviews.get('V-277987', {}).get('Valid', false) | bool)

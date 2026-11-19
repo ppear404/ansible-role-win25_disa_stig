@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-285319 - Windows Server 2025 OpenSSH must be configured so that all network connections associated with
+    SSH traffic are terminated after 10 minutes of becoming unresponsive.
+  when:
+    - win25_stig_v_285319 | bool
+    - '''V-285319'' not in win25_stig_exceptions'
+  tags:
+    - V-285319
+    - CAT2
+  block:
+    - name: Windows Server 2025 OpenSSH must be configured so that all network connections associated with SSH traffic
+        are terminated after 10 minutes of becoming unresponsive.
+      ansible.windows.win_powershell:
+        script: |-
+          [CmdletBinding(SupportsShouldProcess)]
+          param()
+          $Ansible.Changed = $false
+          $path = Join-Path $env:ProgramData 'ssh\sshd_config'
+          $text = [IO.File]::ReadAllText($path)
+          $parts = [regex]::new('(?im)(?=^Match\s)').Split($text, 2)
+          $global = $parts[0]
+          $desired = 'ClientAliveInterval 600'
+          $pattern = '(?im)^\s*#?\s*ClientAliveInterval\s+[^\r\n]*(?:\r?\n|$)'
+          $updated = [regex]::Replace($global, $pattern, '')
+          $updated = $desired + "`r`n" + $updated
+          if ($parts.Count -gt 1) { $updated += $parts[1] }
+          # Compare effective global directives to avoid rewriting unchanged files.
+          $active = @([regex]::Matches($global, '(?im)^\s*ClientAliveInterval\s+([^\r\n]+)'))
+          if ($active.Count -ne 1 -or $active[0].Groups[1].Value.Trim() -ne '600') {
+              $Ansible.Changed = $true
+              if ($PSCmdlet.ShouldProcess($path, 'Set global SSH ClientAliveInterval')) {
+                  [IO.File]::WriteAllText($path, $updated, [Text.UTF8Encoding]::new($false))
+              }
+          }
+      notify: Validate and restart OpenSSH

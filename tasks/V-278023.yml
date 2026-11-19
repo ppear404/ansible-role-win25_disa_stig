@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278023 - Windows Server 2025 must not have the Server Message Block (SMB) v1 protocol installed.
+  when:
+    - win25_stig_v_278023 | bool
+    - '''V-278023'' not in win25_stig_exceptions'
+  tags:
+    - V-278023
+    - CAT2
+  block:
+    - name: Windows Server 2025 must not have the Server Message Block (SMB) v1 protocol installed.
+      ansible.windows.win_feature:
+        name: '{{ item }}'
+        state: absent
+      loop:
+        - FS-SMB1
+      when: item in win25_stig_available_features
+      notify: Record Windows restart requirement

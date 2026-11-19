@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Apply Windows Server 2025 STIG to the development server
+  hosts: win25
+  gather_facts: false
+  roles:
+    - role: win25_disa_stig

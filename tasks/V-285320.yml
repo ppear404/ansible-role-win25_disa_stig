@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-285320 - The Windows Server 2025 OpenSSH configuration file must conform to minimum requirements.
+  when:
+    - win25_stig_v_285320 | bool
+    - '''V-285320'' not in win25_stig_exceptions'
+  tags:
+    - V-285320
+    - CAT2
+  block:
+    - name: The Windows Server 2025 OpenSSH configuration file must conform to minimum requirements.
+      ansible.windows.win_powershell:
+        script: |-
+          [CmdletBinding(SupportsShouldProcess)]
+          param()
+          $Ansible.Changed = $false
+          $directory = Join-Path $env:ProgramData 'ssh'
+          $file = Join-Path $directory 'sshd_config'
+          $sidType = [Security.Principal.SecurityIdentifier]
+          $expectedRights = @{
+              'S-1-5-18' = 2032127
+              'S-1-5-32-544' = 2032127
+              'S-1-5-11' = 1179817
+          }
+          # Inherit only from a directory with the exact required effective file permissions.
+          $parent = Get-Acl -LiteralPath $directory
+          $parentRules = @($parent.GetAccessRules($true, $true, $sidType) | Where-Object {
+              $_.InheritanceFlags -band [Security.AccessControl.InheritanceFlags]::ObjectInherit
+          })
+          $safeParent = $parentRules.Count -eq $expectedRights.Count
+          foreach ($rule in $parentRules) {
+              $sid = $rule.IdentityReference.Value
+              if (-not $expectedRights.ContainsKey($sid) -or
+                  [int]$rule.FileSystemRights -ne $expectedRights[$sid] -or
+                  $rule.AccessControlType -ne 'Allow' -or [int]$rule.PropagationFlags -ne 0) {
+                  $safeParent = $false
+              }
+          }
+          if (-not $safeParent) { throw 'SSH directory permissions must be reviewed before inheriting config ACLs.' }
+          $acl = Get-Acl -LiteralPath $file
+          $explicit = @($acl.GetAccessRules($true, $false, $sidType))
+          $inherited = @($acl.GetAccessRules($false, $true, $sidType))
+          $sameOwner = $acl.GetOwner($sidType).Value -eq 'S-1-5-32-544'
+          if ($acl.AreAccessRulesProtected -or $explicit.Count -ne 0 -or
+              $inherited.Count -ne $expectedRights.Count -or -not $sameOwner) {
+              $Ansible.Changed = $true
+              if ($PSCmdlet.ShouldProcess($file, 'Inherit verified SSH config permissions')) {
+                  $acl.SetAccessRuleProtection($false, $false)
+                  foreach ($rule in $explicit) { $acl.RemoveAccessRuleSpecific($rule) }
+                  $acl.SetOwner([Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))
+                  Set-Acl -LiteralPath $file -AclObject $acl
+              }
+          }

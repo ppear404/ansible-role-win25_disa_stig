@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278245 - The Windows Server 2025 "Create a pagefile" user right must only be assigned to the Administrators
+    group.
+  when:
+    - win25_stig_v_278245 | bool
+    - '''V-278245'' not in win25_stig_exceptions'
+  tags:
+    - V-278245
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Create a pagefile" user right must only be assigned to the Administrators group.
+      ansible.windows.win_user_right:
+        name: SeCreatePagefilePrivilege
+        users:
+          - S-1-5-32-544
+        action: set

@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278143 - Windows Server 2025 data files owned by users must be on a different logical partition from the
+    directory server data files.
+  when:
+    - win25_stig_v_278143 | bool
+    - win25_stig_is_dc
+    - '''V-278143'' not in win25_stig_exceptions'
+  tags:
+    - V-278143
+    - CAT2
+  block:
+    - name: V-278143 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278143''] }}'

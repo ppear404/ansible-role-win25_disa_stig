@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Validate the conditional legal-notice answer file on Windows
+  hosts: win25
+  gather_facts: false
+  vars_files:
+    - ../defaults/main.yml
+  tasks:
+    - name: Exercise positive, negative, and live legal-notice validation
+      ansible.windows.win_powershell:
+        parameters:
+          Code: "{{ lookup('ansible.builtin.file', playbook_dir + '/../files/answer_files/Validate-LegalNotice.ps1') }}"
+          Approved: '{{ win25_stig_legal_notice }}'
+        script: |
+          param([string]$Code, [string]$Approved)
+          $Ansible.Changed = $false
+          $tokens = $null
+          $errors = $null
+          $ast = [System.Management.Automation.Language.Parser]::ParseInput($Code, [ref]$tokens, [ref]$errors)
+          if ($errors.Count) { throw ($errors | Out-String) }
+          $function = $ast.Find({ param($node)
+              $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+                  $node.Name -eq 'Test-StigLegalNotice'
+          }, $true)
+          if (-not $function) { throw 'Validation function missing.' }
+          . ([scriptblock]::Create($function.Extent.Text))
+          $positive = @($Approved, ([regex]::Replace($Approved, '\s+', ' ')), ($Approved -replace "`n", "`r`n"))
+          foreach ($text in $positive) {
+              if (-not (Test-StigLegalNotice -ActualText $text -RegistryKind String).Valid) {
+                  throw 'Whitespace-only notice differences were rejected.'
+              }
+          }
+          $negative = @('', $null, ($Approved -replace 'USG-authorized', 'unauthorized'),
+              ($Approved + ' Additional unauthorized statement.'), ($Approved -replace "`n", '\r\n'))
+          foreach ($text in $negative) {
+              if ((Test-StigLegalNotice -ActualText $text -RegistryKind String).Valid) {
+                  throw 'Missing or changed notice text was accepted.'
+              }
+          }
+          foreach ($kind in @('MultiString', 'ExpandString', 'DWord')) {
+              if ((Test-StigLegalNotice -ActualText $Approved -RegistryKind $kind).Valid) {
+                  throw 'Incorrect registry type was accepted.'
+              }
+          }
+          $live = & ([scriptblock]::Create($Code))
+          if (-not $live.Valid) { throw $live.Results }
+          $Ansible.Result = @{
+              positive_cases = $positive.Count
+              negative_cases = $negative.Count + 3
+              live_validation = $live
+          }
+      register: win25_notice_validation
+
+    - name: Report answer-file validation evidence
+      ansible.builtin.debug:
+        var: win25_notice_validation.result

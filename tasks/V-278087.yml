@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278087 - Windows Server 2025 hardened Universal Naming Convention (UNC) paths must be defined to require
+    mutual authentication and integrity for at least the \\*\SYSVOL and \\*\NETLOGON shares.
+  when:
+    - win25_stig_v_278087 | bool
+    - '''V-278087'' not in win25_stig_exceptions'
+  tags:
+    - V-278087
+    - CAT2
+  block:
+    - name: Windows Server 2025 hardened Universal Naming Convention (UNC) paths must be defined to require mutual
+        authentication and integrity for at least the \\*\SYSVOL and \\*\NETLOGON shares.
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths
+        name: \\*\NETLOGON
+        data: RequireMutualAuthentication=1, RequireIntegrity=1
+        type: string
+      notify: Record Windows restart requirement
+    - name: Windows Server 2025 hardened Universal Naming Convention (UNC) paths must be defined to require mutual
+        authentication and integrity for at least the \\*\SYSVOL and \\*\NETLOGON shares.
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths
+        name: \\*\SYSVOL
+        data: RequireMutualAuthentication=1, RequireIntegrity=1
+        type: string
+      notify: Record Windows restart requirement

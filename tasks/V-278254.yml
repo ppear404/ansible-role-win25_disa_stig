@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278254 - The Windows Server 2025 "Increase scheduling priority" user right must only be assigned to the
+    Administrators group.
+  when:
+    - win25_stig_v_278254 | bool
+    - '''V-278254'' not in win25_stig_exceptions'
+  tags:
+    - V-278254
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Increase scheduling priority" user right must only be assigned to the Administrators
+        group.
+      ansible.windows.win_user_right:
+        name: SeIncreaseBasePriorityPrivilege
+        users:
+          - S-1-5-32-544
+        action: set

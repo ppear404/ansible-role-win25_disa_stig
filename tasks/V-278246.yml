@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278246 - The Windows Server 2025 "Create a token object" user right must not be assigned to any groups
+    or accounts.
+  when:
+    - win25_stig_v_278246 | bool
+    - '''V-278246'' not in win25_stig_exceptions'
+  tags:
+    - V-278246
+    - CAT1
+  block:
+    - name: The Windows Server 2025 "Create a token object" user right must not be assigned to any groups or accounts.
+      ansible.windows.win_user_right:
+        name: SeCreateTokenPrivilege
+        users: []
+        action: set

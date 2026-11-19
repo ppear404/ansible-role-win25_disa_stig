@@ -1,0 +1,14 @@
+---
+all:
+  children:
+    win25:
+      hosts:
+        windows_server:
+          ansible_host: windows.example.invalid
+      vars:
+        ansible_connection: ssh
+        ansible_shell_type: powershell
+        ansible_user: automation_admin
+        # Supply credentials through --ask-pass or Ansible Vault.
+        # Set this to your environment's NTP hostname or IP when applicable.
+        win25_stig_time_source: ''

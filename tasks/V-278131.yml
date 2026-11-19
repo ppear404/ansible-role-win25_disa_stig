@@ -1,0 +1,74 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278131 - Windows Server 2025 must have PowerShell Transcription enabled.
+  when:
+    - win25_stig_v_278131 | bool
+    - '''V-278131'' not in win25_stig_exceptions'
+  tags:
+    - V-278131
+    - CAT2
+  block:
+    - name: Windows Server 2025 must have PowerShell Transcription enabled.
+      ansible.windows.win_powershell:
+        script: |-
+          [CmdletBinding(SupportsShouldProcess)]
+          param()
+          $Ansible.Changed = $false
+          function Get-TranscriptAccessRules {
+              param([Security.AccessControl.FileSystemSecurity]$Security)
+              # Inherited and explicit ACEs with the same effective rights are equivalent.
+              $rules = $Security.GetAccessRules($true, $true, [Security.Principal.SecurityIdentifier])
+              (@($rules | ForEach-Object {
+                  '{0}|{1}|{2}|{3}|{4}' -f $_.IdentityReference.Value,
+                      [int]$_.AccessControlType, [int]$_.FileSystemRights,
+                      [int]$_.InheritanceFlags, [int]$_.PropagationFlags
+              } | Sort-Object) -join ';')
+          }
+          $path = '{{ win25_stig_transcript_directory }}'
+          if (-not (Test-Path -LiteralPath $path)) {
+              $Ansible.Changed = $true
+              if ($PSCmdlet.ShouldProcess($path, 'Create transcript directory')) { New-Item -ItemType Directory -Path $path -Force | Out-Null }
+          }
+          if (Test-Path -LiteralPath $path) {
+              $root = Get-Item -LiteralPath $path
+              $objects = @($root) + @(Get-ChildItem -LiteralPath $path -Recurse -Force)
+              foreach ($object in $objects) {
+                  $acl = Get-Acl -LiteralPath $object.FullName
+                  $desired = if ($object.PSIsContainer) {
+                      New-Object Security.AccessControl.DirectorySecurity
+                  } else { New-Object Security.AccessControl.FileSecurity }
+                  $desired.SetOwner([Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))
+                  $desired.SetAccessRuleProtection($true, $false)
+                  $inherit = if ($object.PSIsContainer) { 'ContainerInherit,ObjectInherit' } else { 'None' }
+                  foreach ($sid in @('S-1-5-18','S-1-5-32-544')) {
+                      $desired.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new(
+                          [Security.Principal.SecurityIdentifier]::new($sid), 'FullControl', $inherit, 'None', 'Allow'))
+                  }
+                  foreach ($sid in @('S-1-5-11','S-1-5-32-545')) {
+                      $desired.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new(
+                          [Security.Principal.SecurityIdentifier]::new($sid), 'WriteData,AppendData', $inherit, 'None', 'Allow'))
+                  }
+                  $sameAccess = (Get-TranscriptAccessRules $acl) -eq (Get-TranscriptAccessRules $desired)
+                  $sidType = [Security.Principal.SecurityIdentifier]
+                  $sameOwner = $acl.GetOwner($sidType).Value -eq $desired.GetOwner($sidType).Value
+                  $protectedRoot = $object.FullName -ne $root.FullName -or $acl.AreAccessRulesProtected
+                  if (-not ($sameAccess -and $sameOwner -and $protectedRoot)) {
+                      $Ansible.Changed = $true
+                      if ($PSCmdlet.ShouldProcess($object.FullName, 'Restrict transcript ACL')) { Set-Acl -LiteralPath $object.FullName -AclObject $desired }
+                  }
+              }
+          }
+    - name: Windows Server 2025 must have PowerShell Transcription enabled.
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription
+        name: OutputDirectory
+        data: '{{ win25_stig_transcript_directory }}'
+        type: string
+      notify: Record Windows restart requirement
+    - name: Windows Server 2025 must have PowerShell Transcription enabled.
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription
+        name: EnableTranscripting
+        data: 1
+        type: dword
+      notify: Record Windows restart requirement

@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278027 - Windows Server 2025 FTP servers must be configured to prevent anonymous logons.
+  when:
+    - win25_stig_v_278027 | bool
+    - '''V-278027'' not in win25_stig_exceptions'
+  tags:
+    - V-278027
+    - CAT2
+  block:
+    - name: V-278027 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278027''] }}'

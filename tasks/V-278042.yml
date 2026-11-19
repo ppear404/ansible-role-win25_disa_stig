@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278042 - Windows Server 2025 must, at a minimum, off-load audit records of interconnected systems in real
+    time and off-load stand-alone or nondomain-joined systems weekly.
+  when:
+    - win25_stig_v_278042 | bool
+    - '''V-278042'' not in win25_stig_exceptions'
+  tags:
+    - V-278042
+    - CAT2
+  block:
+    - name: V-278042 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278042''] }}'
+      when: not (win25_stig_manual_reviews.get('V-278042', {}).get('Valid', false) | bool)

@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278029 - The Windows Server 2025 time service must synchronize with an appropriate DoW time source.
+  when:
+    - win25_stig_v_278029 | bool
+    - '''V-278029'' not in win25_stig_exceptions'
+  tags:
+    - V-278029
+    - CAT3
+  block:
+    - name: V-278029 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278029''] }}'
+      when: not (win25_stig_manual_reviews.get('V-278029', {}).get('Valid', false) | bool)

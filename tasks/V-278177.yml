@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278177 - Windows Server 2025 must only allow administrators responsible for the member server or stand-alone
+    or nondomain-joined system to have Administrator rights on the system.
+  when:
+    - win25_stig_v_278177 | bool
+    - not win25_stig_is_dc
+    - '''V-278177'' not in win25_stig_exceptions'
+  tags:
+    - V-278177
+    - CAT1
+  block:
+    - name: V-278177 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278177''] }}'
+      when: not (win25_stig_manual_reviews.get('V-278177', {}).get('Valid', false) | bool)

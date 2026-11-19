@@ -1,0 +1,2554 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Windows Server 2025 V1R4: conditional legal-notice check and scoped manual-control reviews. -->
+<STIGComments Name="WinServer2025">
+  <Vuln ID="SV-278207r1268215_rule">
+    <AnswerKey Name="DEFAULT">
+      <Answer Index="1" ExpectedStatus="O">
+        <ValidationCode>
+# V-278207: validate the approved notice, tolerating whitespace differences only.
+function Test-StigLegalNotice {
+    param([AllowNull()][object]$ActualText, [string]$RegistryKind)
+    $approved = @'
+You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.
+
+By using this IS (which includes any device attached to this IS), you consent to the following conditions:
+
+-The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
+
+-At any time, the USG may inspect and seize data stored on this IS.
+
+-Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.
+
+-This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy.
+
+-Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details.
+'@
+    $expected = [regex]::Replace($approved, '\s+', ' ').Trim()
+    $actual = if ($ActualText -is [string]) {
+        [regex]::Replace($ActualText, '\s+', ' ').Trim()
+    } else { '' }
+    $valid = $RegistryKind -ceq 'String' -and $ActualText -is [string] -and $actual -ceq $expected
+    $hash = [Security.Cryptography.SHA256]::Create()
+    try {
+        $digest = [BitConverter]::ToString($hash.ComputeHash([Text.Encoding]::UTF8.GetBytes($actual))).Replace('-', '')
+    } finally { $hash.Dispose() }
+    return @{
+        Valid = [bool]$valid
+        Results = "V-278207 independent validation: RegistryKind=$RegistryKind; ApprovedNoticeMatches=$valid; " +
+            "NormalizedTextSHA256=$digest. Only whitespace is normalized; words, case and punctuation must match " +
+            'the Windows Server 2025 V1R4 approved long-form USG notice.'
+    }
+}
+try {
+    $key = Get-Item -LiteralPath 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -ErrorAction Stop
+    $kind = $key.GetValueKind('LegalNoticeText').ToString()
+    $text = $key.GetValue('LegalNoticeText', $null, [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)
+    return Test-StigLegalNotice -ActualText $text -RegistryKind $kind
+} catch {
+    return @{ Valid = $false; Results = 'V-278207 independent validation failed: ' + $_.Exception.Message }
+}
+        </ValidationCode>
+        <ValidTrueStatus>NF</ValidTrueStatus>
+        <ValidTrueComment>Known legal-notice formatting mismatch. Independent registry validation confirms REG_SZ and the complete approved Windows Server 2025 V1R4 notice, allowing whitespace differences only. Native finding details are retained.</ValidTrueComment>
+        <ValidFalseStatus>O</ValidFalseStatus>
+        <ValidFalseComment>Independent legal-notice validation did not pass. Missing text, changed wording or punctuation, an incorrect registry type, and read errors remain Open; manual remediation is required.</ValidFalseComment>
+      </Answer>
+      <Answer Index="2" ExpectedStatus="NF">
+        <ValidationCode>
+# V-278207: validate the approved notice, tolerating whitespace differences only.
+function Test-StigLegalNotice {
+    param([AllowNull()][object]$ActualText, [string]$RegistryKind)
+    $approved = @'
+You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.
+
+By using this IS (which includes any device attached to this IS), you consent to the following conditions:
+
+-The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
+
+-At any time, the USG may inspect and seize data stored on this IS.
+
+-Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.
+
+-This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy.
+
+-Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details.
+'@
+    $expected = [regex]::Replace($approved, '\s+', ' ').Trim()
+    $actual = if ($ActualText -is [string]) {
+        [regex]::Replace($ActualText, '\s+', ' ').Trim()
+    } else { '' }
+    $valid = $RegistryKind -ceq 'String' -and $ActualText -is [string] -and $actual -ceq $expected
+    $hash = [Security.Cryptography.SHA256]::Create()
+    try {
+        $digest = [BitConverter]::ToString($hash.ComputeHash([Text.Encoding]::UTF8.GetBytes($actual))).Replace('-', '')
+    } finally { $hash.Dispose() }
+    return @{
+        Valid = [bool]$valid
+        Results = "V-278207 independent validation: RegistryKind=$RegistryKind; ApprovedNoticeMatches=$valid; " +
+            "NormalizedTextSHA256=$digest. Only whitespace is normalized; words, case and punctuation must match " +
+            'the Windows Server 2025 V1R4 approved long-form USG notice.'
+    }
+}
+try {
+    $key = Get-Item -LiteralPath 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -ErrorAction Stop
+    $kind = $key.GetValueKind('LegalNoticeText').ToString()
+    $text = $key.GetValue('LegalNoticeText', $null, [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)
+    return Test-StigLegalNotice -ActualText $text -RegistryKind $kind
+} catch {
+    return @{ Valid = $false; Results = 'V-278207 independent validation failed: ' + $_.Exception.Message }
+}
+        </ValidationCode>
+        <ValidTrueStatus>NF</ValidTrueStatus>
+        <ValidTrueComment>Known legal-notice formatting mismatch. Independent registry validation confirms REG_SZ and the complete approved Windows Server 2025 V1R4 notice, allowing whitespace differences only. Native finding details are retained.</ValidTrueComment>
+        <ValidFalseStatus>O</ValidFalseStatus>
+        <ValidFalseComment>Independent legal-notice validation did not pass. Missing text, changed wording or punctuation, an incorrect registry type, and read errors remain Open; manual remediation is required.</ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+<Vuln ID="SV-277982r1181944_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        'V-277982' {
+            # Modern Server builds may expose empty legacy COM AU settings/results.
+            # Read effective policy and actual installed-update dates instead.
+            $au=Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' -ErrorAction SilentlyContinue
+            if (-not $au -or $null -eq $au.AUOptions) {
+                $au=Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update' -ErrorAction SilentlyContinue
+            }
+            $patches=@(Get-HotFix -ErrorAction Stop | Where-Object InstalledOn | Sort-Object InstalledOn -Descending)
+            $last=$null; $recent=$false
+            if ($patches.Count -gt 0) {
+                $last=$patches[0].InstalledOn
+                $days=((Get-Date)-$last).TotalDays
+                $recent=$days -ge 0 -and $days -le 30
+            }
+            $service=Get-CimInstance Win32_Service -Filter "Name='wuauserv'" -ErrorAction Stop
+            return @{AutoUpdateEnabled=($au.NoAutoUpdate -ne 1 -and $au.AUOptions -in @(2,3,4) -and
+                    $service -and $service.StartMode -ne 'Disabled'); RecentPatch=[bool]$recent;
+                LastInstalledUpdate=$last; AUOptions=$au.AUOptions;
+                RecentHotfixes=@($patches | Select-Object -First 5 HotFixID,InstalledOn);
+                ReviewBasis='PATCH-01 30-day installation procedure, enabled update configuration and installed-update date evidence'}
+        }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-277982' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>PATCH-01: The server owner checks patch-management compliance weekly. Install security-relevant OS updates within 30 days, or sooner when required by IAVM/CTO/DTM. Record source, scan date, installation date and exceptions in the patch register; escalate overdue updates to the ISSO.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. PATCH-01: The server owner checks patch-management compliance weekly. Install security-relevant OS updates within 30 days, or sooner when required by IAVM/CTO/DTM. Record source, scan date, installation date and exceptions in the patch register; escalate overdue updates to the ISSO.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-277983r1180655_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        'V-277983' {
+            $hardware = @(Get-CimInstance Win32_ComputerSystemProduct -ErrorAction Stop | Select-Object Vendor,Name,UUID)
+            return @{HardwareInventoried=($hardware.Count -gt 0); Hardware=$hardware;
+                ReviewBasis='HW-01 security-plan procedure and captured VM identity; not a hypervisor configuration attestation'}
+        }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-277983' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>HW-01: Maintain a hardware inventory for this VM and its attached devices. Only documented components approved by the ISSO/ISSM may be attached. Review inventory monthly and before changes; disable or remove unapproved devices. Hypervisor administrators must restrict console, virtual media and device passthrough changes to authorized administrators and record approvals.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. HW-01: Maintain a hardware inventory for this VM and its attached devices. Only documented components approved by the ISSO/ISSM may be attached. Review inventory monthly and before changes; disable or remove unapproved devices. Hypervisor administrators must restrict console, virtual media and device passthrough changes to authorized administrators and record approvals.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-277985r1268251_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ApprovedAdminEvidence {
+    param([hashtable]$Policy)
+    $members = @(Get-LocalGroupMember -SID 'S-1-5-32-544' -ErrorAction Stop)
+    $sids = @($members | ForEach-Object { $_.SID.Value })
+    return @{AdminsApproved=($sids.Count -gt 0 -and @($sids | Where-Object { $_ -notin $Policy.approved_admin_sids }).Count -eq 0);
+        AdminSIDs=$sids}
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        { $_ -in @('V-277985','V-278177') } { return Get-ApprovedAdminEvidence -Policy $Policy }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-277985' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>AC-01: Assign each human administrator a unique privileged account separate from their ordinary user account. Use ordinary accounts for routine work. The ansible identity is dedicated to managed automation and is not a shared interactive user account; the built-in administrator is restricted to system administration. Review account ownership and privileged membership monthly, and revoke access on role change or departure.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. AC-01: Assign each human administrator a unique privileged account separate from their ordinary user account. Use ordinary accounts for routine work. The ansible identity is dedicated to managed automation and is not a shared interactive user account; the built-in administrator is restricted to system administration. Review account ownership and privileged membership monthly, and revoke access on role change or departure.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-277987r1268251_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        'V-277987' {
+            if ($Policy.ContainsKey('internet_facing') -and $Policy.internet_facing -eq $false) {
+                return @{NonInternetFacingDeclaration=$true; ReviewBasis='System-owner declaration: non-Internet-facing server; AC-02 operating policy. No AppLocker/egress enforcement attestation.'}
+            }
+            [xml]$xml = Get-AppLockerPolicy -Effective -Xml -ErrorAction Stop
+            $denies = @($xml.AppLockerPolicy.RuleCollection | Where-Object { $_.Type -eq 'Exe' -and $_.EnforcementMode -eq 'Enabled' } |
+                ForEach-Object { $_.FilePathRule } | Where-Object { $_.Action -eq 'Deny' -and $_.UserOrGroupSid -eq 'S-1-5-32-544' })
+            $patterns = @($denies | ForEach-Object { $_.Conditions.FilePathCondition.Path })
+            $names = @('msedge.exe','chrome.exe','firefox.exe','iexplore.exe','outlook.exe','thunderbird.exe')
+            $missing = @($names | Where-Object {
+                $name=$_; @($patterns | Where-Object { $_ -eq '*' -or $_ -ieq "*\$name" }).Count -eq 0
+            })
+            return @{AdminInternetBlocked=($missing.Count -eq 0 -and (Get-Service AppIDSvc).Status -eq 'Running');
+                MissingBrowserMailDenyRules=$missing; Basis='Conservative AppLocker administrator browser/mail deny-path check; alternative solutions require reviewed evidence'}
+        }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-277987' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>AC-02: System-owner declaration: this server is not Internet facing. Public Internet browsing and email are not authorized administrative functions on this system. Administrative identities are restricted by site operating policy to server administration; local service-administration exceptions must identify the required tools/endpoints. Record this deployment scope in the security plan and reassess this determination if Internet exposure, public-network access or workloads change. This is an owner-attested policy determination, not a claim that AppLocker or an egress firewall was inspected.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. AC-02: System-owner declaration: this server is not Internet facing. Public Internet browsing and email are not authorized administrative functions on this system. Administrative identities are restricted by site operating policy to server administration; local service-administration exceptions must identify the required tools/endpoints. Record this deployment scope in the security plan and reassess this determination if Internet exposure, public-network access or workloads change. This is an owner-attested policy determination, not a claim that AppLocker or an egress firewall was inspected.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-277989r1181947_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        'V-277989' {
+            return @{ReviewBasis='SA-01 documented provisioning and rotation length-validation procedure; existing password values are not inspected'}
+        }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-277989' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>SA-01: Manually managed application/service account passwords must contain at least 15 characters. Provisioning and rotation procedures must validate the length before accepting a credential; reject shorter passwords. Use managed service accounts where supported. Store credentials in the approved secret store, restrict access, and review service account compliance quarterly. Password values must never be recorded in assessment evidence.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. SA-01: Manually managed application/service account passwords must contain at least 15 characters. Provisioning and rotation procedures must validate the length before accepting a credential; reject shorter passwords. Use managed service accounts where supported. Store credentials in the approved secret store, restrict access, and review service account compliance quarterly. Password values must never be recorded in assessment evidence.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-277990r1268251_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        'V-277990' {
+            $principals = @($Policy.manually_managed_accounts)
+            $principals += @(Get-CimInstance Win32_Service | Select-Object -ExpandProperty StartName)
+            $principals += @(Get-ScheduledTask | ForEach-Object { if ($_.Principal.LogonType -eq 'Password') { $_.Principal.UserId } })
+            $principals = @($principals | Where-Object {
+                $_ -and $_ -notmatch '^(LocalSystem|LocalService|NetworkService|NT AUTHORITY\\|NT SERVICE\\|SYSTEM$)' -and $_ -notmatch '\$$'
+            } | Select-Object -Unique)
+            $ages = @(); $current = $true
+            foreach ($principal in $principals) {
+                $name = ($principal -split '\\')[-1]
+                $account = Get-LocalUser -Name $name -ErrorAction SilentlyContinue
+                if (-not $account -or -not $account.PasswordLastSet) { $current=$false; $ages += @{Name=$name;AgeDays='unverified'}; continue }
+                $days = ((Get-Date) - $account.PasswordLastSet).TotalDays
+                $ages += @{Name=$name;AgeDays=[Math]::Floor($days)}
+                if ($days -lt 0 -or $days -gt 365) { $current=$false }
+            }
+            return @{ServicePasswordsCurrent=$current; Accounts=$ages; PersonnelChanges='SA-02 requires immediate rotation on administrator departure'}
+        }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-277990' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>SA-02: Inventory manually managed application/service accounts and their owners. Change passwords at least annually and immediately when an administrator with knowledge of the password leaves or loses authorization. Record rotation and personnel-change completion dates without recording secrets. Review password ages monthly; prefer system-managed service accounts.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. SA-02: Inventory manually managed application/service accounts and their owners. Change passwords at least annually and immediately when an administrator with knowledge of the password leaves or loses authorization. Record rotation and personnel-change completion dates without recording secrets. Review password ages monthly; prefer system-managed service accounts.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-277991r1181778_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        { $_ -in @('V-277991','V-278013','V-278014') } {
+            $pattern = switch ($Control) { 'V-277991' {'\bshared\b'} 'V-278013' {'\btemp(orary)?\b'} default {'\bemergency\b|\bbreak.?glass\b'} }
+            $conflicts = @(Get-LocalUser | Where-Object { $_.Enabled -and ($_.Name -match $pattern -or $_.Description -match $pattern) } |
+                Select-Object -ExpandProperty Name)
+            return @{ContradictoryAccount=($conflicts.Count -gt 0); ContradictoryNames=$conflicts;
+                ReviewBasis='System-owner declaration; name/description checks only detect obvious contradictions, not account purpose'}
+        }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-277991' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NA</ValidTrueStatus><ValidTrueComment>AC-03: Shared user accounts are prohibited and are not used on this system, as confirmed by the system owner. Every human user must have an individually attributable account. Do not create shared user accounts or grant shared interactive access to automation identities. Review accounts monthly and remove any unapproved shared account immediately. Any future exception requires an ISSO-approved reason, named authorized users, mitigations and activity monitoring, and reassessment of this control.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. AC-03: Shared user accounts are prohibited and are not used on this system, as confirmed by the system owner. Every human user must have an individually attributable account. Do not create shared user accounts or grant shared interactive access to automation identities. Review accounts monthly and remove any unapproved shared account immediately. Any future exception requires an ISSO-approved reason, named authorized users, mitigations and activity monitoring, and reassessment of this control.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-277992r1182016_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        'V-277992' {
+            [xml]$xml = Get-AppLockerPolicy -Effective -Xml -ErrorAction Stop
+            $enabled = @($xml.AppLockerPolicy.RuleCollection | Where-Object { $_.EnforcementMode -eq 'Enabled' -and $_.ChildNodes.Count -gt 0 } |
+                Select-Object -ExpandProperty Type)
+            return @{AllowlistEnforced=('Exe' -in $enabled -and 'Appx' -in $enabled -and (Get-Service AppIDSvc).Status -eq 'Running');
+                EnforcedCollections=$enabled; Basis='Native AppLocker evidence; alternative allowlisting requires site validation'}
+        }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-277992' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>APP-01: Execute only explicitly authorized software under an enforced deny-by-default application allowlist. Review the effective policy, enforcement service and approved rules monthly and before software changes. Audit-only policy is insufficient. Validate SSH administration and recovery access before enforcing any revised policy.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. APP-01: Execute only explicitly authorized software under an enforced deny-by-default application allowlist. Review the effective policy, enforcement service and approved rules monthly and before software changes. Audit-only policy is insufficient. Validate SSH administration and recovery access before enforcing any revised policy.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-277996r1268251_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        'V-277996' {
+            $sense = Get-Service Sense -ErrorAction SilentlyContinue
+            $onboard = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows Advanced Threat Protection\Status' -ErrorAction SilentlyContinue
+            $mp = Get-MpComputerStatus -ErrorAction Stop
+            return @{HostIDPSActive=($sense.Status -eq 'Running' -and $onboard.OnboardingState -eq 1 -and $mp.RealTimeProtectionEnabled);
+                SenseRunning=($sense.Status -eq 'Running'); MDEOnboarded=($onboard.OnboardingState -eq 1);
+                PreventionEnabled=[bool]$mp.RealTimeProtectionEnabled; Basis='MDE sensor plus Defender prevention; antivirus alone does not pass'}
+        }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-277996' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>IDPS-01: Maintain an installed, healthy and actively reporting host-based intrusion detection and prevention solution. Security operations reviews sensor health daily and investigates alerts. Antivirus or a log forwarder alone is not evidence of host-based IDPS. Resolve missing, stopped or unconfigured sensors and retain management-console evidence.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. IDPS-01: Maintain an installed, healthy and actively reporting host-based intrusion detection and prevention solution. Security operations reviews sensor health daily and investigates alerts. Antivirus or a log forwarder alone is not evidence of host-based IDPS. Resolve missing, stopped or unconfigured sensors and retain management-console evidence.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278006r1182237_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        'V-278006' { return @{FIMBaselineAndWeeklyComparison=$false; Reason='No approved file-integrity baseline, full system-file coverage and weekly comparison evidence registered. See FIM-01.'} }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-278006' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>FIM-01: Maintain approved baselines covering every system-file location, including executable, batch, command and DLL files. Compare files against the baseline at least weekly, investigate unauthorized changes, and retain comparison results. Refresh baselines only after approved changes; document coverage, schedule, alert routing and reviewer.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. FIM-01: Maintain approved baselines covering every system-file location, including executable, batch, command and DLL files. Compare files against the baseline at least weekly, investigate unauthorized changes, and retain comparison results. Refresh baselines only after approved changes; document coverage, schedule, alert routing and reviewer.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278009r1211149_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        'V-278009' {
+            return @{DatastoreEncryptionDeclaration=($Policy.datastore_encryption_used -eq $true);
+                ReviewBasis='System-owner confirmed datastore encryption; DAR-01 documents the benchmark infrastructure-encryption exception. No hypervisor inspection claimed.'}
+        }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-278009' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NA</ValidTrueStatus><ValidTrueComment>DAR-01: The system owner confirms that datastore encryption provides data-at-rest protection for this virtual server. Operating-system-level encryption is omitted because the underlying encrypted datastore protects the VM operating-system/configuration data and persistent virtual disks. This is the documented infrastructure-encryption exception allowed by the V-278009 Check. The storage owner must retain datastore coverage, FIPS-compliant algorithm, key-management and recovery evidence, and reassess after VM/storage moves, unencrypted disk additions or encryption changes. This assessment records the owner declaration; it does not claim a hypervisor encryption inspection.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. DAR-01: The system owner confirms that datastore encryption provides data-at-rest protection for this virtual server. Operating-system-level encryption is omitted because the underlying encrypted datastore protects the VM operating-system/configuration data and persistent virtual disks. This is the documented infrastructure-encryption exception allowed by the V-278009 Check. The storage owner must retain datastore coverage, FIPS-compliant algorithm, key-management and recovery evidence, and reassess after VM/storage moves, unencrypted disk additions or encryption changes. This assessment records the owner declaration; it does not claim a hypervisor encryption inspection.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278010r1180736_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        'V-278010' { return @{DocumentedProtectedTransferPaths=$false; Reason='No data-owner transfer-path register or approved end-to-end protection evidence supplied. SSH administration alone is insufficient. See DIT-01.'} }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-278010' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>DIT-01: The data owner documents confidentiality/integrity requirements and all transfer paths. Where end-to-end protection is required, use TLS, encrypted VPN or IPsec across every application hop; use SSH for administration. Record endpoints, protocols, certificate validation and any terminators. Review after topology changes. SSH presence alone does not prove protection of every application flow.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. DIT-01: The data owner documents confidentiality/integrity requirements and all transfer paths. Where end-to-end protection is required, use TLS, encrypted VPN or IPsec across every application hop; use SSH for administration. Record endpoints, protocols, certificate validation and any terminators. Review after topology changes. SSH presence alone does not prove protection of every application flow.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278011r1182239_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        'V-278011' {
+            $features = @(Get-WindowsFeature -ErrorAction Stop | Where-Object Installed | Select-Object -ExpandProperty Name)
+            $unexpected = @($features | Where-Object { $_ -notin $Policy.required_features })
+            return @{FeaturesMatchRegister=($features.Count -gt 0 -and $unexpected.Count -eq 0); Installed=$features; Unregistered=$unexpected}
+        }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-278011' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>ROLE-01: Maintain the per-host required Windows roles/features register with a purpose for each entry. Compare installed features to the register monthly and after changes. Remove unnecessary features through change control; preserve required PowerShell, OpenSSH and administration dependencies. An unregistered feature requires review and fails the custom check.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. ROLE-01: Maintain the per-host required Windows roles/features register with a purpose for each entry. Compare installed features to the register monthly and after changes. Remove unnecessary features through change control; preserve required PowerShell, OpenSSH and administration dependencies. An unregistered feature requires review and fails the custom check.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278013r1268212_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        { $_ -in @('V-277991','V-278013','V-278014') } {
+            $pattern = switch ($Control) { 'V-277991' {'\bshared\b'} 'V-278013' {'\btemp(orary)?\b'} default {'\bemergency\b|\bbreak.?glass\b'} }
+            $conflicts = @(Get-LocalUser | Where-Object { $_.Enabled -and ($_.Name -match $pattern -or $_.Description -match $pattern) } |
+                Select-Object -ExpandProperty Name)
+            return @{ContradictoryAccount=($conflicts.Count -gt 0); ContradictoryNames=$conflicts;
+                ReviewBasis='System-owner declaration; name/description checks only detect obvious contradictions, not account purpose'}
+        }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-278013' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NA</ValidTrueStatus><ValidTrueComment>AC-04: Temporary user accounts are not used on this system, as confirmed by the system owner. Provisioning procedures prohibit their creation. Review the account inventory monthly. If temporary accounts are introduced, configure automatic expiration within 72 hours, delete unneeded accounts and reassess this control before use.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. AC-04: Temporary user accounts are not used on this system, as confirmed by the system owner. Provisioning procedures prohibit their creation. Review the account inventory monthly. If temporary accounts are introduced, configure automatic expiration within 72 hours, delete unneeded accounts and reassess this control before use.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278014r1182263_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        { $_ -in @('V-277991','V-278013','V-278014') } {
+            $pattern = switch ($Control) { 'V-277991' {'\bshared\b'} 'V-278013' {'\btemp(orary)?\b'} default {'\bemergency\b|\bbreak.?glass\b'} }
+            $conflicts = @(Get-LocalUser | Where-Object { $_.Enabled -and ($_.Name -match $pattern -or $_.Description -match $pattern) } |
+                Select-Object -ExpandProperty Name)
+            return @{ContradictoryAccount=($conflicts.Count -gt 0); ContradictoryNames=$conflicts;
+                ReviewBasis='System-owner declaration; name/description checks only detect obvious contradictions, not account purpose'}
+        }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-278014' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NA</ValidTrueStatus><ValidTrueComment>AC-05: Emergency accounts are not used on this system, as confirmed by the system owner. Provisioning procedures prohibit their creation. Review accounts monthly. If emergency access is introduced, disable/remove the account when the crisis ends or automatically expire it within 72 hours; document any ongoing crisis and reassess before use.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. AC-05: Emergency accounts are not used on this system, as confirmed by the system owner. Provisioning procedures prohibit their creation. Review accounts monthly. If emergency access is introduced, disable/remove the account when the crisis ends or automatically expire it within 72 hours; document any ongoing crisis and reassess before use.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278029r1256714_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Test-ConfiguredTimeSource {
+    param([string]$Type, [string]$Peers, [string[]]$ApprovedSources,
+        [bool]$DomainJoined, [int]$DomainRole, [bool]$ServiceRunning)
+    if (-not $ServiceRunning) { return $false }
+    if ($DomainJoined -and $DomainRole -lt 4 -and $Type -eq 'NT5DS') { return $true }
+    if ($Type -ne 'NTP') { return $false }
+    $names=@($Peers -split '\s+' | Where-Object { $_ } | ForEach-Object { ($_ -split ',')[0] })
+    return ($names.Count -gt 0 -and @($names | Where-Object { $_ -notin $ApprovedSources }).Count -eq 0)
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        'V-278029' {
+            $computer=Get-CimInstance Win32_ComputerSystem -ErrorAction Stop
+            $key=Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\W32Time\Parameters' -ErrorAction Stop
+            $policyKey=Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\W32Time\Parameters' -ErrorAction SilentlyContinue
+            $type=$key.Type; $peers=$key.NtpServer
+            if ($policyKey.Type) { $type=$policyKey.Type }
+            if ($policyKey.NtpServer) { $peers=$policyKey.NtpServer }
+            $running=(Get-Service W32Time).Status -eq 'Running'
+            $approved=Test-ConfiguredTimeSource -Type $type -Peers $peers -ApprovedSources @($Policy.approved_ntp_sources) `
+                -DomainJoined $computer.PartOfDomain -DomainRole $computer.DomainRole -ServiceRunning $running
+            return @{ApprovedTimeSource=[bool]$approved; Type=$type; Peers=$peers;
+                ApprovedStandaloneSources=@($Policy.approved_ntp_sources); ServiceRunning=$running}
+        }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-278029' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>TIME-01: win25_stig_time_source identifies the approved environment time source, designated by the system owner as the authorized upstream time hierarchy. When nonempty, the role configures Windows Time to use that source and enables the NTP client. The custom check returns Not a Finding only when all configured NTP peers match the approved source and Windows Time is running. A blank variable does not approve the existing public time source. Domain members may use NT5DS through their domain time hierarchy. Review synchronization health weekly and reassess when the approved source changes.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. TIME-01: win25_stig_time_source identifies the approved environment time source, designated by the system owner as the authorized upstream time hierarchy. When nonempty, the role configures Windows Time to use that source and enables the NTP client. The custom check returns Not a Finding only when all configured NTP peers match the approved source and Windows Time is running. A blank variable does not approve the existing public time source. Domain members may use NT5DS through their domain time hierarchy. Review synchronization health weekly and reassess when the approved source changes.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278041r1180829_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-UniversalForwarderEvidence {
+    $service = Get-CimInstance Win32_Service -Filter "Name='SplunkForwarder'" -ErrorAction Stop
+    $paths = @('C:\Program Files\SplunkUniversalForwarder')
+    if ($service -and $service.PathName -match '^"?(.+?\\bin\\splunkd\.exe)"?(?:\s|$)') {
+        $paths += Split-Path (Split-Path $Matches[1] -Parent) -Parent
+    }
+    $root = $null
+    foreach ($path in ($paths | Select-Object -Unique)) {
+        $exe = Join-Path $path 'bin\splunk.exe'
+        if (Test-Path -LiteralPath $exe) {
+            $version = (Get-Item -LiteralPath $exe).VersionInfo
+            # Service identity and installation location distinguish Universal Forwarder from Enterprise.
+            if ($service -or $path -match 'SplunkUniversalForwarder$') { $root = $path; break }
+        }
+    }
+    $data = @{UniversalForwarderInstalled=($null -ne $root); ServiceState='Absent'; SecurityEventsForwarded=$false}
+    if ($service) { $data.ServiceState = $service.State }
+    if (-not $root) { return $data }
+    $data.InstallationPath = $root
+    $data.Version = $version.ProductVersion
+    # Never execute splunk.exe or accept a license; inspect merged config files without exposing secrets.
+    # Presence alone satisfies the owner's explicit V-278041/042 criterion. V-278106 requires more.
+    $inputs = @{}; $outputs = @{}
+    foreach ($kind in @('inputs', 'outputs')) {
+        $merged = @{}
+        $files = @()
+        $files += Join-Path $root "etc\system\default\$kind.conf"
+        $files += @(Get-ChildItem (Join-Path $root 'etc\apps') -Directory -ErrorAction SilentlyContinue |
+            Sort-Object Name -Descending | ForEach-Object { Join-Path $_.FullName "default\$kind.conf" })
+        $files += @(Get-ChildItem (Join-Path $root 'etc\apps') -Directory -ErrorAction SilentlyContinue |
+            Sort-Object Name -Descending | ForEach-Object { Join-Path $_.FullName "local\$kind.conf" })
+        $files += Join-Path $root "etc\system\local\$kind.conf"
+        foreach ($file in $files) {
+            if (-not (Test-Path -LiteralPath $file)) { continue }
+            $section = 'default'
+            foreach ($line in (Get-Content -LiteralPath $file -ErrorAction Stop)) {
+                if ($line -match '^\s*\[([^]]+)\]\s*$') { $section = $Matches[1].Trim(); continue }
+                if ($line -match '^\s*(disabled|server|defaultGroup|current_only)\s*=\s*(.*?)\s*$') {
+                    $name=$Matches[1]; $value=$Matches[2]
+                    if (-not $merged.ContainsKey($section)) { $merged[$section]=@{} }
+                    $merged[$section][$name]=$value
+                }
+            }
+        }
+        if ($kind -eq 'inputs') { $inputs=$merged } else { $outputs=$merged }
+    }
+    $security = $inputs['WinEventLog://Security']
+    $securityEnabled = $security -and $security['disabled'] -match '^(0|false)$' -and
+        $security['current_only'] -notmatch '^(1|true)$'
+    $targets = @()
+    $groupNames = @()
+    if ($outputs['tcpout']) { $groupNames = @($outputs['tcpout']['defaultGroup'] -split ',' | ForEach-Object { $_.Trim() }) }
+    foreach ($name in $groupNames) {
+        $group=$outputs["tcpout:$name"]
+        if ($group -and $group['disabled'] -notmatch '^(1|true)$' -and
+            $outputs['tcpout']['disabled'] -notmatch '^(1|true)$') {
+            $targets += @($group['server'] -split ',' | Where-Object { $_.Trim() })
+        }
+    }
+    $localNames = @('localhost','127.0.0.1','::1',$env:COMPUTERNAME)
+    $localNames += @(Get-NetIPAddress -ErrorAction Stop | Select-Object -ExpandProperty IPAddress)
+    $remote = @($targets | Where-Object {
+        $hostPart = ($_ -replace ':\d+$','').Trim(' ', '[', ']')
+        $hostPart -notin $localNames
+    })
+    $data.SecurityInputEnabled = [bool]$securityEnabled
+    $data.RemoteDestinationCount = $remote.Count
+    $data.SecurityEventsForwarded = ($data.ServiceState -eq 'Running' -and $securityEnabled -and $remote.Count -gt 0)
+    return $data
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        { $_ -in @('V-278041','V-278042','V-278106') } { return Get-UniversalForwarderEvidence }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-278041' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>LOG-01: Splunk Universal Forwarder is the site-approved audit backup mechanism. Per the system owner's assessment criterion, verify its installation for this control. Forward Windows Security, System and Application audit events to a separate Splunk system; retain them under the audit retention policy. Check forwarding and destination retention daily and test retrieval monthly. Investigate missing events or failed delivery.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. LOG-01: Splunk Universal Forwarder is the site-approved audit backup mechanism. Per the system owner's assessment criterion, verify its installation for this control. Forward Windows Security, System and Application audit events to a separate Splunk system; retain them under the audit retention policy. Check forwarding and destination retention daily and test retrieval monthly. Investigate missing events or failed delivery.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278042r1182270_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-UniversalForwarderEvidence {
+    $service = Get-CimInstance Win32_Service -Filter "Name='SplunkForwarder'" -ErrorAction Stop
+    $paths = @('C:\Program Files\SplunkUniversalForwarder')
+    if ($service -and $service.PathName -match '^"?(.+?\\bin\\splunkd\.exe)"?(?:\s|$)') {
+        $paths += Split-Path (Split-Path $Matches[1] -Parent) -Parent
+    }
+    $root = $null
+    foreach ($path in ($paths | Select-Object -Unique)) {
+        $exe = Join-Path $path 'bin\splunk.exe'
+        if (Test-Path -LiteralPath $exe) {
+            $version = (Get-Item -LiteralPath $exe).VersionInfo
+            # Service identity and installation location distinguish Universal Forwarder from Enterprise.
+            if ($service -or $path -match 'SplunkUniversalForwarder$') { $root = $path; break }
+        }
+    }
+    $data = @{UniversalForwarderInstalled=($null -ne $root); ServiceState='Absent'; SecurityEventsForwarded=$false}
+    if ($service) { $data.ServiceState = $service.State }
+    if (-not $root) { return $data }
+    $data.InstallationPath = $root
+    $data.Version = $version.ProductVersion
+    # Never execute splunk.exe or accept a license; inspect merged config files without exposing secrets.
+    # Presence alone satisfies the owner's explicit V-278041/042 criterion. V-278106 requires more.
+    $inputs = @{}; $outputs = @{}
+    foreach ($kind in @('inputs', 'outputs')) {
+        $merged = @{}
+        $files = @()
+        $files += Join-Path $root "etc\system\default\$kind.conf"
+        $files += @(Get-ChildItem (Join-Path $root 'etc\apps') -Directory -ErrorAction SilentlyContinue |
+            Sort-Object Name -Descending | ForEach-Object { Join-Path $_.FullName "default\$kind.conf" })
+        $files += @(Get-ChildItem (Join-Path $root 'etc\apps') -Directory -ErrorAction SilentlyContinue |
+            Sort-Object Name -Descending | ForEach-Object { Join-Path $_.FullName "local\$kind.conf" })
+        $files += Join-Path $root "etc\system\local\$kind.conf"
+        foreach ($file in $files) {
+            if (-not (Test-Path -LiteralPath $file)) { continue }
+            $section = 'default'
+            foreach ($line in (Get-Content -LiteralPath $file -ErrorAction Stop)) {
+                if ($line -match '^\s*\[([^]]+)\]\s*$') { $section = $Matches[1].Trim(); continue }
+                if ($line -match '^\s*(disabled|server|defaultGroup|current_only)\s*=\s*(.*?)\s*$') {
+                    $name=$Matches[1]; $value=$Matches[2]
+                    if (-not $merged.ContainsKey($section)) { $merged[$section]=@{} }
+                    $merged[$section][$name]=$value
+                }
+            }
+        }
+        if ($kind -eq 'inputs') { $inputs=$merged } else { $outputs=$merged }
+    }
+    $security = $inputs['WinEventLog://Security']
+    $securityEnabled = $security -and $security['disabled'] -match '^(0|false)$' -and
+        $security['current_only'] -notmatch '^(1|true)$'
+    $targets = @()
+    $groupNames = @()
+    if ($outputs['tcpout']) { $groupNames = @($outputs['tcpout']['defaultGroup'] -split ',' | ForEach-Object { $_.Trim() }) }
+    foreach ($name in $groupNames) {
+        $group=$outputs["tcpout:$name"]
+        if ($group -and $group['disabled'] -notmatch '^(1|true)$' -and
+            $outputs['tcpout']['disabled'] -notmatch '^(1|true)$') {
+            $targets += @($group['server'] -split ',' | Where-Object { $_.Trim() })
+        }
+    }
+    $localNames = @('localhost','127.0.0.1','::1',$env:COMPUTERNAME)
+    $localNames += @(Get-NetIPAddress -ErrorAction Stop | Select-Object -ExpandProperty IPAddress)
+    $remote = @($targets | Where-Object {
+        $hostPart = ($_ -replace ':\d+$','').Trim(' ', '[', ']')
+        $hostPart -notin $localNames
+    })
+    $data.SecurityInputEnabled = [bool]$securityEnabled
+    $data.RemoteDestinationCount = $remote.Count
+    $data.SecurityEventsForwarded = ($data.ServiceState -eq 'Running' -and $securityEnabled -and $remote.Count -gt 0)
+    return $data
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        { $_ -in @('V-278041','V-278042','V-278106') } { return Get-UniversalForwarderEvidence }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-278042' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>LOG-02: Splunk Universal Forwarder is the site-approved audit offload mechanism. Per the system owner's assessment criterion, verify its installation for this control. Configure real-time Windows event forwarding for interconnected systems; for isolated/non-domain systems offload no less often than weekly. Monitor forwarder/destination health daily, alert on delivery interruption, and retain evidence of offload and review.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. LOG-02: Splunk Universal Forwarder is the site-approved audit offload mechanism. Per the system owner's assessment criterion, verify its installation for this control. Configure real-time Windows event forwarding for interconnected systems; for isolated/non-domain systems offload no less often than weekly. Monitor forwarder/destination health daily, alert on delivery interruption, and retain evidence of offload and review.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278106r1211154_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-UniversalForwarderEvidence {
+    $service = Get-CimInstance Win32_Service -Filter "Name='SplunkForwarder'" -ErrorAction Stop
+    $paths = @('C:\Program Files\SplunkUniversalForwarder')
+    if ($service -and $service.PathName -match '^"?(.+?\\bin\\splunkd\.exe)"?(?:\s|$)') {
+        $paths += Split-Path (Split-Path $Matches[1] -Parent) -Parent
+    }
+    $root = $null
+    foreach ($path in ($paths | Select-Object -Unique)) {
+        $exe = Join-Path $path 'bin\splunk.exe'
+        if (Test-Path -LiteralPath $exe) {
+            $version = (Get-Item -LiteralPath $exe).VersionInfo
+            # Service identity and installation location distinguish Universal Forwarder from Enterprise.
+            if ($service -or $path -match 'SplunkUniversalForwarder$') { $root = $path; break }
+        }
+    }
+    $data = @{UniversalForwarderInstalled=($null -ne $root); ServiceState='Absent'; SecurityEventsForwarded=$false}
+    if ($service) { $data.ServiceState = $service.State }
+    if (-not $root) { return $data }
+    $data.InstallationPath = $root
+    $data.Version = $version.ProductVersion
+    # Never execute splunk.exe or accept a license; inspect merged config files without exposing secrets.
+    # Presence alone satisfies the owner's explicit V-278041/042 criterion. V-278106 requires more.
+    $inputs = @{}; $outputs = @{}
+    foreach ($kind in @('inputs', 'outputs')) {
+        $merged = @{}
+        $files = @()
+        $files += Join-Path $root "etc\system\default\$kind.conf"
+        $files += @(Get-ChildItem (Join-Path $root 'etc\apps') -Directory -ErrorAction SilentlyContinue |
+            Sort-Object Name -Descending | ForEach-Object { Join-Path $_.FullName "default\$kind.conf" })
+        $files += @(Get-ChildItem (Join-Path $root 'etc\apps') -Directory -ErrorAction SilentlyContinue |
+            Sort-Object Name -Descending | ForEach-Object { Join-Path $_.FullName "local\$kind.conf" })
+        $files += Join-Path $root "etc\system\local\$kind.conf"
+        foreach ($file in $files) {
+            if (-not (Test-Path -LiteralPath $file)) { continue }
+            $section = 'default'
+            foreach ($line in (Get-Content -LiteralPath $file -ErrorAction Stop)) {
+                if ($line -match '^\s*\[([^]]+)\]\s*$') { $section = $Matches[1].Trim(); continue }
+                if ($line -match '^\s*(disabled|server|defaultGroup|current_only)\s*=\s*(.*?)\s*$') {
+                    $name=$Matches[1]; $value=$Matches[2]
+                    if (-not $merged.ContainsKey($section)) { $merged[$section]=@{} }
+                    $merged[$section][$name]=$value
+                }
+            }
+        }
+        if ($kind -eq 'inputs') { $inputs=$merged } else { $outputs=$merged }
+    }
+    $security = $inputs['WinEventLog://Security']
+    $securityEnabled = $security -and $security['disabled'] -match '^(0|false)$' -and
+        $security['current_only'] -notmatch '^(1|true)$'
+    $targets = @()
+    $groupNames = @()
+    if ($outputs['tcpout']) { $groupNames = @($outputs['tcpout']['defaultGroup'] -split ',' | ForEach-Object { $_.Trim() }) }
+    foreach ($name in $groupNames) {
+        $group=$outputs["tcpout:$name"]
+        if ($group -and $group['disabled'] -notmatch '^(1|true)$' -and
+            $outputs['tcpout']['disabled'] -notmatch '^(1|true)$') {
+            $targets += @($group['server'] -split ',' | Where-Object { $_.Trim() })
+        }
+    }
+    $localNames = @('localhost','127.0.0.1','::1',$env:COMPUTERNAME)
+    $localNames += @(Get-NetIPAddress -ErrorAction Stop | Select-Object -ExpandProperty IPAddress)
+    $remote = @($targets | Where-Object {
+        $hostPart = ($_ -replace ':\d+$','').Trim(' ', '[', ']')
+        $hostPart -notin $localNames
+    })
+    $data.SecurityInputEnabled = [bool]$securityEnabled
+    $data.RemoteDestinationCount = $remote.Count
+    $data.SecurityEventsForwarded = ($data.ServiceState -eq 'Running' -and $securityEnabled -and $remote.Count -gt 0)
+    return $data
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        { $_ -in @('V-278041','V-278042','V-278106') } { return Get-UniversalForwarderEvidence }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-278106' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NA</ValidTrueStatus><ValidTrueComment>LOG-03: When Security events are forwarded directly to a separate audit server, the local one-week sizing requirement is not applicable. Verify an enabled Security input, a running forwarder and a separate configured destination. Otherwise retain at least one week locally, review actual event volume weekly and increase capacity before retention falls below seven days. A 5 GB setting alone is not proof of a week of retention.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. LOG-03: When Security events are forwarded directly to a separate audit server, the local one-week sizing requirement is not applicable. Verify an enabled Security input, a running forwarder and a separate configured destination. Otherwise retain at least one week locally, review actual event volume weekly and increase capacity before retention falls below seven days. A 5 GB setting alone is not proof of a week of retention.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278177r1182280_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ApprovedAdminEvidence {
+    param([hashtable]$Policy)
+    $members = @(Get-LocalGroupMember -SID 'S-1-5-32-544' -ErrorAction Stop)
+    $sids = @($members | ForEach-Object { $_.SID.Value })
+    return @{AdminsApproved=($sids.Count -gt 0 -and @($sids | Where-Object { $_ -notin $Policy.approved_admin_sids }).Count -eq 0);
+        AdminSIDs=$sids}
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        { $_ -in @('V-277985','V-278177') } { return Get-ApprovedAdminEvidence -Policy $Policy }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-278177' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>AC-06: Only accounts responsible for administration may belong to local Administrators. The approved development-server identities are the dedicated ansible automation identity and the built-in administrative identity, identified by SID in the per-host register. No ordinary user accounts are allowed. Review membership monthly and at personnel changes; domain members must replace broad Domain Admins membership with a server-specific group.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. AC-06: Only accounts responsible for administration may belong to local Administrators. The approved development-server identities are the dedicated ansible automation identity and the built-in administrative identity, identified by SID in the per-host register. No ordinary user accounts are allowed. Review membership monthly and at personnel changes; domain members must replace broad Domain Admins membership with a server-specific group.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278240r1268251_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[# ManualChecks.ps1 SHA256: dc24f4302a56ebe8544ee98d223bbd477b346264fad6c88fdc58ae4251995fe4
+function Test-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Evidence, [hashtable]$Policy)
+    $valid = $false
+    switch ($Control) {
+        'V-277982' { $valid = $Evidence.AutoUpdateEnabled -and $Evidence.RecentPatch }
+        'V-277983' { $valid = $Evidence.HardwareInventoried -and $Policy.hardware_control_procedure }
+        'V-277985' { $valid = $Evidence.AdminsApproved -and $Policy.separate_admin_accounts }
+        'V-277987' { $valid = $Evidence.NonInternetFacingDeclaration -or $Evidence.AdminInternetBlocked }
+        'V-277989' { $valid = $Policy.service_password_minimum -ge 15 -and $Policy.service_password_provisioning_check }
+        'V-277990' { $valid = $Evidence.ServicePasswordsCurrent -and $Policy.rotate_on_departure }
+        'V-277991' { $valid = $Policy.shared_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-277992' { $valid = $Evidence.AllowlistEnforced }
+        'V-277996' { $valid = $Evidence.HostIDPSActive }
+        'V-278006' { $valid = $Evidence.FIMBaselineAndWeeklyComparison }
+        'V-278009' { $valid = $Evidence.DatastoreEncryptionDeclaration }
+        'V-278010' { $valid = $Evidence.DocumentedProtectedTransferPaths }
+        'V-278011' { $valid = $Evidence.FeaturesMatchRegister }
+        'V-278013' { $valid = $Policy.temporary_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278014' { $valid = $Policy.emergency_accounts_used -eq $false -and -not $Evidence.ContradictoryAccount }
+        'V-278029' { $valid = $Evidence.ApprovedTimeSource }
+        'V-278041' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278042' { $valid = $Evidence.UniversalForwarderInstalled }
+        'V-278106' { $valid = $Evidence.SecurityEventsForwarded }
+        'V-278177' { $valid = $Evidence.AdminsApproved }
+        'V-278240' { $valid = $Evidence.AllProfilesPreserveZone }
+        default { throw "Unsupported manual control $Control" }
+    }
+    return @{ Valid = [bool]$valid; Results = "$Control custom review: " + ($Evidence | ConvertTo-Json -Compress -Depth 8) }
+}
+
+function Invoke-ScopedManualReview {
+    param([string]$Control, [hashtable]$Policy)
+    try {
+        $ErrorActionPreference='Stop'
+        if ($env:COMPUTERNAME -ine $Policy.computer_name) { throw 'No per-host policy register for this computer.' }
+        $sid=(Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }).SID.Value -replace '-500$', ''
+        if ($sid -ne $Policy.machine_sid) { throw 'Per-host machine SID mismatch.' }
+        $evidence=Get-ManualControlEvidence -Control $Control -Policy $Policy
+        return Test-ManualControlEvidence -Control $Control -Evidence $evidence -Policy $Policy
+    } catch {
+        return @{Valid=$false;Results='Custom review failed closed: '+$_.Exception.Message}
+    }
+}
+
+function Get-ZonePreservationEvidence {
+    $profiles = @(Get-CimInstance Win32_UserProfile -ErrorAction Stop | Where-Object { -not $_.Special })
+    $paths = @($profiles | ForEach-Object { @{SID=$_.SID; File=(Join-Path $_.LocalPath 'NTUSER.DAT')} })
+    $paths += @{SID='DefaultProfile';File=(Join-Path $env:SystemDrive 'Users\Default\NTUSER.DAT')}
+    $checked=@(); $valid=$true
+    foreach ($profile in $paths) {
+        $mount=$profile.SID; $temporary=$false; $copy=$null
+        try {
+            if (-not (Test-Path "Registry::HKEY_USERS\$mount")) {
+                if (-not (Test-Path -LiteralPath $profile.File)) { throw "Existing profile hive missing: $($profile.SID)" }
+                $mount='WIN25_REVIEW_'+[guid]::NewGuid().ToString('N')
+                $copy=Join-Path $env:TEMP "$mount.dat"
+                Copy-Item -LiteralPath $profile.File -Destination $copy -ErrorAction Stop
+                & reg.exe load "HKU\$mount" $copy *> $null
+                if ($LASTEXITCODE -ne 0) { throw "Cannot read copied profile hive: $($profile.SID)" }
+                $temporary=$true
+            }
+            $key=[Microsoft.Win32.Registry]::Users.OpenSubKey("$mount\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Attachments")
+            $value=$null; $kind=$null
+            if ($key) {
+                try {
+                    if ('SaveZoneInformation' -in $key.GetValueNames()) {
+                        $kind=$key.GetValueKind('SaveZoneInformation').ToString()
+                        $value=$key.GetValue('SaveZoneInformation')
+                    }
+                } finally { $key.Dispose() }
+            }
+            if ($null -ne $value -and ($kind -ne 'DWord' -or $value -ne 2)) { $valid=$false }
+            $checked+=@{SID=$profile.SID;Value=$value;Kind=$kind}
+        } catch { $valid=$false; $checked+=@{SID=$profile.SID;Error=$_.Exception.Message} }
+        finally {
+            if ($temporary) {
+                [GC]::Collect(); [GC]::WaitForPendingFinalizers()
+                & reg.exe unload "HKU\$mount" *> $null
+                if ($LASTEXITCODE -ne 0) { $valid=$false; $checked+=@{SID=$profile.SID;Error='Temporary hive unload failed'} }
+            }
+            if ($copy) { Remove-Item -LiteralPath $copy -Force -ErrorAction SilentlyContinue }
+        }
+    }
+    return @{AllProfilesPreserveZone=$valid; Profiles=$checked; Basis='All non-system profiles and the default profile; missing value is the compliant Windows default'}
+}
+
+function Get-ManualControlEvidence {
+    param([string]$Control, [hashtable]$Policy)
+    switch ($Control) {
+        'V-278240' { return Get-ZonePreservationEvidence }
+        default { throw 'Unsupported control' }
+    }
+}
+
+try {
+    $ErrorActionPreference = 'Stop'
+    $Policy = @{}
+    $register = @'
+{
+  "computer_name": "WIN25-CORE-V0",
+  "machine_sid": "S-1-5-21-2982072508-2365857290-1453907225",
+  "approved_admin_sids": [
+    "S-1-5-21-2982072508-2365857290-1453907225-1000",
+    "S-1-5-21-2982072508-2365857290-1453907225-500"
+  ],
+  "hardware_control_procedure": true,
+  "separate_admin_accounts": true,
+  "service_password_minimum": 15,
+  "service_password_provisioning_check": true,
+  "rotate_on_departure": true,
+  "shared_accounts_used": false,
+  "temporary_accounts_used": false,
+  "emergency_accounts_used": false,
+  "manually_managed_accounts": [
+    "ansible"
+  ],
+  "approved_ntp_sources": {{ ([win25_stig_time_source] if win25_stig_time_source | default("") | length > 0 else []) | to_json }},
+  "required_features": [
+    "FileAndStorage-Services",
+    "Storage-Services",
+    "NET-Framework-45-Features",
+    "NET-Framework-45-Core",
+    "NET-WCF-Services45",
+    "NET-WCF-TCP-PortSharing45",
+    "Windows-Defender",
+    "System-DataArchiver",
+    "PowerShellRoot",
+    "PowerShell",
+    "WoW64-Support"
+  ],
+  "internet_facing": false,
+  "datastore_encryption_used": true
+}
+'@
+    ($register | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Policy[$_.Name] = $_.Value }
+    return Invoke-ScopedManualReview -Control 'V-278240' -Policy $Policy
+} catch {
+    return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>ATT-01: Preserve attachment zone information in every interactive user profile. Leave SaveZoneInformation absent (Windows default) or set REG_DWORD 2. Check loaded and unloaded profiles and the default profile on provisioning and monthly. A value of 1 or an unreadable existing profile is a finding. Service-only identities do not create an exception for human interactive users.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. ATT-01: Preserve attachment zone information in every interactive user profile. Leave SaveZoneInformation absent (Windows default) or set REG_DWORD 2. Check loaded and unloaded profiles and the default profile on provisioning and monthly. A value of 1 or an unreadable existing profile is a finding. Service-only identities do not create an exception for human interactive users.</ValidFalseComment></Answer></AnswerKey></Vuln></STIGComments>

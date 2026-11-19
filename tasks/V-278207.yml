@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278207 - The Windows Server 2025 required legal notice must be configured to display before console logon.
+  when:
+    - win25_stig_v_278207 | bool
+    - '''V-278207'' not in win25_stig_exceptions'
+  tags:
+    - V-278207
+    - CAT2
+  block:
+    - name: The Windows Server 2025 required legal notice must be configured to display before console logon.
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+        name: LegalNoticeText
+        data: '{{ win25_stig_legal_notice }}'
+        type: string
+      notify: Record Windows restart requirement

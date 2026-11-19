@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278159 - Windows Server 2025 domain controllers must have a PKI server certificate.
+  when:
+    - win25_stig_v_278159 | bool
+    - win25_stig_is_dc
+    - '''V-278159'' not in win25_stig_exceptions'
+  tags:
+    - V-278159
+    - CAT2
+  block:
+    - name: V-278159 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278159''] }}'

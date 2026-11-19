@@ -1,0 +1,349 @@
+# SPDX-License-Identifier: MIT-0
+---
+win25_stig_cat1: true
+win25_stig_cat2: true
+win25_stig_cat3: true
+win25_stig_reboot: false
+win25_stig_ftp_required: false
+win25_stig_bluetooth_required: false
+win25_stig_manage_defender: true
+win25_stig_manage_local_password_flags: false
+win25_stig_password_exempt_accounts: []
+win25_stig_administrator_name: stig_local_admin
+win25_stig_guest_name: stig_guest_disabled
+win25_stig_transcript_directory: C:\ProgramData\PS_Transcript
+win25_stig_enable_virtualization_security: false
+win25_stig_enable_credential_guard_uefi_lock: false
+win25_stig_exchange_server: false
+win25_stig_enforce_remote_uac: true
+win25_stig_exceptions: {}
+win25_stig_legal_notice: 'You are accessing a U.S. Government (USG) Information System (IS) that is provided for
+  USG-authorized use only.
+
+
+  By using this IS (which includes any device attached to this IS), you consent to the following conditions:
+
+
+  -The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to,
+  penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement
+  (LE), and counterintelligence (CI) investigations.
+
+
+  -At any time, the USG may inspect and seize data stored on this IS.
+
+
+  -Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception,
+  and search, and may be disclosed or used for any USG-authorized purpose.
+
+
+  -This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for
+  your personal benefit or privacy.
+
+
+  -Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching
+  or monitoring of the content of privileged communications, or work product, related to personal representation
+  or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product
+  are private and confidential. See User Agreement for details.'
+win25_stig_v_277982: true
+win25_stig_v_277983: true
+win25_stig_v_277985: true
+win25_stig_v_277986: true
+win25_stig_v_277987: true
+win25_stig_v_277988: true
+win25_stig_v_277989: true
+win25_stig_v_277990: true
+win25_stig_v_277991: true
+win25_stig_v_277992: true
+win25_stig_v_277993: true
+win25_stig_v_277995: true
+win25_stig_v_277996: true
+win25_stig_v_277997: true
+win25_stig_v_277998: true
+win25_stig_v_277999: true
+win25_stig_v_278000: true
+win25_stig_v_278001: true
+win25_stig_v_278002: true
+win25_stig_v_278003: true
+win25_stig_v_278004: true
+win25_stig_v_278005: true
+win25_stig_v_278006: true
+win25_stig_v_278007: true
+win25_stig_v_278008: true
+win25_stig_v_278009: true
+win25_stig_v_278010: true
+win25_stig_v_278011: true
+win25_stig_v_278012: true
+win25_stig_v_278013: true
+win25_stig_v_278014: true
+win25_stig_v_278015: true
+win25_stig_v_278016: true
+win25_stig_v_278017: true
+win25_stig_v_278018: true
+win25_stig_v_278019: true
+win25_stig_v_278020: true
+win25_stig_v_278021: true
+win25_stig_v_278022: true
+win25_stig_v_278023: true
+win25_stig_v_278024: true
+win25_stig_v_278025: true
+win25_stig_v_278026: true
+win25_stig_v_278027: true
+win25_stig_v_278028: true
+win25_stig_v_278029: true
+win25_stig_v_278030: true
+win25_stig_v_278031: true
+win25_stig_v_278032: true
+win25_stig_v_278033: true
+win25_stig_v_278034: true
+win25_stig_v_278035: true
+win25_stig_v_278036: true
+win25_stig_v_278037: true
+win25_stig_v_278038: true
+win25_stig_v_278039: true
+win25_stig_v_278040: true
+win25_stig_v_278041: true
+win25_stig_v_278042: true
+win25_stig_v_278043: true
+win25_stig_v_278044: true
+win25_stig_v_278045: true
+win25_stig_v_278046: true
+win25_stig_v_278047: true
+win25_stig_v_278048: true
+win25_stig_v_278049: true
+win25_stig_v_278050: true
+win25_stig_v_278051: true
+win25_stig_v_278052: true
+win25_stig_v_278053: true
+win25_stig_v_278054: true
+win25_stig_v_278055: true
+win25_stig_v_278056: true
+win25_stig_v_278057: true
+win25_stig_v_278058: true
+win25_stig_v_278059: true
+win25_stig_v_278060: true
+win25_stig_v_278061: true
+win25_stig_v_278062: true
+win25_stig_v_278063: true
+win25_stig_v_278064: true
+win25_stig_v_278065: true
+win25_stig_v_278066: true
+win25_stig_v_278067: true
+win25_stig_v_278068: true
+win25_stig_v_278069: true
+win25_stig_v_278070: true
+win25_stig_v_278071: true
+win25_stig_v_278072: true
+win25_stig_v_278073: true
+win25_stig_v_278074: true
+win25_stig_v_278075: true
+win25_stig_v_278076: true
+win25_stig_v_278077: true
+win25_stig_v_278078: true
+win25_stig_v_278079: true
+win25_stig_v_278080: true
+win25_stig_v_278082: true
+win25_stig_v_278083: true
+win25_stig_v_278084: true
+win25_stig_v_278085: true
+win25_stig_v_278086: true
+win25_stig_v_278087: true
+win25_stig_v_278088: true
+win25_stig_v_278089: true
+win25_stig_v_278090: true
+win25_stig_v_278091: true
+win25_stig_v_278092: true
+win25_stig_v_278093: true
+win25_stig_v_278094: true
+win25_stig_v_278095: true
+win25_stig_v_278096: true
+win25_stig_v_278097: true
+win25_stig_v_278098: true
+win25_stig_v_278099: true
+win25_stig_v_278100: true
+win25_stig_v_278101: true
+win25_stig_v_278102: true
+win25_stig_v_278103: true
+win25_stig_v_278104: true
+win25_stig_v_278105: true
+win25_stig_v_278106: true
+win25_stig_v_278107: true
+win25_stig_v_278108: true
+win25_stig_v_278109: true
+win25_stig_v_278110: true
+win25_stig_v_278111: true
+win25_stig_v_278112: true
+win25_stig_v_278113: true
+win25_stig_v_278114: true
+win25_stig_v_278115: true
+win25_stig_v_278116: true
+win25_stig_v_278117: true
+win25_stig_v_278118: true
+win25_stig_v_278119: true
+win25_stig_v_278120: true
+win25_stig_v_278121: true
+win25_stig_v_278122: true
+win25_stig_v_278123: true
+win25_stig_v_278124: true
+win25_stig_v_278125: true
+win25_stig_v_278126: true
+win25_stig_v_278127: true
+win25_stig_v_278128: true
+win25_stig_v_278129: true
+win25_stig_v_278130: true
+win25_stig_v_278131: true
+win25_stig_v_278132: true
+win25_stig_v_278133: true
+win25_stig_v_278134: true
+win25_stig_v_278135: true
+win25_stig_v_278136: true
+win25_stig_v_278137: true
+win25_stig_v_278138: true
+win25_stig_v_278139: true
+win25_stig_v_278140: true
+win25_stig_v_278141: true
+win25_stig_v_278142: true
+win25_stig_v_278143: true
+win25_stig_v_278144: true
+win25_stig_v_278145: true
+win25_stig_v_278146: true
+win25_stig_v_278147: true
+win25_stig_v_278148: true
+win25_stig_v_278149: true
+win25_stig_v_278150: true
+win25_stig_v_278151: true
+win25_stig_v_278152: true
+win25_stig_v_278153: true
+win25_stig_v_278154: true
+win25_stig_v_278155: true
+win25_stig_v_278156: true
+win25_stig_v_278157: true
+win25_stig_v_278158: true
+win25_stig_v_278159: true
+win25_stig_v_278160: true
+win25_stig_v_278161: true
+win25_stig_v_278162: true
+win25_stig_v_278163: true
+win25_stig_v_278164: true
+win25_stig_v_278165: true
+win25_stig_v_278166: true
+win25_stig_v_278167: true
+win25_stig_v_278168: true
+win25_stig_v_278169: true
+win25_stig_v_278170: true
+win25_stig_v_278171: true
+win25_stig_v_278173: true
+win25_stig_v_278174: true
+win25_stig_v_278175: true
+win25_stig_v_278176: true
+win25_stig_v_278177: true
+win25_stig_v_278178: true
+win25_stig_v_278179: true
+win25_stig_v_278180: true
+win25_stig_v_278181: true
+win25_stig_v_278182: true
+win25_stig_v_278183: true
+win25_stig_v_278184: true
+win25_stig_v_278185: true
+win25_stig_v_278186: true
+win25_stig_v_278187: true
+win25_stig_v_278188: true
+win25_stig_v_278189: true
+win25_stig_v_278190: true
+win25_stig_v_278192: true
+win25_stig_v_278193: true
+win25_stig_v_278194: true
+win25_stig_v_278195: true
+win25_stig_v_278196: true
+win25_stig_v_278197: true
+win25_stig_v_278198: true
+win25_stig_v_278199: true
+win25_stig_v_278200: true
+win25_stig_v_278201: true
+win25_stig_v_278202: true
+win25_stig_v_278203: true
+win25_stig_v_278204: true
+win25_stig_v_278205: true
+win25_stig_v_278206: true
+win25_stig_v_278207: true
+win25_stig_v_278209: true
+win25_stig_v_278210: true
+win25_stig_v_278211: true
+win25_stig_v_278212: true
+win25_stig_v_278213: true
+win25_stig_v_278214: true
+win25_stig_v_278215: true
+win25_stig_v_278216: true
+win25_stig_v_278217: true
+win25_stig_v_278218: true
+win25_stig_v_278219: true
+win25_stig_v_278220: true
+win25_stig_v_278221: true
+win25_stig_v_278222: true
+win25_stig_v_278223: true
+win25_stig_v_278225: true
+win25_stig_v_278226: true
+win25_stig_v_278227: true
+win25_stig_v_278228: true
+win25_stig_v_278229: true
+win25_stig_v_278230: true
+win25_stig_v_278231: true
+win25_stig_v_278232: true
+win25_stig_v_278233: true
+win25_stig_v_278234: true
+win25_stig_v_278235: true
+win25_stig_v_278236: true
+win25_stig_v_278237: true
+win25_stig_v_278238: true
+win25_stig_v_278239: true
+win25_stig_v_278240: true
+win25_stig_v_278241: true
+win25_stig_v_278242: true
+win25_stig_v_278243: true
+win25_stig_v_278244: true
+win25_stig_v_278245: true
+win25_stig_v_278246: true
+win25_stig_v_278247: true
+win25_stig_v_278248: true
+win25_stig_v_278249: true
+win25_stig_v_278250: true
+win25_stig_v_278251: true
+win25_stig_v_278252: true
+win25_stig_v_278253: true
+win25_stig_v_278254: true
+win25_stig_v_278255: true
+win25_stig_v_278256: true
+win25_stig_v_278257: true
+win25_stig_v_278258: true
+win25_stig_v_278259: true
+win25_stig_v_278260: true
+win25_stig_v_278261: true
+win25_stig_v_278262: true
+win25_stig_v_279918: true
+win25_stig_v_279920: true
+win25_stig_v_279921: true
+win25_stig_v_279922: true
+win25_stig_v_279923: true
+win25_stig_v_285313: true
+win25_stig_v_285314: true
+win25_stig_v_285315: true
+win25_stig_v_285316: true
+win25_stig_v_285317: true
+win25_stig_v_285318: true
+win25_stig_v_285319: true
+win25_stig_v_285320: true
+win25_stig_v_285321: true
+win25_stig_v_285322: true
+win25_stig_v_285323: true
+win25_stig_v_289259: true
+win25_stig_domain_sid: ''
+win25_stig_forest_root_sid: ''
+
+# Limit to controller IPs/CIDRs when the management network is known.
+win25_stig_management_remote_addresses: any
+
+# These public DoD trust anchors and cross-certificates apply to unclassified systems.
+win25_stig_unclassified: true
+win25_stig_certificate_directory: 'C:\ProgramData\win25-stig\certificates'
+
+# Approved environment NTP hostname/IP. Blank leaves Windows Time configuration unchanged.
+win25_stig_time_source: ''

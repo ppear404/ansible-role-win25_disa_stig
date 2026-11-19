@@ -1,0 +1,59 @@
+# SPDX-License-Identifier: MIT-0
+---
+win25_stig_certificates:
+  - control: V-278192
+    file: dod-root-ca-3.cer
+    sha256: B107B33F453E5510F68E513110C6F6944BACC263DF0137F821C1B3C2F8F863D2
+    thumbprint: D73CA91102A2204A36459ED32213B467D7CE97FB
+    subject_cn: DoD Root CA 3
+    issuer_cn: DoD Root CA 3
+    kind: root
+  - control: V-278192
+    file: dod-root-ca-4.cer
+    sha256: 559A5189452B13F8233F0022363C06F26E3C517C1D4B77445035959DF3244F74
+    thumbprint: B8269F25DBD937ECAFD4C35A9838571723F2D026
+    subject_cn: DoD Root CA 4
+    issuer_cn: DoD Root CA 4
+    kind: root
+  - control: V-278192
+    file: dod-root-ca-5.cer
+    sha256: 1F4EDE9DC2A241F6521BF518424ACD49EBE84420E69DAF5BAC57AF1F8EE294A9
+    thumbprint: 4ECB5CC3095670454DA1CBD410FC921F46B8564B
+    subject_cn: DoD Root CA 5
+    issuer_cn: DoD Root CA 5
+    kind: root
+  - control: V-278192
+    file: dod-root-ca-6.cer
+    sha256: 2A5E41ACA93DF7CC496D2369B7A0A037045D502F1ABAAF76975FC07C6660CF93
+    thumbprint: D37ECF61C0B4ED88681EF3630C4E2FC787B37AEF
+    subject_cn: DoD Root CA 6
+    issuer_cn: DoD Root CA 6
+    kind: root
+  - control: V-278193
+    file: dod-root-ca-3-interop.cer
+    sha256: 46FB3F2A748306A7AE873E1410663E174BD218B1B5AEF1772AA160C92451EEC0
+    thumbprint: EC3C9B8B017892CAC3A13C7C9AAD52E7F7B0ABE4
+    subject_cn: DoD Root CA 3
+    issuer_cn: DoD Interoperability Root CA 2
+    kind: cross
+  - control: V-278193
+    file: dod-root-ca-6-interop.cer
+    sha256: 477DEAF34D69022735B30739065DFA6178EA75A533333683979D0100A3B24C73
+    thumbprint: F3EE5E2442ADB5B246CAA286C29F6349F4202EC5
+    subject_cn: DoD Root CA 6
+    issuer_cn: DoD Interoperability Root CA 2
+    kind: cross
+  - control: V-278194
+    file: dod-root-ca-3-cceb.cer
+    sha256: E61E50598E9101AB58258A92FB4AC1B9EE802F8A701392C00C54F46310D6DFE2
+    thumbprint: E582D22036CDAD1977C8249C2DC2943C12585D78
+    subject_cn: DoD Root CA 3
+    issuer_cn: US DoD CCEB Interoperability Root CA 2
+    kind: cross
+  - control: V-278194
+    file: dod-root-ca-6-cceb.cer
+    sha256: 740FF38BFA102D3EA023F2FDACFD37937A2C1F585397FD925EB7A3651D191CEA
+    thumbprint: 410CD8D5D276EFCE2618B9671AC4B9CAA81E28B7
+    subject_cn: DoD Root CA 6
+    issuer_cn: US DoD CCEB Interoperability Root CA 2
+    kind: cross

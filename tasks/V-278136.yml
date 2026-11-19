@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278136 - Windows Server 2025 Kerberos policy user ticket renewal maximum lifetime must be limited to seven
+    days or less.
+  when:
+    - win25_stig_v_278136 | bool
+    - win25_stig_is_dc
+    - '''V-278136'' not in win25_stig_exceptions'
+  tags:
+    - V-278136
+    - CAT2
+  block:
+    - name: V-278136 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278136''] }}'

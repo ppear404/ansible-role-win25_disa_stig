@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278169 - The Windows Server 2025 "Deny log on as a batch job" user right on domain controllers must be
+    configured to prevent unauthenticated access.
+  when:
+    - win25_stig_v_278169 | bool
+    - win25_stig_is_dc
+    - '''V-278169'' not in win25_stig_exceptions'
+  tags:
+    - V-278169
+    - CAT2
+  block:
+    - name: The Windows Server 2025 "Deny log on as a batch job" user right on domain controllers must be configured
+        to prevent unauthenticated access.
+      ansible.windows.win_user_right:
+        name: SeDenyBatchLogonRight
+        users:
+          - S-1-5-32-546
+        action: add

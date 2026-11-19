@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-279918 - Windows Server 2025 must be configured to audit handle manipulation failures.
+  when:
+    - win25_stig_v_279918 | bool
+    - '''V-279918'' not in win25_stig_exceptions'
+  tags:
+    - V-279918
+    - CAT2
+  block:
+    - name: V-279918 - Configure audit subcategory
+      ansible.windows.win_audit_policy_system:
+        subcategory: Handle Manipulation
+        audit_type:
+          - failure

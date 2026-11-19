@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT-0
+---
+galaxy_info:
+  role_name: win25_disa_stig
+  namespace: local
+  author: Infrastructure Automation
+  description: Windows Server 2025 DISA STIG V1R4 remediation and manual-review tracking
+  license: MIT-0
+  min_ansible_version: '2.18'
+  platforms:
+    - name: Windows
+      versions:
+        - '2025'
+  galaxy_tags:
+    - windows
+    - security
+    - stig
+    - disa
+dependencies: []

@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278076 - Windows Server 2025 must be configured to audit System - Security State Change successes.
+  when:
+    - win25_stig_v_278076 | bool
+    - '''V-278076'' not in win25_stig_exceptions'
+  tags:
+    - V-278076
+    - CAT2
+  block:
+    - name: Windows Server 2025 must be configured to audit System - Security State Change successes.
+      ansible.windows.win_audit_policy_system:
+        subcategory: Security State Change
+        audit_type:
+          - success

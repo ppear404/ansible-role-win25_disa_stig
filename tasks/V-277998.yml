@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-277998 - Windows Server 2025 permissions for the system drive root directory (usually C:\) must conform
+    to minimum requirements.
+  when:
+    - win25_stig_v_277998 | bool
+    - '''V-277998'' not in win25_stig_exceptions'
+  tags:
+    - V-277998
+    - CAT2
+  block:
+    - name: V-277998 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-277998''] }}'

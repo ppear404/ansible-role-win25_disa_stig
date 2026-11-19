@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278018 - Windows Server 2025 must not have Bluetooth enabled unless required by the organization.
+  when:
+    - win25_stig_v_278018 | bool
+    - not win25_stig_bluetooth_required
+    - '''V-278018'' not in win25_stig_exceptions'
+  tags:
+    - V-278018
+    - CAT2
+  block:
+    - name: Windows Server 2025 must not have Bluetooth enabled unless required by the organization.
+      ansible.windows.win_powershell:
+        script: |-
+          [CmdletBinding(SupportsShouldProcess)]
+          param()
+          $Ansible.Changed = $false
+          $service = Get-Service bthserv -ErrorAction SilentlyContinue
+          if ($service -and ($service.StartType -ne 'Disabled' -or $service.Status -ne 'Stopped')) {
+              $Ansible.Changed = $true
+              if ($PSCmdlet.ShouldProcess('bthserv', 'Stop and disable Bluetooth')) {
+                  Stop-Service bthserv -Force
+                  Set-Service bthserv -StartupType Disabled
+              }
+          }

@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278242 - The Windows Server 2025 "Act as part of the operating system" user right must not be assigned
+    to any groups or accounts.
+  when:
+    - win25_stig_v_278242 | bool
+    - '''V-278242'' not in win25_stig_exceptions'
+  tags:
+    - V-278242
+    - CAT1
+  block:
+    - name: The Windows Server 2025 "Act as part of the operating system" user right must not be assigned to any
+        groups or accounts.
+      ansible.windows.win_user_right:
+        name: SeTcbPrivilege
+        users: []
+        action: set

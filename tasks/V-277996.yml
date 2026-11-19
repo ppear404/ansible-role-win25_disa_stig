@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-277996 - Windows Server 2025 must have a host-based intrusion detection and prevention service (IDPS)
+    installed.
+  when:
+    - win25_stig_v_277996 | bool
+    - '''V-277996'' not in win25_stig_exceptions'
+  tags:
+    - V-277996
+    - CAT2
+  block:
+    - name: V-277996 - Record required site remediation or manual review
+      ansible.builtin.set_fact:
+        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-277996''] }}'
+      when: not (win25_stig_manual_reviews.get('V-277996', {}).get('Valid', false) | bool)

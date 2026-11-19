@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-277995 - Windows Server 2025 must use an antivirus program.
+  when:
+    - win25_stig_v_277995 | bool
+    - win25_stig_manage_defender
+    - '''V-277995'' not in win25_stig_exceptions'
+  tags:
+    - V-277995
+    - CAT2
+  block:
+    - name: Windows Server 2025 must use an antivirus program.
+      ansible.windows.win_feature:
+        name: Windows-Defender
+        state: present
+      notify: Record Windows restart requirement

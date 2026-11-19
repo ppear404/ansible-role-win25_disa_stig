@@ -1,0 +1,49 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Validate the approved environment time source
+  ansible.builtin.assert:
+    that:
+      - win25_stig_time_source is string
+      - win25_stig_time_source is match('^[A-Za-z0-9][A-Za-z0-9.:-]*$')
+    fail_msg: Set win25_stig_time_source to a single approved hostname or IP without flags or whitespace.
+- name: Configure the approved Windows NTP source and enable the NTP client
+  ansible.windows.win_regedit:
+    path: '{{ item.path }}'
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    type: '{{ item.type }}'
+  loop:
+    - path: HKLM:\SYSTEM\CurrentControlSet\Services\W32Time\Parameters
+      name: Type
+      data: NTP
+      type: string
+    - path: HKLM:\SYSTEM\CurrentControlSet\Services\W32Time\Parameters
+      name: NtpServer
+      data: '{{ win25_stig_time_source }},0x8'
+      type: string
+    - path: HKLM:\SOFTWARE\Policies\Microsoft\W32Time\Parameters
+      name: Type
+      data: NTP
+      type: string
+    - path: HKLM:\SOFTWARE\Policies\Microsoft\W32Time\Parameters
+      name: NtpServer
+      data: '{{ win25_stig_time_source }},0x8'
+      type: string
+    - path: HKLM:\SYSTEM\CurrentControlSet\Services\W32Time\TimeProviders\NtpClient
+      name: Enabled
+      data: 1
+      type: dword
+    - path: HKLM:\SOFTWARE\Policies\Microsoft\W32Time\TimeProviders\NtpClient
+      name: Enabled
+      data: 1
+      type: dword
+  notify: Restart Windows Time
+  loop_control:
+    label: '{{ item.path }} / {{ item.name }}'
+- name: Keep Windows Time enabled and running
+  ansible.windows.win_service:
+    name: W32Time
+    start_mode: auto
+    state: started
+- name: Apply time configuration before reviewing the effective settings
+  ansible.builtin.meta: flush_handlers

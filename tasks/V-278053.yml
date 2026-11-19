@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278053 - Windows Server 2025 must be configured to audit Detailed Tracking - Plug and Play Events successes.
+  when:
+    - win25_stig_v_278053 | bool
+    - '''V-278053'' not in win25_stig_exceptions'
+  tags:
+    - V-278053
+    - CAT2
+  block:
+    - name: Windows Server 2025 must be configured to audit Detailed Tracking - Plug and Play Events successes.
+      ansible.windows.win_audit_policy_system:
+        subcategory: Plug and Play Events
+        audit_type:
+          - success

@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-278193 - Windows Server 2025 must have the DoW Interoperability Root Certificate Authority (CA) cross-certificates
+    installed in the Untrusted Certificates Store on unclassified systems.
+  when:
+    - win25_stig_v_278193 | bool
+    - '''V-278193'' not in win25_stig_exceptions'
+    - win25_stig_unclassified | bool
+  tags:
+    - V-278193
+    - CAT2
+  block:
+    - name: V-278193 - Prepare validated public certificates
+      ansible.builtin.import_tasks: certificates_prepare.yml
+      vars:
+        win25_stig_certificate_control: V-278193
+    - name: V-278193 - Remove managed cross-certificates from trusted stores
+      ansible.windows.win_certificate_store:
+        thumbprint: '{{ item.0.thumbprint }}'
+        store_location: '{{ item.1 }}'
+        store_name: '{{ item.2 }}'
+        state: absent
+      loop: '{{ win25_stig_selected_certificates | product([''LocalMachine'', ''CurrentUser''], [''Root'', ''CertificateAuthority''])
+        | list }}'
+      loop_control:
+        label: '{{ item.0.file }} / {{ item.1 }} / {{ item.2 }}'
+    - name: V-278193 - Install certificates in the required stores
+      ansible.windows.win_certificate_store:
+        path: '{{ win25_stig_certificate_directory }}\{{ item.0.file }}'
+        store_location: '{{ item.1 }}'
+        store_name: Disallowed
+        state: present
+      loop: '{{ win25_stig_selected_certificates | product([''LocalMachine'', ''CurrentUser'']) | list }}'
+      loop_control:
+        label: '{{ item.0.file }} / {{ item.1 }}'

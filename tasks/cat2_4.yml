@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: V-285315 - Include control tasks
+  ansible.builtin.import_tasks: V-285315.yml
+  tags:
+    - V-285315
+    - CAT2
+- name: V-285317 - Include control tasks
+  ansible.builtin.import_tasks: V-285317.yml
+  tags:
+    - V-285317
+    - CAT2
+- name: V-285318 - Include control tasks
+  ansible.builtin.import_tasks: V-285318.yml
+  tags:
+    - V-285318
+    - CAT2
+- name: V-285319 - Include control tasks
+  ansible.builtin.import_tasks: V-285319.yml
+  tags:
+    - V-285319
+    - CAT2
+- name: V-285320 - Include control tasks
+  ansible.builtin.import_tasks: V-285320.yml
+  tags:
+    - V-285320
+    - CAT2
+- name: V-285321 - Include control tasks
+  ansible.builtin.import_tasks: V-285321.yml
+  tags:
+    - V-285321
+    - CAT2
+- name: V-285322 - Include control tasks
+  ansible.builtin.import_tasks: V-285322.yml
+  tags:
+    - V-285322
+    - CAT2
+- name: V-285323 - Include control tasks
+  ansible.builtin.import_tasks: V-285323.yml
+  tags:
+    - V-285323
+    - CAT2
+- name: V-289259 - Include control tasks
+  ansible.builtin.import_tasks: V-289259.yml
+  tags:
+    - V-289259
+    - CAT2
