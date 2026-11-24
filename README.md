@@ -1,7 +1,5 @@
 # Windows Server 2025 DISA STIG
 
-> Public release preparation: use the clean snapshot described in [PUBLICATION.md](PUBLICATION.md). The development Git history contains private assessment artifacts and must not be pushed to a public remote.
-
 Ansible role based on the **Windows Server 2025 V1R4** manual XCCDF supplied in
 `files/disa_stigs`. It follows the neighboring roles' category and vulnerability
 file structure. Every one of the benchmark's 291 controls has a task file, a
