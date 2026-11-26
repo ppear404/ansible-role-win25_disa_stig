@@ -8,7 +8,11 @@
     - V-278029
     - CAT3
   block:
-    - name: V-278029 - Record required site remediation or manual review
-      ansible.builtin.set_fact:
-        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278029''] }}'
-      when: not (win25_stig_manual_reviews.get('V-278029', {}).get('Valid', false) | bool)
+    - name: Configure the explicitly supplied NTP peer
+      ansible.builtin.import_tasks: configure_time_source.yml
+      when:
+        - not (win25_stig_uses_domain_time | bool)
+        - win25_stig_time_source != ''
+    - name: Configure domain hierarchy synchronization
+      ansible.builtin.import_tasks: configure_domain_time.yml
+      when: win25_stig_uses_domain_time | bool

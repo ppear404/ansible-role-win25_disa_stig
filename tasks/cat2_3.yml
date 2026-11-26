@@ -220,11 +220,6 @@
   tags:
     - V-278239
     - CAT2
-- name: V-278240 - Include control tasks
-  ansible.builtin.import_tasks: V-278240.yml
-  tags:
-    - V-278240
-    - CAT2
 - name: V-278241 - Include control tasks
   ansible.builtin.import_tasks: V-278241.yml
   tags:

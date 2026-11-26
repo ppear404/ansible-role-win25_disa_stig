@@ -1583,7 +1583,7 @@ win25_stig_control_manifest:
   V-278029:
     title: The Windows Server 2025 time service must synchronize with an appropriate DoW time source.
     severity: low
-    implementation: manual
+    implementation: automated
     conditions: []
     check: 'Review the Windows time service configuration.
 
@@ -4455,7 +4455,7 @@ win25_stig_control_manifest:
   V-278144:
     title: Windows Server 2025 domain controllers must run on a machine dedicated to that function.
     severity: medium
-    implementation: assessed
+    implementation: manual
     conditions:
       - win25_stig_is_dc
     check: "This applies to domain controllers, it is not applicable for other systems.\n\nReview the installed\
@@ -4502,7 +4502,7 @@ win25_stig_control_manifest:
     title: Windows Server 2025 directory data (outside the root DSE) of a nonpublic directory must be configured
       to prevent anonymous access.
     severity: high
-    implementation: assessed
+    implementation: manual
     conditions:
       - win25_stig_is_dc
     check: "This applies to domain controllers. It is not applicable for other systems.\n\nOpen command prompt (not\
@@ -5443,7 +5443,7 @@ win25_stig_control_manifest:
   V-278159:
     title: Windows Server 2025 domain controllers must have a PKI server certificate.
     severity: medium
-    implementation: assessed
+    implementation: manual
     conditions:
       - win25_stig_is_dc
     check: 'This applies to domain controllers. It is not applicable for other systems.

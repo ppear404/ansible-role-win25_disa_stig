@@ -5,87 +5,6 @@
   tags:
     - V-278090
     - CAT2
-- name: V-278133 - Include control tasks
-  ansible.builtin.import_tasks: V-278133.yml
-  tags:
-    - V-278133
-    - CAT2
-- name: V-278134 - Include control tasks
-  ansible.builtin.import_tasks: V-278134.yml
-  tags:
-    - V-278134
-    - CAT2
-- name: V-278135 - Include control tasks
-  ansible.builtin.import_tasks: V-278135.yml
-  tags:
-    - V-278135
-    - CAT2
-- name: V-278136 - Include control tasks
-  ansible.builtin.import_tasks: V-278136.yml
-  tags:
-    - V-278136
-    - CAT2
-- name: V-278137 - Include control tasks
-  ansible.builtin.import_tasks: V-278137.yml
-  tags:
-    - V-278137
-    - CAT2
-- name: V-278143 - Include control tasks
-  ansible.builtin.import_tasks: V-278143.yml
-  tags:
-    - V-278143
-    - CAT2
-- name: V-278144 - Include control tasks
-  ansible.builtin.import_tasks: V-278144.yml
-  tags:
-    - V-278144
-    - CAT2
-- name: V-278145 - Include control tasks
-  ansible.builtin.import_tasks: V-278145.yml
-  tags:
-    - V-278145
-    - CAT2
-- name: Install Group Policy Management for the V-278148 assessment
-  ansible.windows.win_feature:
-    name: GPMC
-    state: present
-  when:
-    - win25_stig_is_dc
-    - win25_stig_v_278148 | bool
-    - "'V-278148' not in win25_stig_exceptions"
-  tags:
-    - V-278148
-    - CAT2
-- name: V-278148 - Include control tasks
-  ansible.builtin.import_tasks: V-278148.yml
-  tags:
-    - V-278148
-    - CAT2
-- name: V-278149 - Include control tasks
-  ansible.builtin.import_tasks: V-278149.yml
-  tags:
-    - V-278149
-    - CAT2
-- name: V-278150 - Include control tasks
-  ansible.builtin.import_tasks: V-278150.yml
-  tags:
-    - V-278150
-    - CAT2
-- name: V-278151 - Include control tasks
-  ansible.builtin.import_tasks: V-278151.yml
-  tags:
-    - V-278151
-    - CAT2
-- name: V-278152 - Include control tasks
-  ansible.builtin.import_tasks: V-278152.yml
-  tags:
-    - V-278152
-    - CAT2
-- name: V-278153 - Include control tasks
-  ansible.builtin.import_tasks: V-278153.yml
-  tags:
-    - V-278153
-    - CAT2
 - name: V-278154 - Include control tasks
   ansible.builtin.import_tasks: V-278154.yml
   tags:
@@ -110,16 +29,6 @@
   ansible.builtin.import_tasks: V-278158.yml
   tags:
     - V-278158
-    - CAT2
-- name: V-278159 - Include control tasks
-  ansible.builtin.import_tasks: V-278159.yml
-  tags:
-    - V-278159
-    - CAT2
-- name: V-278162 - Include control tasks
-  ansible.builtin.import_tasks: V-278162.yml
-  tags:
-    - V-278162
     - CAT2
 - name: V-278163 - Include control tasks
   ansible.builtin.import_tasks: V-278163.yml
@@ -165,11 +74,6 @@
   ansible.builtin.import_tasks: V-278171.yml
   tags:
     - V-278171
-    - CAT2
-- name: V-278173 - Include control tasks
-  ansible.builtin.import_tasks: V-278173.yml
-  tags:
-    - V-278173
     - CAT2
 - name: V-278174 - Include control tasks
   ansible.builtin.import_tasks: V-278174.yml

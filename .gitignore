@@ -12,10 +12,15 @@ ansible.cfg
 id_rsa*
 id_ed25519*
 
-# Private assessments and validation evidence.
+# Historical local assessment artifacts.
 .files/
 files/cklbs/
 tests/evidence/
+
+# ansible run related
+.ansible
+.ansible-tmp
+.files
 
 # Locally supplied upstream reference/evaluator distributions.
 files/disa_stigs/

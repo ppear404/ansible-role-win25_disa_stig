@@ -345,5 +345,5 @@ win25_stig_management_remote_addresses: any
 win25_stig_unclassified: true
 win25_stig_certificate_directory: 'C:\ProgramData\win25-stig\certificates'
 
-# Approved environment NTP hostname/IP. Blank leaves Windows Time configuration unchanged.
+# NTP peer for standalone servers and the PDC emulator. Blank leaves their time settings unchanged.
 win25_stig_time_source: ''

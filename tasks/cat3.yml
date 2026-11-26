@@ -1,10 +1,5 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278002 - Include control tasks
-  ansible.builtin.import_tasks: V-278002.yml
-  tags:
-    - V-278002
-    - CAT3
 - name: V-278029 - Include control tasks
   ansible.builtin.import_tasks: V-278029.yml
   tags:
@@ -50,7 +45,3 @@
   tags:
     - V-278231
     - CAT3
-
-- name: Import controls for domain-joined Windows servers
-  ansible.builtin.import_tasks: domain_joined_cat3.yml
-  when: win25_stig_domain_joined | bool

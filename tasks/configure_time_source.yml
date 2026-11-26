@@ -45,5 +45,3 @@
     name: W32Time
     start_mode: auto
     state: started
-- name: Apply time configuration before reviewing the effective settings
-  ansible.builtin.meta: flush_handlers

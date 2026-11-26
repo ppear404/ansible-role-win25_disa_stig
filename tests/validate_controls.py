@@ -7,6 +7,7 @@ import subprocess
 import tarfile
 
 from jinja2 import Environment
+from lxml import etree
 import unittest
 import xml.etree.ElementTree as ET
 
@@ -41,7 +42,6 @@ class BenchmarkTests(unittest.TestCase):
 
     def test_complete_benchmark_coverage(self):
         self.assertEqual(set(self.groups), set(self.manifest))
-        self.assertEqual(set(self.groups), {p.stem for p in (ROOT / 'tasks').glob('V-*.yml')})
         for control, group in self.groups.items():
             with self.subTest(control=control):
                 rule = group.find('x:Rule', NS)
@@ -68,7 +68,10 @@ class BenchmarkTests(unittest.TestCase):
 
         imports = []
         verify_imports('main.yml')
-        self.assertCountEqual(imports, self.groups)
+        automated = {control for control, data in self.manifest.items()
+                     if data['implementation'] == 'automated'}
+        self.assertEqual(automated, {path.stem for path in (ROOT / 'tasks').glob('V-*.yml')})
+        self.assertCountEqual(imports, automated)
 
     def test_audit_controls_do_not_undo_each_other(self):
         policies = {}
@@ -86,12 +89,16 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual(policies['Registry'], {'success', 'failure'})
         self.assertEqual(policies['Credential Validation'], {'success', 'failure'})
 
-    def test_manual_controls_do_not_claim_compliance(self):
-        for control, data in self.manifest.items():
-            if data['implementation'] == 'manual':
-                body = load('tasks/' + control + '.yml')[0]['block']
-                self.assertTrue(all('ansible.builtin.set_fact' in task for task in body))
-                self.assertIn(control, str(body))
+    def test_time_remediation_uses_standard_control_selection(self):
+        time = load('tasks/V-278029.yml')[0]
+        self.assertEqual(set(time['tags']), {'CAT3', 'V-278029'})
+        self.assertIn('win25_stig_v_278029 | bool', time['when'])
+        self.assertIn("'V-278029' not in win25_stig_exceptions", time['when'])
+        ntp, domain = time['block']
+        self.assertEqual(ntp['ansible.builtin.import_tasks'], 'configure_time_source.yml')
+        self.assertEqual(ntp['when'], ['not (win25_stig_uses_domain_time | bool)', "win25_stig_time_source != ''"])
+        self.assertEqual(domain['ansible.builtin.import_tasks'], 'configure_domain_time.yml')
+        self.assertEqual(domain['when'], 'win25_stig_uses_domain_time | bool')
 
     def test_default_notice_wording_matches_bundled_evaluator(self):
         with tarfile.open(self.archive, 'r:gz') as package:
@@ -106,20 +113,27 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual(re.sub(r"\s+", " ", actual).strip(), re.sub(r"\s+", " ", expected).strip())
 
     def test_legal_notice_answer_file_is_scoped_and_conditional(self):
-        tree = ET.parse(ROOT / 'files/answer_files/WinServer2025_AnswerFile.xml')
+        path = ROOT / 'files/answer_files/WinServer2025_AnswerFile.xml'
+        tree = ET.parse(path)
         root = tree.getroot()
         self.assertEqual(root.attrib['Name'], 'WinServer2025')
         rule_id = self.groups['V-278207'].find('x:Rule', NS).attrib['id']
-        self.assertEqual(len([v for v in root.findall('Vuln') if v.attrib['ID'] == rule_id]), 1)
+        self.assertEqual([v.attrib['ID'] for v in root.findall('Vuln')], [rule_id])
         answers = root.findall("Vuln[@ID='" + rule_id + "']/AnswerKey/Answer")
         self.assertEqual({a.attrib['ExpectedStatus'] for a in answers}, {'O', 'NF'})
-        source = (ROOT / 'files/answer_files/Validate-LegalNotice.ps1').read_text().strip()
+        self.assertEqual(len(answers), 2)
+        source = answers[0].findtext('ValidationCode').strip()
         for answer in answers:
+            self.assertEqual(set(answer.attrib), {'ExpectedStatus', 'Index'})
             self.assertEqual(answer.findtext('ValidationCode').strip(), source)
-            self.assertEqual(answer.findtext('ValidTrueStatus'), 'NF')
-            self.assertEqual(answer.findtext('ValidFalseStatus'), 'O')
+            self.assertEqual(answer.findtext('ValidTrueStatus'), '')
+            self.assertEqual(answer.findtext('ValidFalseStatus'), '')
         approved = re.search(r"\$approved = @'\n(.*?)\n'@", source, re.S).group(1)
         self.assertEqual(approved, self.defaults['win25_stig_legal_notice'])
+        with tarfile.open(self.archive, 'r:gz') as package:
+            schema = next(member for member in package
+                          if member.name.endswith('/xml/Schema_AnswerFile.xsd'))
+            etree.XMLSchema(etree.parse(package.extractfile(schema))).assertValid(etree.parse(str(path)))
 
     def test_domain_member_settings_skip_standalone_servers(self):
         for control in ['V-278178', 'V-278179', 'V-278181']:

@@ -4,34 +4,6 @@
   ansible.builtin.import_tasks: preflight.yml
   tags:
     - always
-- name: Deploy procedures and review controls requiring site evidence
-  ansible.builtin.import_tasks: manual_reviews.yml
-  tags:
-    - CAT1
-    - CAT2
-    - CAT3
-    - V-277982
-    - V-277983
-    - V-277985
-    - V-277987
-    - V-277989
-    - V-277990
-    - V-277991
-    - V-277992
-    - V-277996
-    - V-278006
-    - V-278009
-    - V-278010
-    - V-278011
-    - V-278013
-    - V-278014
-    - V-278029
-    - V-278041
-    - V-278042
-    - V-278106
-    - V-278177
-    - V-278240
-
 - name: Install OpenSSH before configuring SSH controls
   ansible.builtin.import_tasks: V-285313.yml
   when: (win25_stig_cat1 | bool and win25_stig_v_285316 | bool) or win25_stig_cat2 | bool
@@ -122,7 +94,17 @@
   ansible.builtin.meta: flush_handlers
   tags:
     - always
-- name: Report remaining site requirements
-  ansible.builtin.import_tasks: report.yml
+- name: Show configured remediation exceptions and restart requirement
+  ansible.builtin.debug:
+    msg:
+      documented_exceptions: '{{ win25_stig_exceptions }}'
+      restart_required: '{{ win25_stig_restart_required }}'
+  tags:
+    - always
+- name: Reboot when explicitly enabled
+  ansible.windows.win_reboot: null
+  when:
+    - win25_stig_reboot | bool
+    - win25_stig_restart_required | bool
   tags:
     - always

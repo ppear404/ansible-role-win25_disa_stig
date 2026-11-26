@@ -14,8 +14,3 @@
         key: ClearTextPassword
         value: 0
       when: not win25_stig_is_dc
-    - name: V-278040 - Report required domain GPO configuration
-      ansible.builtin.set_fact:
-        win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278040 (configure domain account policy
-          in the authoritative GPO)''] }}'
-      when: win25_stig_is_dc

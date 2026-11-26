@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT-0
 ---
 - name: Validate the conditional legal-notice answer file on Windows
-  hosts: win25
+  hosts: '{{ win25_stig_test_hosts | default("win25") }}'
   gather_facts: false
   vars_files:
     - ../defaults/main.yml
@@ -9,11 +9,12 @@
     - name: Exercise positive, negative, and live legal-notice validation
       ansible.windows.win_powershell:
         parameters:
-          Code: "{{ lookup('ansible.builtin.file', playbook_dir + '/../files/answer_files/Validate-LegalNotice.ps1') }}"
+          AnswerFile: "{{ lookup('ansible.builtin.file', playbook_dir + '/../files/answer_files/WinServer2025_AnswerFile.xml') }}"
           Approved: '{{ win25_stig_legal_notice }}'
         script: |
-          param([string]$Code, [string]$Approved)
+          param([string]$AnswerFile, [string]$Approved)
           $Ansible.Changed = $false
+          $Code = ([xml]$AnswerFile).SelectSingleNode('//ValidationCode').InnerText
           $tokens = $null
           $errors = $null
           $ast = [System.Management.Automation.Language.Parser]::ParseInput($Code, [ref]$tokens, [ref]$errors)
@@ -51,6 +52,6 @@
           }
       register: win25_notice_validation
 
-    - name: Report answer-file validation evidence
+    - name: Show legal-notice test results
       ansible.builtin.debug:
         var: win25_notice_validation.result

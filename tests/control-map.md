@@ -2,43 +2,44 @@
 
 All 291 benchmark controls are listed. Automated means a remediation implementation exists;
 applicability, opt-in settings, effective GPOs, and runtime state still require assessment.
+Evaluate-STIG and the responsible reviewers assess the manual controls.
 
 | Control | Category | Implementation | Requirement |
 | --- | --- | --- | --- |
-| [V-277982](../tasks/V-277982.yml) | II | manual | Windows Server 2025 must install security-relevant software updates within 30 days unless the time period is directed by an authoritative source (e.g., IAVM, CTOs, DTMs, STIGs). |
-| [V-277983](../tasks/V-277983.yml) | II | manual | Windows Server 2025 must prohibit the use or connection of unauthorized hardware components. |
-| [V-277985](../tasks/V-277985.yml) | II | manual | Windows Server 2025 users with administrative privileges must have separate accounts for administrative duties and normal operational tasks. |
-| [V-277986](../tasks/V-277986.yml) | II | manual | Windows Server 2025 passwords for the built-in Administrator account must be changed at least every 180 days. |
-| [V-277987](../tasks/V-277987.yml) | I | manual | Windows Server 2025 administrative accounts must not be used with applications that access the internet, such as web browsers, or with potential internet sources, such as email. |
-| [V-277988](../tasks/V-277988.yml) | II | manual | Windows Server 2025 members of the Backup Operators group must have separate accounts for backup duties and normal operational tasks. |
-| [V-277989](../tasks/V-277989.yml) | II | manual | Windows Server 2025 manually managed application account passwords must be at least 15 characters in length. |
-| [V-277990](../tasks/V-277990.yml) | II | manual | Windows Server 2025 manually managed application account passwords must be changed at least annually or when a system administrator with knowledge of the password leaves the organization. |
-| [V-277991](../tasks/V-277991.yml) | II | manual | Windows Server 2025 shared user accounts must not be permitted. |
-| [V-277992](../tasks/V-277992.yml) | II | manual | Windows Server 2025 must employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs. |
-| [V-277993](../tasks/V-277993.yml) | II | manual | Windows Server 2025 systems must have a Trusted Platform Module (TPM) enabled and ready for use. |
+| V-277982 | II | manual | Windows Server 2025 must install security-relevant software updates within 30 days unless the time period is directed by an authoritative source (e.g., IAVM, CTOs, DTMs, STIGs). |
+| V-277983 | II | manual | Windows Server 2025 must prohibit the use or connection of unauthorized hardware components. |
+| V-277985 | II | manual | Windows Server 2025 users with administrative privileges must have separate accounts for administrative duties and normal operational tasks. |
+| V-277986 | II | manual | Windows Server 2025 passwords for the built-in Administrator account must be changed at least every 180 days. |
+| V-277987 | I | manual | Windows Server 2025 administrative accounts must not be used with applications that access the internet, such as web browsers, or with potential internet sources, such as email. |
+| V-277988 | II | manual | Windows Server 2025 members of the Backup Operators group must have separate accounts for backup duties and normal operational tasks. |
+| V-277989 | II | manual | Windows Server 2025 manually managed application account passwords must be at least 15 characters in length. |
+| V-277990 | II | manual | Windows Server 2025 manually managed application account passwords must be changed at least annually or when a system administrator with knowledge of the password leaves the organization. |
+| V-277991 | II | manual | Windows Server 2025 shared user accounts must not be permitted. |
+| V-277992 | II | manual | Windows Server 2025 must employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs. |
+| V-277993 | II | manual | Windows Server 2025 systems must have a Trusted Platform Module (TPM) enabled and ready for use. |
 | [V-277995](../tasks/V-277995.yml) | II | automated | Windows Server 2025 must use an antivirus program. |
-| [V-277996](../tasks/V-277996.yml) | II | manual | Windows Server 2025 must have a host-based intrusion detection and prevention service (IDPS) installed. |
-| [V-277997](../tasks/V-277997.yml) | I | manual | Windows Server 2025 local volumes must use a format that supports New Technology File System (NTFS) attributes. |
-| [V-277998](../tasks/V-277998.yml) | II | manual | Windows Server 2025 permissions for the system drive root directory (usually C:\) must conform to minimum requirements. |
-| [V-277999](../tasks/V-277999.yml) | II | manual | Windows Server 2025 permissions for program file directories must conform to minimum requirements. |
-| [V-278000](../tasks/V-278000.yml) | II | manual | Windows Server 2025 permissions for the Windows installation directory must conform to minimum requirements. |
-| [V-278001](../tasks/V-278001.yml) | II | manual | Windows Server 2025 default permissions for the HKEY_LOCAL_MACHINE registry hive must be maintained. |
-| [V-278002](../tasks/V-278002.yml) | III | manual | Windows Server 2025 nonadministrative accounts or groups must only have print permissions on printer shares. |
-| [V-278003](../tasks/V-278003.yml) | II | manual | Outdated or unused accounts on Windows Server 2025 must be removed or disabled. |
+| V-277996 | II | manual | Windows Server 2025 must have a host-based intrusion detection and prevention service (IDPS) installed. |
+| V-277997 | I | manual | Windows Server 2025 local volumes must use a format that supports New Technology File System (NTFS) attributes. |
+| V-277998 | II | manual | Windows Server 2025 permissions for the system drive root directory (usually C:\) must conform to minimum requirements. |
+| V-277999 | II | manual | Windows Server 2025 permissions for program file directories must conform to minimum requirements. |
+| V-278000 | II | manual | Windows Server 2025 permissions for the Windows installation directory must conform to minimum requirements. |
+| V-278001 | II | manual | Windows Server 2025 default permissions for the HKEY_LOCAL_MACHINE registry hive must be maintained. |
+| V-278002 | III | manual | Windows Server 2025 nonadministrative accounts or groups must only have print permissions on printer shares. |
+| V-278003 | II | manual | Outdated or unused accounts on Windows Server 2025 must be removed or disabled. |
 | [V-278004](../tasks/V-278004.yml) | II | automated | Windows Server 2025 accounts must require passwords. |
 | [V-278005](../tasks/V-278005.yml) | II | automated | Windows Server 2025 passwords must be configured to expire. |
-| [V-278006](../tasks/V-278006.yml) | II | manual | Windows Server 2025 system files must be monitored for unauthorized changes. |
-| [V-278007](../tasks/V-278007.yml) | II | manual | Windows Server 2025 nonsystem-created file shares must limit access to groups that require it. |
-| [V-278008](../tasks/V-278008.yml) | II | manual | Windows Server 2025 must have software certificate installation files removed. |
-| [V-278009](../tasks/V-278009.yml) | I | manual | Windows Server 2025 systems requiring data-at-rest protections must employ cryptographic mechanisms to prevent unauthorized disclosure and modification of the information at rest. |
-| [V-278010](../tasks/V-278010.yml) | II | manual | Windows Server 2025 must implement protection methods such as TLS, encrypted VPNs, or IPsec if the data owner has a strict requirement for ensuring data integrity and confidentiality is maintained at every step of the data transfer and handling process. |
-| [V-278011](../tasks/V-278011.yml) | II | manual | Windows Server 2025 must have the roles and features required by the system documented. |
+| V-278006 | II | manual | Windows Server 2025 system files must be monitored for unauthorized changes. |
+| V-278007 | II | manual | Windows Server 2025 nonsystem-created file shares must limit access to groups that require it. |
+| V-278008 | II | manual | Windows Server 2025 must have software certificate installation files removed. |
+| V-278009 | I | manual | Windows Server 2025 systems requiring data-at-rest protections must employ cryptographic mechanisms to prevent unauthorized disclosure and modification of the information at rest. |
+| V-278010 | II | manual | Windows Server 2025 must implement protection methods such as TLS, encrypted VPNs, or IPsec if the data owner has a strict requirement for ensuring data integrity and confidentiality is maintained at every step of the data transfer and handling process. |
+| V-278011 | II | manual | Windows Server 2025 must have the roles and features required by the system documented. |
 | [V-278012](../tasks/V-278012.yml) | II | automated | Windows Server 2025 must have a host-based firewall installed and enabled. |
-| [V-278013](../tasks/V-278013.yml) | II | manual | Windows Server 2025 must automatically remove or disable temporary user accounts after 72 hours. |
-| [V-278014](../tasks/V-278014.yml) | II | manual | Windows Server 2025 must automatically remove or disable emergency accounts after the crisis is resolved or within 72 hours. |
+| V-278013 | II | manual | Windows Server 2025 must automatically remove or disable temporary user accounts after 72 hours. |
+| V-278014 | II | manual | Windows Server 2025 must automatically remove or disable emergency accounts after the crisis is resolved or within 72 hours. |
 | [V-278015](../tasks/V-278015.yml) | II | automated | Windows Server 2025 must not have the Fax Server role installed. |
 | [V-278016](../tasks/V-278016.yml) | II | automated | Windows Server 2025 must not have the Microsoft FTP service installed unless required by the organization. |
-| [V-278017](../tasks/V-278017.yml) | II | manual | Windows Server 2025 must not have Wi-Fi enabled unless required by the organization. |
+| V-278017 | II | manual | Windows Server 2025 must not have Wi-Fi enabled unless required by the organization. |
 | [V-278018](../tasks/V-278018.yml) | II | automated | Windows Server 2025 must not have Bluetooth enabled unless required by the organization. |
 | [V-278019](../tasks/V-278019.yml) | II | automated | Windows Server 2025 must not have the Peer Name Resolution Protocol installed. |
 | [V-278020](../tasks/V-278020.yml) | II | automated | Windows Server 2025 must not have Simple TCP/IP Services installed. |
@@ -48,12 +49,12 @@ applicability, opt-in settings, effective GPOs, and runtime state still require 
 | [V-278024](../tasks/V-278024.yml) | II | automated | Windows Server 2025 must have the Server Message Block (SMB) v1 protocol disabled on the SMB server. |
 | [V-278025](../tasks/V-278025.yml) | II | automated | Windows Server 2025 must have the Server Message Block (SMB) v1 protocol disabled on the SMB client. |
 | [V-278026](../tasks/V-278026.yml) | II | automated | Windows Server 2025 must not have Windows PowerShell 2.0 installed. |
-| [V-278027](../tasks/V-278027.yml) | II | manual | Windows Server 2025 FTP servers must be configured to prevent anonymous logons. |
-| [V-278028](../tasks/V-278028.yml) | II | manual | Windows Server 2025 FTP servers must be configured to prevent access to the system drive. |
-| [V-278029](../tasks/V-278029.yml) | III | manual | The Windows Server 2025 time service must synchronize with an appropriate DoW time source. |
-| [V-278030](../tasks/V-278030.yml) | II | manual | Windows Server 2025 must have orphaned security identifiers (SIDs) removed from user rights. |
-| [V-278031](../tasks/V-278031.yml) | II | manual | Windows Server 2025 systems must have Unified Extensible Firmware Interface (UEFI) firmware and be configured to run in UEFI mode, not Legacy BIOS. |
-| [V-278032](../tasks/V-278032.yml) | II | manual | Windows Server 2025 must have Secure Boot enabled. |
+| V-278027 | II | manual | Windows Server 2025 FTP servers must be configured to prevent anonymous logons. |
+| V-278028 | II | manual | Windows Server 2025 FTP servers must be configured to prevent access to the system drive. |
+| [V-278029](../tasks/V-278029.yml) | III | automated | The Windows Server 2025 time service must synchronize with an appropriate DoW time source. |
+| V-278030 | II | manual | Windows Server 2025 must have orphaned security identifiers (SIDs) removed from user rights. |
+| V-278031 | II | manual | Windows Server 2025 systems must have Unified Extensible Firmware Interface (UEFI) firmware and be configured to run in UEFI mode, not Legacy BIOS. |
+| V-278032 | II | manual | Windows Server 2025 must have Secure Boot enabled. |
 | [V-278033](../tasks/V-278033.yml) | II | automated | Windows Server 2025 account lockout duration must be configured to 15 minutes or greater. |
 | [V-278034](../tasks/V-278034.yml) | II | automated | Windows Server 2025 must have the number of allowed bad logon attempts configured to three or less. |
 | [V-278035](../tasks/V-278035.yml) | II | automated | Windows Server 2025 must have the period of time before the bad logon counter is reset configured to 15 minutes or greater. |
@@ -62,12 +63,12 @@ applicability, opt-in settings, effective GPOs, and runtime state still require 
 | [V-278038](../tasks/V-278038.yml) | II | automated | Windows Server 2025 minimum password age must be configured to at least one day. |
 | [V-278039](../tasks/V-278039.yml) | II | automated | Windows Server 2025 must have the built-in Windows password complexity policy enabled. |
 | [V-278040](../tasks/V-278040.yml) | I | automated | Windows Server 2025 reversible password encryption must be disabled. |
-| [V-278041](../tasks/V-278041.yml) | II | manual | Windows Server 2025 audit records must be backed up to a different system or media than the system being audited. |
-| [V-278042](../tasks/V-278042.yml) | II | manual | Windows Server 2025 must, at a minimum, off-load audit records of interconnected systems in real time and off-load stand-alone or nondomain-joined systems weekly. |
-| [V-278043](../tasks/V-278043.yml) | II | manual | Windows Server 2025 permissions for the Application event log must prevent access by nonprivileged accounts. |
-| [V-278044](../tasks/V-278044.yml) | II | manual | Windows Server 2025 permissions for the Security event log must prevent access by nonprivileged accounts. |
-| [V-278045](../tasks/V-278045.yml) | II | manual | Windows Server 2025 permissions for the System event log must prevent access by nonprivileged accounts. |
-| [V-278046](../tasks/V-278046.yml) | II | manual | Windows Server 2025 Event Viewer must be protected from unauthorized modification and deletion. |
+| V-278041 | II | manual | Windows Server 2025 audit records must be backed up to a different system or media than the system being audited. |
+| V-278042 | II | manual | Windows Server 2025 must, at a minimum, off-load audit records of interconnected systems in real time and off-load stand-alone or nondomain-joined systems weekly. |
+| V-278043 | II | manual | Windows Server 2025 permissions for the Application event log must prevent access by nonprivileged accounts. |
+| V-278044 | II | manual | Windows Server 2025 permissions for the Security event log must prevent access by nonprivileged accounts. |
+| V-278045 | II | manual | Windows Server 2025 permissions for the System event log must prevent access by nonprivileged accounts. |
+| V-278046 | II | manual | Windows Server 2025 Event Viewer must be protected from unauthorized modification and deletion. |
 | [V-278047](../tasks/V-278047.yml) | II | automated | Windows Server 2025 must be configured to audit Account Logon - Credential Validation successes. |
 | [V-278048](../tasks/V-278048.yml) | II | automated | Windows Server 2025 must be configured to audit Account Logon - Credential Validation failures. |
 | [V-278049](../tasks/V-278049.yml) | II | automated | Windows Server 2025 must be configured to audit Account Management - Other Account Management Events successes. |
@@ -152,37 +153,37 @@ applicability, opt-in settings, effective GPOs, and runtime state still require 
 | [V-278129](../tasks/V-278129.yml) | II | automated | Windows Server 2025 Windows Remote Management (WinRM) service must not allow unencrypted traffic. |
 | [V-278130](../tasks/V-278130.yml) | II | automated | Windows Server 2025 Windows Remote Management (WinRM) service must not store RunAs credentials. |
 | [V-278131](../tasks/V-278131.yml) | II | automated | Windows Server 2025 must have PowerShell Transcription enabled. |
-| [V-278132](../tasks/V-278132.yml) | I | manual | Windows Server 2025 must only allow administrators responsible for the domain controller to have Administrator rights on the system. |
-| [V-278133](../tasks/V-278133.yml) | II | manual | Windows Server 2025 Kerberos user logon restrictions must be enforced. |
-| [V-278134](../tasks/V-278134.yml) | II | manual | Windows Server 2025 Kerberos service ticket maximum lifetime must be limited to 600 minutes or less. |
-| [V-278135](../tasks/V-278135.yml) | II | manual | Windows Server 2025 Kerberos user ticket lifetime must be limited to 10 hours or less. |
-| [V-278136](../tasks/V-278136.yml) | II | manual | Windows Server 2025 Kerberos policy user ticket renewal maximum lifetime must be limited to seven days or less. |
-| [V-278137](../tasks/V-278137.yml) | II | manual | Windows Server 2025 computer clock synchronization tolerance must be limited to five minutes or less. |
-| [V-278138](../tasks/V-278138.yml) | I | manual | Windows Server 2025 permissions on the Active Directory data files must only allow system administrators (SAs) access. |
-| [V-278139](../tasks/V-278139.yml) | I | manual | Windows Server 2025 Active Directory SYSVOL directory must have the proper access control permissions. |
-| [V-278140](../tasks/V-278140.yml) | I | manual | Windows Server 2025 Active Directory (AD) Group Policy Objects (GPOs) must have proper access control permissions. |
-| [V-278141](../tasks/V-278141.yml) | I | manual | Windows Server 2025 Active Directory Domain Controllers Organizational Unit (OU) object must have the proper access control permissions. |
-| [V-278142](../tasks/V-278142.yml) | I | manual | Windows Server 2025 organization created Active Directory Organizational Unit (OU) objects must have proper access control permissions. |
-| [V-278143](../tasks/V-278143.yml) | II | manual | Windows Server 2025 data files owned by users must be on a different logical partition from the directory server data files. |
-| [V-278144](../tasks/V-278144.yml) | II | assessed | Windows Server 2025 domain controllers must run on a machine dedicated to that function. |
-| [V-278145](../tasks/V-278145.yml) | II | manual | Windows Server 2025 must use separate, NSA-approved (Type 1) cryptography to protect the directory data in transit for directory service implementations at a classified confidentiality level when replication data traverses a network cleared to a lower level than the data. |
-| [V-278146](../tasks/V-278146.yml) | I | assessed | Windows Server 2025 directory data (outside the root DSE) of a nonpublic directory must be configured to prevent anonymous access. |
-| [V-278147](../tasks/V-278147.yml) | III | manual | Windows Server 2025 directory service must be configured to terminate LDAP-based network connections to the directory server after five minutes of inactivity. |
-| [V-278148](../tasks/V-278148.yml) | II | manual | Windows Server 2025 Active Directory Group Policy Objects (GPOs) must be configured with proper audit settings. |
-| [V-278149](../tasks/V-278149.yml) | II | manual | Windows Server 2025 Active Directory (AD) Domain object must be configured with proper audit settings. |
-| [V-278150](../tasks/V-278150.yml) | II | manual | Windows Server 2025 Active Directory (AD) Infrastructure object must be configured with proper audit settings. |
-| [V-278151](../tasks/V-278151.yml) | II | manual | Windows Server 2025 Active Directory (AD) Domain Controllers Organizational Unit (OU) object must be configured with proper audit settings. |
-| [V-278152](../tasks/V-278152.yml) | II | manual | Windows Server 2025 Active Directory (AD) AdminSDHolder object must be configured with proper audit settings. |
-| [V-278153](../tasks/V-278153.yml) | II | manual | Windows Server 2025 Active Directory (AD) RID Manager$ object must be configured with proper audit settings. |
+| V-278132 | I | manual | Windows Server 2025 must only allow administrators responsible for the domain controller to have Administrator rights on the system. |
+| V-278133 | II | manual | Windows Server 2025 Kerberos user logon restrictions must be enforced. |
+| V-278134 | II | manual | Windows Server 2025 Kerberos service ticket maximum lifetime must be limited to 600 minutes or less. |
+| V-278135 | II | manual | Windows Server 2025 Kerberos user ticket lifetime must be limited to 10 hours or less. |
+| V-278136 | II | manual | Windows Server 2025 Kerberos policy user ticket renewal maximum lifetime must be limited to seven days or less. |
+| V-278137 | II | manual | Windows Server 2025 computer clock synchronization tolerance must be limited to five minutes or less. |
+| V-278138 | I | manual | Windows Server 2025 permissions on the Active Directory data files must only allow system administrators (SAs) access. |
+| V-278139 | I | manual | Windows Server 2025 Active Directory SYSVOL directory must have the proper access control permissions. |
+| V-278140 | I | manual | Windows Server 2025 Active Directory (AD) Group Policy Objects (GPOs) must have proper access control permissions. |
+| V-278141 | I | manual | Windows Server 2025 Active Directory Domain Controllers Organizational Unit (OU) object must have the proper access control permissions. |
+| V-278142 | I | manual | Windows Server 2025 organization created Active Directory Organizational Unit (OU) objects must have proper access control permissions. |
+| V-278143 | II | manual | Windows Server 2025 data files owned by users must be on a different logical partition from the directory server data files. |
+| V-278144 | II | manual | Windows Server 2025 domain controllers must run on a machine dedicated to that function. |
+| V-278145 | II | manual | Windows Server 2025 must use separate, NSA-approved (Type 1) cryptography to protect the directory data in transit for directory service implementations at a classified confidentiality level when replication data traverses a network cleared to a lower level than the data. |
+| V-278146 | I | manual | Windows Server 2025 directory data (outside the root DSE) of a nonpublic directory must be configured to prevent anonymous access. |
+| V-278147 | III | manual | Windows Server 2025 directory service must be configured to terminate LDAP-based network connections to the directory server after five minutes of inactivity. |
+| V-278148 | II | manual | Windows Server 2025 Active Directory Group Policy Objects (GPOs) must be configured with proper audit settings. |
+| V-278149 | II | manual | Windows Server 2025 Active Directory (AD) Domain object must be configured with proper audit settings. |
+| V-278150 | II | manual | Windows Server 2025 Active Directory (AD) Infrastructure object must be configured with proper audit settings. |
+| V-278151 | II | manual | Windows Server 2025 Active Directory (AD) Domain Controllers Organizational Unit (OU) object must be configured with proper audit settings. |
+| V-278152 | II | manual | Windows Server 2025 Active Directory (AD) AdminSDHolder object must be configured with proper audit settings. |
+| V-278153 | II | manual | Windows Server 2025 Active Directory (AD) RID Manager$ object must be configured with proper audit settings. |
 | [V-278154](../tasks/V-278154.yml) | II | automated | Windows Server 2025 must be configured to audit Account Management - Computer Account Management successes. |
 | [V-278155](../tasks/V-278155.yml) | II | automated | Windows Server 2025 must be configured to audit DS Access - Directory Service Access successes. |
 | [V-278156](../tasks/V-278156.yml) | II | automated | Windows Server 2025 must be configured to audit DS Access - Directory Service Access failures. |
 | [V-278157](../tasks/V-278157.yml) | II | automated | Windows Server 2025 must be configured to audit DS Access - Directory Service Changes successes. |
 | [V-278158](../tasks/V-278158.yml) | II | automated | Windows Server 2025 must be configured to audit DS Access - Directory Service Changes failures. |
-| [V-278159](../tasks/V-278159.yml) | II | assessed | Windows Server 2025 domain controllers must have a PKI server certificate. |
-| [V-278160](../tasks/V-278160.yml) | I | manual | Windows Server 2025 domain Controller PKI certificates must be issued by the DoW PKI or an approved External Certificate Authority (ECA). |
-| [V-278161](../tasks/V-278161.yml) | I | manual | Windows Server 2025 PKI certificates associated with user accounts must be issued by a DoW PKI or an approved External Certificate Authority (ECA). |
-| [V-278162](../tasks/V-278162.yml) | II | manual | Windows Server 2025 Active Directory (AD) user accounts, including administrators, must be configured to require the use of a common access card (CAC), Personal Identity Verification (PIV)-compliant hardware token, or Alternate Logon Token (ALT) for user authentication. |
+| V-278159 | II | manual | Windows Server 2025 domain controllers must have a PKI server certificate. |
+| V-278160 | I | manual | Windows Server 2025 domain Controller PKI certificates must be issued by the DoW PKI or an approved External Certificate Authority (ECA). |
+| V-278161 | I | manual | Windows Server 2025 PKI certificates associated with user accounts must be issued by a DoW PKI or an approved External Certificate Authority (ECA). |
+| V-278162 | II | manual | Windows Server 2025 Active Directory (AD) user accounts, including administrators, must be configured to require the use of a common access card (CAC), Personal Identity Verification (PIV)-compliant hardware token, or Alternate Logon Token (ALT) for user authentication. |
 | [V-278163](../tasks/V-278163.yml) | II | automated | Windows Server 2025 domain controllers must require LDAP access signing. |
 | [V-278164](../tasks/V-278164.yml) | II | automated | Windows Server 2025 domain controllers must be configured to allow reset of machine account passwords. |
 | [V-278165](../tasks/V-278165.yml) | II | automated | The Windows Server 2025 "Access this computer from the network" user right must only be assigned to the Administrators, Authenticated Users, and Enterprise Domain Controllers groups on domain controllers. |
@@ -192,11 +193,11 @@ applicability, opt-in settings, effective GPOs, and runtime state still require 
 | [V-278169](../tasks/V-278169.yml) | II | automated | The Windows Server 2025 "Deny log on as a batch job" user right on domain controllers must be configured to prevent unauthenticated access. |
 | [V-278170](../tasks/V-278170.yml) | II | automated | The Windows Server 2025 "Deny log on as a service" user right must be configured to include no accounts or groups (blank) on domain controllers. |
 | [V-278171](../tasks/V-278171.yml) | II | automated | The Windows Server 2025 "Deny log on locally" user right on domain controllers must be configured to prevent unauthenticated access. |
-| [V-278173](../tasks/V-278173.yml) | II | manual | Windows Server 2025 must be configured for name-based strong mappings for certificates. |
+| V-278173 | II | manual | Windows Server 2025 must be configured for name-based strong mappings for certificates. |
 | [V-278174](../tasks/V-278174.yml) | II | automated | The Windows Server 2025 "Deny log on through Remote Desktop Services" user right on domain controllers must be configured to prevent unauthenticated access. |
 | [V-278175](../tasks/V-278175.yml) | II | automated | The Windows Server 2025 "Enable computer and user accounts to be trusted for delegation" user right must only be assigned to the Administrators group on domain controllers. |
-| [V-278176](../tasks/V-278176.yml) | II | manual | The password for the krbtgt account on a domain must be reset at least every 180 days. |
-| [V-278177](../tasks/V-278177.yml) | I | manual | Windows Server 2025 must only allow administrators responsible for the member server or stand-alone or nondomain-joined system to have Administrator rights on the system. |
+| V-278176 | II | manual | The password for the krbtgt account on a domain must be reset at least every 180 days. |
+| V-278177 | I | manual | Windows Server 2025 must only allow administrators responsible for the member server or stand-alone or nondomain-joined system to have Administrator rights on the system. |
 | [V-278178](../tasks/V-278178.yml) | II | automated | Windows Server 2025 local administrator accounts must have their privileged token filtered to prevent elevated privileges from being used over the network on domain-joined member servers. |
 | [V-278179](../tasks/V-278179.yml) | II | automated | Windows Server 2025 local users on domain-joined member servers must not be enumerated. |
 | [V-278180](../tasks/V-278180.yml) | II | automated | Windows Server 2025 must restrict unauthenticated Remote Procedure Call (RPC) clients from connecting to the RPC server on domain-joined member servers and stand-alone or nondomain-joined systems. |
@@ -210,9 +211,9 @@ applicability, opt-in settings, effective GPOs, and runtime state still require 
 | [V-278188](../tasks/V-278188.yml) | II | automated | The Windows Server 2025 "Deny log on through Remote Desktop Services" user right on domain-joined member servers must be configured to prevent access from highly privileged domain accounts and all local accounts and from unauthenticated access on all systems. |
 | [V-278189](../tasks/V-278189.yml) | II | automated | The Windows Server 2025 "Enable computer and user accounts to be trusted for delegation" user right must not be assigned to any groups or accounts on domain-joined member servers and stand-alone or nondomain-joined systems. |
 | [V-278190](../tasks/V-278190.yml) | I | automated | Windows Server 2025 must be running Credential Guard on domain-joined member servers. |
-| [V-278192](../tasks/V-278192.yml) | II | manual | Windows Server 2025 must have the DoW Root Certificate Authority (CA) certificates installed in the Trusted Root Store. |
-| [V-278193](../tasks/V-278193.yml) | II | manual | Windows Server 2025 must have the DoW Interoperability Root Certificate Authority (CA) cross-certificates installed in the Untrusted Certificates Store on unclassified systems. |
-| [V-278194](../tasks/V-278194.yml) | II | manual | Windows Server 2025 must have the US DoW CCEB Interoperability Root CA cross-certificates in the Untrusted Certificates Store on unclassified systems. |
+| [V-278192](../tasks/V-278192.yml) | II | automated | Windows Server 2025 must have the DoW Root Certificate Authority (CA) certificates installed in the Trusted Root Store. |
+| [V-278193](../tasks/V-278193.yml) | II | automated | Windows Server 2025 must have the DoW Interoperability Root Certificate Authority (CA) cross-certificates installed in the Untrusted Certificates Store on unclassified systems. |
+| [V-278194](../tasks/V-278194.yml) | II | automated | Windows Server 2025 must have the US DoW CCEB Interoperability Root CA cross-certificates in the Untrusted Certificates Store on unclassified systems. |
 | [V-278195](../tasks/V-278195.yml) | II | automated | Windows Server 2025 must have the built-in guest account disabled. |
 | [V-278196](../tasks/V-278196.yml) | I | automated | Windows Server 2025 must prevent local accounts with blank passwords from being used from the network. |
 | [V-278197](../tasks/V-278197.yml) | II | automated | The Windows Server 2025 built-in administrator account must be renamed. |
@@ -256,7 +257,7 @@ applicability, opt-in settings, effective GPOs, and runtime state still require 
 | [V-278237](../tasks/V-278237.yml) | II | automated | Windows Server 2025 User Account Control (UAC) must only elevate UIAccess applications that are installed in secure locations. |
 | [V-278238](../tasks/V-278238.yml) | II | automated | Windows Server 2025 User Account Control (UAC) must run all administrators in Admin Approval Mode, enabling UAC. |
 | [V-278239](../tasks/V-278239.yml) | II | automated | Windows Server 2025 User Account Control (UAC) must virtualize file and registry write failures to per-user locations. |
-| [V-278240](../tasks/V-278240.yml) | II | manual | Windows Server 2025 must preserve zone information when saving attachments. |
+| V-278240 | II | manual | Windows Server 2025 must preserve zone information when saving attachments. |
 | [V-278241](../tasks/V-278241.yml) | II | automated | The Windows Server 2025 "Access Credential Manager as a trusted caller" user right must not be assigned to any groups or accounts. |
 | [V-278242](../tasks/V-278242.yml) | I | automated | The Windows Server 2025 "Act as part of the operating system" user right must not be assigned to any groups or accounts. |
 | [V-278243](../tasks/V-278243.yml) | II | automated | The Windows Server 2025 "Allow log on locally" user right must only be assigned to the Administrators group. |
@@ -295,4 +296,4 @@ applicability, opt-in settings, effective GPOs, and runtime state still require 
 | [V-285321](../tasks/V-285321.yml) | II | automated | Windows Server 2025 OpenSSH private host key files must conform to minimum requirements. |
 | [V-285322](../tasks/V-285322.yml) | II | automated | Windows Server 2025 OpenSSH public host key files must conform to minimum requirements. |
 | [V-285323](../tasks/V-285323.yml) | II | automated | Windows Server 2025 OpenSSH must not allow GSSAPI authentication. |
-| [V-289259](../tasks/V-289259.yml) | II | manual | Windows Server 2025 must be maintained at a supported servicing level. |
+| V-289259 | II | manual | Windows Server 2025 must be maintained at a supported servicing level. |
