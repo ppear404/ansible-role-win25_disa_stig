@@ -1,8 +1,10 @@
 # Windows Server 2025 V1R4 control map
 
-All 291 benchmark controls are listed. Automated means a remediation implementation exists;
-applicability, opt-in settings, effective GPOs, and runtime state still require assessment.
-Evaluate-STIG and the responsible reviewers assess the manual controls.
+This map lists remediation coverage for all 291 benchmark controls.
+`automated` identifies controls with a role task. `manual` identifies controls
+that require remediation outside the role when applicable. Use Evaluate-STIG
+and the responsible reviewers to assess the effective configuration and any
+administrative requirements.
 
 | Control | Category | Implementation | Requirement |
 | --- | --- | --- | --- |

@@ -4,7 +4,9 @@ This Ansible role applies technical controls from the Windows Server 2025
 V1R4 benchmark. It implements 221 of the benchmark's 291 controls, including
 conditional and opt-in remediation. The control manifest retains the original
 benchmark check and fix text. A successful play establishes which Ansible tasks
-ran. Evaluate-STIG independently assesses the effective Windows configuration.
+ran. Run the unmodified upstream Evaluate-STIG separately to assess the
+effective Windows configuration. The role's output reports configured
+remediation exceptions and whether a restart is required.
 
 ## Requirements and use
 
@@ -114,25 +116,39 @@ The available inputs and defaults are in [defaults/main.yml](defaults/main.yml).
 
 ## Independent assessment and migration
 
-Run the upstream evaluator separately after remediation. Use the
-[answer-file instructions](files/answer_files/README.md) for installation,
-assessment execution, and the custom legal-notice validation.
+Use the upstream checks for the applicable benchmark revision and review the
+resulting CKLB. The optional bundled answer file adds a V-278207 legal-notice
+comment while preserving native finding statuses. System owners and reviewers
+handle declarations and administrative determinations through their existing
+assessment process. See the [answer-file instructions](files/answer_files/README.md)
+for running Evaluate-STIG directly or with the separate development playbook.
 
-Remove calls to `include_role` with `tasks_from: assessment`. Remove
-`win25_stig_organizational_policy`, `win25_stig_host_policy`,
-`win25_stig_administrative_evidence`, `win25_stig_evidence_root`,
-`win25_stig_assessment_archive_root`, `win25_stig_evaluator_version`,
-`win25_stig_evaluator_archive`, and `win25_stig_role_revision` from the
-calling project. Retain technical inputs such as
-`win25_stig_time_source` and `win25_stig_exceptions`. Replace the previous
-generated Windows Server 2025 answer file with the bundled XML where the
-legal-notice check is wanted. Route declarations and controls requiring human
-judgment through your existing owner and reviewer process.
+When upgrading from the role-managed assessment workflow, update the calling
+project as follows. The upgrade removes the role's evidence collection and
+reporting tasks, administrative policy inputs, and answer-file generation.
+
+1. Remove references to `tasks_from: assessment`, `tests/evaluate.yml`, and
+   the old answer-file generator at `tests/build_answer_file.py`. Retire the
+   per-host static register and any XML generated from it.
+2. Remove the legacy inputs `win25_stig_organizational_policy`,
+   `win25_stig_host_policy`, `win25_stig_administrative_evidence`,
+   `win25_stig_evidence_root`, `win25_stig_assessment_archive_root`,
+   `win25_stig_evaluator_version`, `win25_stig_evaluator_archive`, and
+   `win25_stig_role_revision`. Continue supplying remediation inputs such as
+   `win25_stig_time_source` and `win25_stig_exceptions` through inventory.
+3. Run the native evaluator using a fresh upstream extraction. Install the
+   bundled XML if you want the supplemental legal-notice comparison. Have the
+   responsible reviewers revisit prior declarations or overrides against the
+   current benchmark.
+
+See the [control map](tests/control-map.md) for remediation coverage.
 
 ## Development checks
 
-Install PyYAML, Jinja2, and lxml for the Python checks. With an upstream
-package for V1R4 available under `files/`, run:
+Install PyYAML, Jinja2, and lxml for the Python checks. Place the upstream
+Evaluate-STIG archive containing V1R4 under the role's `files/` directory or
+the development repository's top-level `files/` directory. Run these commands
+from the role directory.
 
 ```bash
 python tests/validate_controls.py

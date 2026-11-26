@@ -4,21 +4,17 @@ The existing development Git history is not the public release history: it
 contains historical host assessments. Adding ignore rules or deleting files
 in the working tree does not remove those objects from Git history.
 
-Use the prepared `.release/win25_disa_stig-public.tar.gz` snapshot to initialize
-a new Git repository for public publication. It contains no `.git` directory,
-private inventory, assessment evidence or upstream evaluator distribution.
-Do not push this development repository's branches or tags to the public remote.
-The development role's implementation files are unchanged by this preparation.
+Prepare a fresh snapshot of the current role files to initialize a new Git
+repository for public publication. Exclude `.git`, private inventories, host
+assessment artifacts, and the upstream evaluator distribution. Do not push
+this development repository's branches or tags to the public remote.
 
-The snapshot replaces per-host answer configuration with conspicuous example
-identifiers and conservative declarations. Generated answer data is sanitized
-consistently. Configure and validate a private site-specific copy before use.
-Local baseline-dependent development utilities are excluded from the public
-snapshot; the publication manifest lists these exclusions.
+Include the checked-in V1R4 legal-notice answer file and its instructions.
+Review the snapshot for leftover generated answer files, per-host registers,
+and private assessment outputs before publication.
 
-The user-removed benchmark/evaluator files remain removed. Full benchmark and
-integration tests require local reference packages and authorized Windows hosts;
-publication preparation does not claim to rerun those tests.
+Full benchmark and integration tests require local reference packages and
+authorized Windows hosts.
 
 After extracting the snapshot:
 
@@ -30,6 +26,5 @@ git commit -m "Initial public release"
 # Create the public GitHub repository, then add its remote and push main.
 ```
 
-Review `PUBLICATION_MANIFEST.json` in the snapshot for included-file hashes,
-sanitized data files and excluded development material. Publishing to GitHub
-is a separate action; no remote repository or push is performed here.
+Record the included-file hashes and exclusions in the publication manifest
+before publishing.
