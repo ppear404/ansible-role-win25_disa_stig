@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Set the local Windows Time client to follow the domain hierarchy
+  ansible.windows.win_regedit:
+    path: HKLM:\SYSTEM\CurrentControlSet\Services\W32Time\Parameters
+    name: Type
+    data: NT5DS
+    type: string
+  notify: Restart Windows Time
+
+- name: Ensure Windows Time is running for domain synchronization
+  ansible.windows.win_service:
+    name: W32Time
+    state: started
+
+- name: Apply domain time configuration before reviewing the effective settings
+  ansible.builtin.meta: flush_handlers
+
+- name: Check the effective domain time type and service state
+  ansible.windows.win_powershell:
+    script: |
+      $Ansible.Changed = $false
+      $configuration = & w32tm.exe /query /configuration
+      $queryOk = $LASTEXITCODE -eq 0
+      $running = (Get-Service W32Time -ErrorAction Stop).Status -eq 'Running'
+      $type = $configuration | Where-Object { $_ -match '^\s*Type\s*:' } | Select-Object -First 1
+      $Ansible.Result = @{
+          Valid = ($queryOk -and $running -and $type -match '^\s*Type\s*:\s*NT5DS(?:\s|$)')
+          Results = "W32Time running: $running; configuration query succeeded: $queryOk; $type"
+      }
+  register: win25_stig_domain_time_probe
+  check_mode: false

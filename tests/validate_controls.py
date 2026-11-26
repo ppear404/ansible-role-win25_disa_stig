@@ -14,6 +14,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 NS = {'x': 'http://checklists.nist.gov/xccdf/1.1'}
+DOMAIN_CONDITIONS = {'win25_stig_domain_joined', 'win25_stig_is_dc'}
 
 
 def load(path):
@@ -23,7 +24,17 @@ def load(path):
 class BenchmarkTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.xml = ET.parse(next((ROOT / 'files').rglob('*xccdf.xml')))
+        cls.archive = next((ROOT / 'files').glob('evaluate-stig-*.tar.gz'), None)
+        if cls.archive is None:
+            cls.archive = next((ROOT.parent.parent / 'files').glob('evaluate-stig-*.tar.gz'))
+        xml = next((ROOT / 'files').rglob('*xccdf.xml'), None)
+        if xml is None:
+            with tarfile.open(cls.archive, 'r:gz') as package:
+                member = next(m for m in package.getmembers()
+                              if m.name.endswith('/U_MS_Windows_Server_2025_STIG_V1R4_Manual-xccdf.xml'))
+                cls.xml = ET.parse(package.extractfile(member))
+        else:
+            cls.xml = ET.parse(xml)
         cls.groups = {g.attrib['id']: g for g in cls.xml.findall('x:Group', NS)}
         cls.manifest = load('vars/control_manifest.yml')['win25_stig_control_manifest']
         cls.defaults = load('defaults/main.yml')
@@ -40,14 +51,23 @@ class BenchmarkTests(unittest.TestCase):
                 self.assertIn('win25_stig_' + control.lower().replace('-', '_'), self.defaults)
 
     def test_each_control_imported_once_in_correct_category(self):
-        imports = []
-        for p in list((ROOT / 'tasks').glob('cat*.yml')) + [ROOT / 'tasks/main.yml', ROOT / 'tasks/security_policy.yml']:
-            for task in yaml.safe_load(p.read_text()):
-                name = task.get('ansible.builtin.import_tasks', '')
+        def verify_imports(path, joined_gate=False):
+            for task in load('tasks/' + path):
+                name = task.get('ansible.builtin.import_tasks')
+                if not name:
+                    continue
                 if name.startswith('V-'):
-                    imports.append(name[:-4])
+                    control = name[:-4]
+                    imports.append(control)
                     category = {'high': 'CAT1', 'medium': 'CAT2', 'low': 'CAT3'}
-                    self.assertIn(category[self.manifest[name[:-4]]['severity']], task['tags'])
+                    self.assertIn(category[self.manifest[control]['severity']], task['tags'])
+                    conditions = load('tasks/' + name)[0]['when']
+                    self.assertEqual(bool(DOMAIN_CONDITIONS.intersection(conditions)), joined_gate, control)
+                else:
+                    verify_imports(name, joined_gate or task.get('when') == 'win25_stig_domain_joined | bool')
+
+        imports = []
+        verify_imports('main.yml')
         self.assertCountEqual(imports, self.groups)
 
     def test_audit_controls_do_not_undo_each_other(self):
@@ -74,8 +94,7 @@ class BenchmarkTests(unittest.TestCase):
                 self.assertIn(control, str(body))
 
     def test_default_notice_wording_matches_bundled_evaluator(self):
-        archive = next((ROOT / 'files').glob('evaluate-stig-*.tar.gz'))
-        with tarfile.open(archive, 'r:gz') as package:
+        with tarfile.open(self.archive, 'r:gz') as package:
             member = next(m for m in package.getmembers()
                           if m.name.endswith('/Scan-WindowsServer2025_Checks.psm1'))
             code = package.extractfile(member).read().decode('utf-8-sig')

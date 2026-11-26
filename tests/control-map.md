@@ -164,9 +164,9 @@ applicability, opt-in settings, effective GPOs, and runtime state still require 
 | [V-278141](../tasks/V-278141.yml) | I | manual | Windows Server 2025 Active Directory Domain Controllers Organizational Unit (OU) object must have the proper access control permissions. |
 | [V-278142](../tasks/V-278142.yml) | I | manual | Windows Server 2025 organization created Active Directory Organizational Unit (OU) objects must have proper access control permissions. |
 | [V-278143](../tasks/V-278143.yml) | II | manual | Windows Server 2025 data files owned by users must be on a different logical partition from the directory server data files. |
-| [V-278144](../tasks/V-278144.yml) | II | manual | Windows Server 2025 domain controllers must run on a machine dedicated to that function. |
+| [V-278144](../tasks/V-278144.yml) | II | assessed | Windows Server 2025 domain controllers must run on a machine dedicated to that function. |
 | [V-278145](../tasks/V-278145.yml) | II | manual | Windows Server 2025 must use separate, NSA-approved (Type 1) cryptography to protect the directory data in transit for directory service implementations at a classified confidentiality level when replication data traverses a network cleared to a lower level than the data. |
-| [V-278146](../tasks/V-278146.yml) | I | manual | Windows Server 2025 directory data (outside the root DSE) of a nonpublic directory must be configured to prevent anonymous access. |
+| [V-278146](../tasks/V-278146.yml) | I | assessed | Windows Server 2025 directory data (outside the root DSE) of a nonpublic directory must be configured to prevent anonymous access. |
 | [V-278147](../tasks/V-278147.yml) | III | manual | Windows Server 2025 directory service must be configured to terminate LDAP-based network connections to the directory server after five minutes of inactivity. |
 | [V-278148](../tasks/V-278148.yml) | II | manual | Windows Server 2025 Active Directory Group Policy Objects (GPOs) must be configured with proper audit settings. |
 | [V-278149](../tasks/V-278149.yml) | II | manual | Windows Server 2025 Active Directory (AD) Domain object must be configured with proper audit settings. |
@@ -179,7 +179,7 @@ applicability, opt-in settings, effective GPOs, and runtime state still require 
 | [V-278156](../tasks/V-278156.yml) | II | automated | Windows Server 2025 must be configured to audit DS Access - Directory Service Access failures. |
 | [V-278157](../tasks/V-278157.yml) | II | automated | Windows Server 2025 must be configured to audit DS Access - Directory Service Changes successes. |
 | [V-278158](../tasks/V-278158.yml) | II | automated | Windows Server 2025 must be configured to audit DS Access - Directory Service Changes failures. |
-| [V-278159](../tasks/V-278159.yml) | II | manual | Windows Server 2025 domain controllers must have a PKI server certificate. |
+| [V-278159](../tasks/V-278159.yml) | II | assessed | Windows Server 2025 domain controllers must have a PKI server certificate. |
 | [V-278160](../tasks/V-278160.yml) | I | manual | Windows Server 2025 domain Controller PKI certificates must be issued by the DoW PKI or an approved External Certificate Authority (ECA). |
 | [V-278161](../tasks/V-278161.yml) | I | manual | Windows Server 2025 PKI certificates associated with user accounts must be issued by a DoW PKI or an approved External Certificate Authority (ECA). |
 | [V-278162](../tasks/V-278162.yml) | II | manual | Windows Server 2025 Active Directory (AD) user accounts, including administrators, must be configured to require the use of a common access card (CAC), Personal Identity Verification (PIV)-compliant hardware token, or Alternate Logon Token (ALT) for user authentication. |

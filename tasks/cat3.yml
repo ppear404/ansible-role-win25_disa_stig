@@ -45,13 +45,12 @@
   tags:
     - V-278110
     - CAT3
-- name: V-278147 - Include control tasks
-  ansible.builtin.import_tasks: V-278147.yml
-  tags:
-    - V-278147
-    - CAT3
 - name: V-278231 - Include control tasks
   ansible.builtin.import_tasks: V-278231.yml
   tags:
     - V-278231
     - CAT3
+
+- name: Import controls for domain-joined Windows servers
+  ansible.builtin.import_tasks: domain_joined_cat3.yml
+  when: win25_stig_domain_joined | bool

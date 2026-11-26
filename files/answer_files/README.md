@@ -27,9 +27,19 @@ Windows tests parse all 21 generated scripts, reproduce the evaluator's child-Po
 
 V-277987 now records the owner's non-Internet-facing declaration and administrative-use policy as Not a Finding. This is a policy determination, not proof of AppLocker or egress filtering. V-278009 records the owner's datastore-encryption declaration as Not Applicable under the benchmark's explicit infrastructure-encryption exception. These declarations and reassessment procedures are in the security-plan document.
 
-Set `win25_stig_time_source` in inventory/group/host variables or with `-e` to an environment NTP hostname or IP. Per the owner, any nonempty value is designated approved; no separate DoW-hostname allowlist is required. The role configures the NTP client and restarts Windows Time only when configuration changes. Matching peers and a running service produce Not a Finding. Blank leaves configuration unchanged and does not approve an existing source. Use the same variable for both role execution and `tests/evaluate.yml`. The evaluator renders `templates/WinServer2025_AnswerFile.xml.j2` with that value and archives the exact rendered file; the checked-in XML is the blank-variable reference.
+For a standalone server or the PDC emulator, set `win25_stig_time_source` in inventory or with `-e` to the approved environment NTP hostname or IP. The answer checks that the configured peers match and Windows Time is running. A blank value leaves external NTP configuration unchanged. Use the same variable for role execution and `tests/evaluate.yml`. The evaluator renders `templates/WinServer2025_AnswerFile.xml.j2` with that value and archives the rendered file. Other domain-joined servers use `NT5DS`, which Evaluate-STIG checks natively on a running Windows Time service.
 
 ```bash
 ansible-playbook tests/test.yml --limit win25-1 --tags V-278029 -e win25_stig_time_source=ntp.example.internal --ask-pass
 ansible-playbook tests/evaluate.yml --limit win25-1 -e win25_stig_time_source=ntp.example.internal --ask-pass
 ```
+
+### Domain controller reviews
+
+The V1R4 answer file handles native Not Reviewed results for V-278144, V-278146, and V-278159. The role runs the same read-only checks on domain controllers. V-278144 reviews installed server roles and machine-wide installed programs. It recognizes VirtIO guest tools when the DC has a working VirtIO PCI device. Additional workloads require review. V-278146 binds anonymously and searches the domain naming context on the local LDAP server. It requires an explicit access denial. V-278159 checks the local machine personal store for a currently valid certificate with the DC DNS name and a private key. V-278160 separately assesses issuer authorization.
+
+The role installs Group Policy Management on DCs selected for V-278140 or V-278148. The evaluator uses Get-GPO to enumerate policy objects for the permissions and auditing reviews. Review the resulting access and audit entries against the benchmark.
+
+Use this role's generated WinServer2025_AnswerFile.xml for these reviews. A separately maintained copy used by another assessment playbook needs the same updates.
+
+For V-278149 through V-278153, the answer file reads each directory object's audit settings. It marks the control Open when the required explicit Everyone failure-audit entry is absent. Other cases retain Not Reviewed for verification of success auditing, inheritance, and object-specific permissions. The check runs read-only and records collection errors for review.

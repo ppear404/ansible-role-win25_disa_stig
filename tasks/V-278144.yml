@@ -9,6 +9,16 @@
     - V-278144
     - CAT2
   block:
+    - name: V-278144 - Review installed domain controller roles and applications
+      ansible.windows.win_powershell:
+        script: |
+          $Ansible.Changed = $false
+          $Ansible.Result = & {
+          {{ lookup('ansible.builtin.file', role_path + '/files/answer_files/Validate-DedicatedDc.ps1') | indent(2, true) }}
+          }
+      register: win25_stig_dedicated_dc
+      check_mode: false
     - name: V-278144 - Record required site remediation or manual review
       ansible.builtin.set_fact:
         win25_stig_pending_controls: '{{ win25_stig_pending_controls + [''V-278144''] }}'
+      when: not (win25_stig_dedicated_dc.result.Valid | bool)

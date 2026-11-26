@@ -76,6 +76,11 @@ management port using the `Ansible STIG management connection` rule. Limit its s
 with `win25_stig_management_remote_addresses` (default: `any`). The built-in Administrator becomes `stig_local_admin` and Guest
 becomes `stig_guest_disabled`; override those names to match site policy.
 
+- Preflight reads `Win32_ComputerSystem.PartOfDomain` and `DomainRole` from the
+  target. Category task lists import `tasks/domain_joined_cat*.yml` for joined
+  hosts. Individual controls retain their domain-controller or member-server
+  conditions and can be selected by vulnerability ID. Controls common to
+  standalone and joined hosts continue to run from the main category lists.
 - Domain controllers and member/standalone systems receive different user-right
   settings. Domain-controller account/Kerberos policies and directory ACLs remain
   pending until managed through the authoritative domain GPO. The role does not
@@ -176,4 +181,4 @@ Certificate controls V-278192, V-278193 and V-278194 use pinned, validated publi
 
 The role deploys security-plan procedures and runs custom evidence checks for the 21 manual-review controls in the November 19 baseline. Account non-use declarations follow the system owner's policy; absent technical protections become Open. See [the procedure document](files/answer_files/manual/SecurityPlanProcedures.md) and run `tests/validate-manual-controls.yml` for decision fixtures.
 
-For V-278029, set `win25_stig_time_source` to the environment NTP hostname/IP in inventory or extra variables for both remediation and evaluation. Any nonempty value is owner-designated approved; blank leaves Windows Time unchanged. The role configures the source and enables the NTP client; the answer checks matching configured peers and a running service. V-277987 records the owner's non-Internet-facing policy determination; V-278009 records datastore encryption as the benchmark's infrastructure-encryption exception (Not Applicable).
+For V-278029, set `win25_stig_time_source` to an approved NTP hostname/IP for standalone servers and the PDC emulator. A blank value leaves their configuration unchanged. Domain members and other domain controllers use local `NT5DS` and a running Windows Time service, regardless of the peer variable. If an overriding GPO chooses a different time type, update the authoritative policy. The role checks the policy-effective type and whether the service is running. V-277987 records the owner's non-Internet-facing policy determination. V-278009 records datastore encryption under the benchmark's infrastructure-encryption exception (Not Applicable).

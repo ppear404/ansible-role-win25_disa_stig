@@ -29,12 +29,19 @@
   ansible.builtin.set_fact:
     win25_stig_effective_site_register: >-
       {{ (lookup('ansible.builtin.file', role_path + '/files/answer_files/manual/site-register.json') | from_json)
-         | combine({'approved_ntp_sources': [win25_stig_time_source] if win25_stig_time_source | length > 0 else []}) }}
+         | combine({'approved_ntp_sources': [win25_stig_time_source]
+             if win25_stig_time_source | length > 0 and not (win25_stig_uses_domain_time | bool) else []}) }}
 - name: Configure the environment time source before reviewing V-278029
   ansible.builtin.import_tasks: configure_time_source.yml
   when:
     - "'V-278029' in win25_stig_selected_manual_controls"
     - win25_stig_time_source | length > 0
+    - not (win25_stig_uses_domain_time | bool)
+- name: Configure domain hierarchy time before reviewing V-278029
+  ansible.builtin.import_tasks: configure_domain_time.yml
+  when:
+    - "'V-278029' in win25_stig_selected_manual_controls"
+    - win25_stig_uses_domain_time | bool
 - name: Create security-plan procedure directory
   ansible.windows.win_file:
     path: 'C:\ProgramData\win25-stig\Policy'
@@ -78,7 +85,10 @@
   when: win25_stig_selected_manual_controls | length > 0
 - name: Retain review decisions for individual control tasks
   ansible.builtin.set_fact:
-    win25_stig_manual_reviews: '{{ win25_stig_manual_review_probe.result | default({}) }}'
+    win25_stig_manual_reviews: >-
+      {{ win25_stig_manual_review_probe.result | default({}) |
+         combine({'V-278029': win25_stig_domain_time_probe.result}
+                 if win25_stig_domain_time_probe.result is defined else {}) }}
 - name: Record custom checks that still require remediation
   ansible.builtin.set_fact:
     win25_stig_pending_controls: '{{ win25_stig_pending_controls + [item.key] }}'

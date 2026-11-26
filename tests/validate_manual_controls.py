@@ -3,6 +3,7 @@ from pathlib import Path
 import json
 import re
 from jinja2 import Environment
+from build_answer_file import evaluator_archive, standalone_rules
 import hashlib
 import base64
 import tarfile
@@ -16,12 +17,14 @@ BASE = ROOT / 'files/answer_files'
 class ManualAnswerTests(unittest.TestCase):
     def test_exact_scope_and_self_contained_sources(self):
         tree = ET.parse(str(BASE / 'WinServer2025_AnswerFile.xml'))
-        checklist = json.loads((ROOT / 'files/cklbs/WIN25-CORE-V0_WinServer2025_V1R4_20261119-015833.cklb').read_text())
-        expected = {r['rule_id_src']: r['group_id'] for r in checklist['stigs'][0]['rules'] if r['status'] == 'not_reviewed'}
+        policies = json.loads((BASE / 'manual/policies.json').read_text())
+        expected = {v['rule_id_src']: k for k, v in standalone_rules(policies).items()}
         checks = json.loads((BASE / 'manual/checks.json').read_text())
         procedures = json.loads((BASE / 'manual/policies.json').read_text())
         nodes = {v.attrib['ID']: v for v in tree.findall('Vuln')}
-        self.assertEqual(set(nodes), set(expected) | {'SV-278207r1268215_rule'})
+        self.assertEqual(set(nodes), set(expected) | {'SV-278207r1268215_rule', 'SV-278146r1268251_rule', 'SV-278159r1182124_rule', 'SV-278144r1182094_rule',
+            'SV-278149r1182104_rule', 'SV-278150r1211157_rule', 'SV-278151r1182108_rule',
+            'SV-278152r1211160_rule', 'SV-278153r1182112_rule'})
         for rule, control in expected.items():
             answers = nodes[rule].findall('AnswerKey/Answer')
             self.assertEqual(len(answers), 1)
@@ -53,7 +56,7 @@ class ManualAnswerTests(unittest.TestCase):
         self.assertIn('"approved_ntp_sources": []', node.text)
 
     def test_bundled_evaluator_schema(self):
-        with tarfile.open(ROOT / 'files/evaluate-stig-1.2610.1.tar.gz') as archive:
+        with tarfile.open(evaluator_archive()) as archive:
             member = next(m for m in archive.getmembers() if m.name.endswith('/Schema_AnswerFile.xsd'))
             schema = ET.XMLSchema(ET.fromstring(archive.extractfile(member).read()))
         schema.assertValid(ET.parse(str(BASE / 'WinServer2025_AnswerFile.xml')))

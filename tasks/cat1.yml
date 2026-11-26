@@ -45,60 +45,10 @@
   tags:
     - V-278128
     - CAT1
-- name: V-278132 - Include control tasks
-  ansible.builtin.import_tasks: V-278132.yml
-  tags:
-    - V-278132
-    - CAT1
-- name: V-278138 - Include control tasks
-  ansible.builtin.import_tasks: V-278138.yml
-  tags:
-    - V-278138
-    - CAT1
-- name: V-278139 - Include control tasks
-  ansible.builtin.import_tasks: V-278139.yml
-  tags:
-    - V-278139
-    - CAT1
-- name: V-278140 - Include control tasks
-  ansible.builtin.import_tasks: V-278140.yml
-  tags:
-    - V-278140
-    - CAT1
-- name: V-278141 - Include control tasks
-  ansible.builtin.import_tasks: V-278141.yml
-  tags:
-    - V-278141
-    - CAT1
-- name: V-278142 - Include control tasks
-  ansible.builtin.import_tasks: V-278142.yml
-  tags:
-    - V-278142
-    - CAT1
-- name: V-278146 - Include control tasks
-  ansible.builtin.import_tasks: V-278146.yml
-  tags:
-    - V-278146
-    - CAT1
-- name: V-278160 - Include control tasks
-  ansible.builtin.import_tasks: V-278160.yml
-  tags:
-    - V-278160
-    - CAT1
-- name: V-278161 - Include control tasks
-  ansible.builtin.import_tasks: V-278161.yml
-  tags:
-    - V-278161
-    - CAT1
 - name: V-278177 - Include control tasks
   ansible.builtin.import_tasks: V-278177.yml
   tags:
     - V-278177
-    - CAT1
-- name: V-278190 - Include control tasks
-  ansible.builtin.import_tasks: V-278190.yml
-  tags:
-    - V-278190
     - CAT1
 - name: V-278196 - Include control tasks
   ansible.builtin.import_tasks: V-278196.yml
@@ -145,3 +95,7 @@
   tags:
     - V-285316
     - CAT1
+
+- name: Import controls for domain-joined Windows servers
+  ansible.builtin.import_tasks: domain_joined_cat1.yml
+  when: win25_stig_domain_joined | bool

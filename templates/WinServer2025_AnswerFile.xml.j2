@@ -2551,4 +2551,247 @@ try {
 } catch {
     return @{ Valid = $false; Results = 'Custom review failed closed: ' + $_.Exception.Message }
 }
-]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>ATT-01: Preserve attachment zone information in every interactive user profile. Leave SaveZoneInformation absent (Windows default) or set REG_DWORD 2. Check loaded and unloaded profiles and the default profile on provisioning and monthly. A value of 1 or an unreadable existing profile is a finding. Service-only identities do not create an exception for human interactive users.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. ATT-01: Preserve attachment zone information in every interactive user profile. Leave SaveZoneInformation absent (Windows default) or set REG_DWORD 2. Check loaded and unloaded profiles and the default profile on provisioning and monthly. A value of 1 or an unreadable existing profile is a finding. Service-only identities do not create an exception for human interactive users.</ValidFalseComment></Answer></AnswerKey></Vuln></STIGComments>
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>ATT-01: Preserve attachment zone information in every interactive user profile. Leave SaveZoneInformation absent (Windows default) or set REG_DWORD 2. Check loaded and unloaded profiles and the default profile on provisioning and monthly. A value of 1 or an unreadable existing profile is a finding. Service-only identities do not create an exception for human interactive users.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Required evidence did not pass; this is Open, not an approved exception. ATT-01: Preserve attachment zone information in every interactive user profile. Leave SaveZoneInformation absent (Windows default) or set REG_DWORD 2. Check loaded and unloaded profiles and the default profile on provisioning and monthly. A value of 1 or an unreadable existing profile is a finding. Service-only identities do not create an exception for human interactive users.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278144r1182094_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[try {
+    $ErrorActionPreference = 'Stop'
+    $roles = @(Get-WindowsFeature | Where-Object { $_.Installed -and $_.FeatureType -eq 'Role' } | Select-Object -ExpandProperty Name)
+    $extraRoles = @($roles | Where-Object { $_ -notin @('AD-Domain-Services', 'DNS', 'FileAndStorage-Services') })
+    $software = foreach ($view in 'Registry64', 'Registry32') {
+        $hive = [Microsoft.Win32.RegistryKey]::OpenBaseKey('LocalMachine', $view)
+        try {
+            $uninstall = $hive.OpenSubKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall')
+            if (-not $uninstall) { throw "Missing uninstall inventory in $view" }
+            foreach ($name in $uninstall.GetSubKeyNames()) {
+                $key = $uninstall.OpenSubKey($name)
+                try {
+                    $display = $key.GetValue('DisplayName')
+                    if ($display) { [string]$display }
+                } finally { $key.Dispose() }
+            }
+        } finally { $hive.Dispose() }
+    }
+    $required = @()
+    if (Get-CimInstance Win32_PnPEntity | Where-Object {
+        $_.Status -eq 'OK' -and $_.PNPDeviceID -like 'PCI\VEN_1AF4*'
+    }) { $required += 'Virtio-win-guest-tools' }
+    $extraApps = @($software | Where-Object { $_ -notin $required } | Sort-Object -Unique)
+    $valid = 'AD-Domain-Services' -in $roles -and $extraRoles.Count -eq 0 -and $extraApps.Count -eq 0
+    return @{Valid=$valid; Results="Installed roles: $($roles -join ', '); installed applications: $($software -join ', '); additional applications requiring review: $($extraApps -join ', ')"}
+} catch {
+    return @{Valid=$false; Results="Dedicated domain controller review incomplete: $($_.Exception.Message)"}
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>Review installed roles and applications after software changes. VirtIO guest tools support active virtual devices on this DC.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Review additional roles and applications for operational necessity and remove unrelated workloads.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278146r1268251_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[$connection = $null
+try {
+    $ErrorActionPreference = 'Stop'
+    Add-Type -AssemblyName System.DirectoryServices.Protocols
+    $root = [ADSI]'LDAP://localhost/RootDSE'
+    $base = [string]$root.defaultNamingContext.Value
+    if (-not $base) { throw 'Domain naming context unavailable' }
+    $connection = [System.DirectoryServices.Protocols.LdapConnection]::new('localhost')
+    $connection.AuthType = [System.DirectoryServices.Protocols.AuthType]::Anonymous
+    $connection.SessionOptions.ProtocolVersion = 3
+    $connection.Bind()
+    $request = [System.DirectoryServices.Protocols.SearchRequest]::new(
+        $base, '(objectClass=*)', [System.DirectoryServices.Protocols.SearchScope]::Base, @('distinguishedName'))
+    try {
+        $null = $connection.SendRequest($request)
+        return @{Valid=$false; Results='Anonymous search of the domain naming context succeeded.'}
+    } catch [System.DirectoryServices.Protocols.DirectoryOperationException] {
+        $response = $_.Exception.Response
+        $denied = $response.ResultCode -eq 'InsufficientAccessRights' -or
+            ($response.ResultCode -eq 'OperationsError' -and $response.ErrorMessage -match '000004DC')
+        return @{Valid=[bool]$denied; Results="Anonymous domain search returned $($response.ResultCode): $($response.ErrorMessage)"}
+    }
+} catch {
+    return @{Valid=$false; Results="Anonymous LDAP verification incomplete: $($_.Exception.Message)"}
+} finally {
+    if ($connection) { $connection.Dispose() }
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>Verify anonymous bind and rejection of domain naming context searches after directory access policy changes.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Review anonymous access and repeat the domain naming context search.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278159r1182124_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[try {
+    $ErrorActionPreference = 'Stop'
+    $hostName = [string]([ADSI]'LDAP://localhost/RootDSE').dnsHostName.Value
+    if (-not $hostName) { throw 'DC DNS name unavailable' }
+    $now = Get-Date
+    $certificates = @(Get-ChildItem Cert:\LocalMachine\My | Where-Object {
+        $_.HasPrivateKey -and $_.NotBefore -le $now -and $_.NotAfter -gt $now -and
+        $hostName -in @($_.DnsNameList | ForEach-Object { $_.Unicode })
+    })
+    return @{Valid=($certificates.Count -gt 0); Results="Currently valid personal certificates with the DC DNS name and a private key: $($certificates.Count)"}
+} catch {
+    return @{Valid=$false; Results="DC certificate verification incomplete: $($_.Exception.Message)"}
+}
+]]></ValidationCode><ValidTrueStatus>NF</ValidTrueStatus><ValidTrueComment>Verify that the personal certificate identifies the controller and renew it before expiration.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Inspect the machine personal store and provision a valid certificate for this controller.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278149r1182104_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[$relativeDn = ''
+$allDescendants = $false
+# The generated answer supplies the relative DN and required inheritance scope.
+try {
+    $ErrorActionPreference = 'Stop'
+    $domain = [string]([ADSI]'LDAP://localhost/RootDSE').defaultNamingContext.Value
+    if (-not $domain) { throw 'Domain naming context unavailable' }
+    $dn = if ($relativeDn) { "$relativeDn,$domain" } else { $domain }
+    $entry = [ADSI]("LDAP://localhost/" + $dn)
+    $entry.psbase.Options.SecurityMasks = [DirectoryServices.SecurityMasks]::Sacl
+    $entry.psbase.RefreshCache(@('nTSecurityDescriptor'))
+    $acl = $entry.psbase.ObjectSecurity
+    $rules = @($acl.GetAuditRules($true, $false, [Security.Principal.SecurityIdentifier]))
+    $full = [int][DirectoryServices.ActiveDirectoryRights]::GenericAll
+    $rights = 0
+    foreach ($ace in $rules) {
+        if ($ace.IdentityReference.Value -ne 'S-1-1-0' -or
+            -not ($ace.AuditFlags -band [Security.AccessControl.AuditFlags]::Failure) -or
+            $ace.ObjectType -ne [Guid]::Empty -or $ace.InheritedObjectType -ne [Guid]::Empty) { continue }
+        if ($ace.InheritanceType -eq 'All' -or
+            (-not $allDescendants -and $ace.InheritanceType -in @('None', 'SelfAndChildren'))) {
+            $rights = $rights -bor [int]$ace.ActiveDirectoryRights
+        }
+    }
+    if (($rights -band $full) -eq $full) {
+        return @{Valid=$true; Results="Everyone failure auditing covers full control on $dn. Review the required success entries."}
+    }
+    # Split, object-specific or complementary inheritance entries can need manual interpretation.
+    $failureEntries = @($rules | Where-Object {
+        $_.IdentityReference.Value -eq 'S-1-1-0' -and ($_.AuditFlags -band [Security.AccessControl.AuditFlags]::Failure)
+    })
+    return @{Valid=($failureEntries.Count -gt 0); Results="Explicit Everyone failure audit entries on $dn : $($failureEntries.Count). Review scope and success entries when present."}
+} catch {
+    return @{Valid=$true; Results="Manual audit review required: $($_.Exception.Message)"}
+}
+]]></ValidationCode><ValidTrueStatus>NR</ValidTrueStatus><ValidTrueComment>Review the explicit and inherited audit entries against the object-specific benchmark requirements.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Add the required explicit Everyone failure auditing entry through directory change control.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278150r1211157_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[$relativeDn = 'CN=Infrastructure'
+$allDescendants = $false
+# The generated answer supplies the relative DN and required inheritance scope.
+try {
+    $ErrorActionPreference = 'Stop'
+    $domain = [string]([ADSI]'LDAP://localhost/RootDSE').defaultNamingContext.Value
+    if (-not $domain) { throw 'Domain naming context unavailable' }
+    $dn = if ($relativeDn) { "$relativeDn,$domain" } else { $domain }
+    $entry = [ADSI]("LDAP://localhost/" + $dn)
+    $entry.psbase.Options.SecurityMasks = [DirectoryServices.SecurityMasks]::Sacl
+    $entry.psbase.RefreshCache(@('nTSecurityDescriptor'))
+    $acl = $entry.psbase.ObjectSecurity
+    $rules = @($acl.GetAuditRules($true, $false, [Security.Principal.SecurityIdentifier]))
+    $full = [int][DirectoryServices.ActiveDirectoryRights]::GenericAll
+    $rights = 0
+    foreach ($ace in $rules) {
+        if ($ace.IdentityReference.Value -ne 'S-1-1-0' -or
+            -not ($ace.AuditFlags -band [Security.AccessControl.AuditFlags]::Failure) -or
+            $ace.ObjectType -ne [Guid]::Empty -or $ace.InheritedObjectType -ne [Guid]::Empty) { continue }
+        if ($ace.InheritanceType -eq 'All' -or
+            (-not $allDescendants -and $ace.InheritanceType -in @('None', 'SelfAndChildren'))) {
+            $rights = $rights -bor [int]$ace.ActiveDirectoryRights
+        }
+    }
+    if (($rights -band $full) -eq $full) {
+        return @{Valid=$true; Results="Everyone failure auditing covers full control on $dn. Review the required success entries."}
+    }
+    # Split, object-specific or complementary inheritance entries can need manual interpretation.
+    $failureEntries = @($rules | Where-Object {
+        $_.IdentityReference.Value -eq 'S-1-1-0' -and ($_.AuditFlags -band [Security.AccessControl.AuditFlags]::Failure)
+    })
+    return @{Valid=($failureEntries.Count -gt 0); Results="Explicit Everyone failure audit entries on $dn : $($failureEntries.Count). Review scope and success entries when present."}
+} catch {
+    return @{Valid=$true; Results="Manual audit review required: $($_.Exception.Message)"}
+}
+]]></ValidationCode><ValidTrueStatus>NR</ValidTrueStatus><ValidTrueComment>Review the explicit and inherited audit entries against the object-specific benchmark requirements.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Add the required explicit Everyone failure auditing entry through directory change control.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278151r1182108_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[$relativeDn = 'OU=Domain Controllers'
+$allDescendants = $true
+# The generated answer supplies the relative DN and required inheritance scope.
+try {
+    $ErrorActionPreference = 'Stop'
+    $domain = [string]([ADSI]'LDAP://localhost/RootDSE').defaultNamingContext.Value
+    if (-not $domain) { throw 'Domain naming context unavailable' }
+    $dn = if ($relativeDn) { "$relativeDn,$domain" } else { $domain }
+    $entry = [ADSI]("LDAP://localhost/" + $dn)
+    $entry.psbase.Options.SecurityMasks = [DirectoryServices.SecurityMasks]::Sacl
+    $entry.psbase.RefreshCache(@('nTSecurityDescriptor'))
+    $acl = $entry.psbase.ObjectSecurity
+    $rules = @($acl.GetAuditRules($true, $false, [Security.Principal.SecurityIdentifier]))
+    $full = [int][DirectoryServices.ActiveDirectoryRights]::GenericAll
+    $rights = 0
+    foreach ($ace in $rules) {
+        if ($ace.IdentityReference.Value -ne 'S-1-1-0' -or
+            -not ($ace.AuditFlags -band [Security.AccessControl.AuditFlags]::Failure) -or
+            $ace.ObjectType -ne [Guid]::Empty -or $ace.InheritedObjectType -ne [Guid]::Empty) { continue }
+        if ($ace.InheritanceType -eq 'All' -or
+            (-not $allDescendants -and $ace.InheritanceType -in @('None', 'SelfAndChildren'))) {
+            $rights = $rights -bor [int]$ace.ActiveDirectoryRights
+        }
+    }
+    if (($rights -band $full) -eq $full) {
+        return @{Valid=$true; Results="Everyone failure auditing covers full control on $dn. Review the required success entries."}
+    }
+    # Split, object-specific or complementary inheritance entries can need manual interpretation.
+    $failureEntries = @($rules | Where-Object {
+        $_.IdentityReference.Value -eq 'S-1-1-0' -and ($_.AuditFlags -band [Security.AccessControl.AuditFlags]::Failure)
+    })
+    return @{Valid=($failureEntries.Count -gt 0); Results="Explicit Everyone failure audit entries on $dn : $($failureEntries.Count). Review scope and success entries when present."}
+} catch {
+    return @{Valid=$true; Results="Manual audit review required: $($_.Exception.Message)"}
+}
+]]></ValidationCode><ValidTrueStatus>NR</ValidTrueStatus><ValidTrueComment>Review the explicit and inherited audit entries against the object-specific benchmark requirements.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Add the required explicit Everyone failure auditing entry through directory change control.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278152r1211160_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[$relativeDn = 'CN=AdminSDHolder,CN=System'
+$allDescendants = $false
+# The generated answer supplies the relative DN and required inheritance scope.
+try {
+    $ErrorActionPreference = 'Stop'
+    $domain = [string]([ADSI]'LDAP://localhost/RootDSE').defaultNamingContext.Value
+    if (-not $domain) { throw 'Domain naming context unavailable' }
+    $dn = if ($relativeDn) { "$relativeDn,$domain" } else { $domain }
+    $entry = [ADSI]("LDAP://localhost/" + $dn)
+    $entry.psbase.Options.SecurityMasks = [DirectoryServices.SecurityMasks]::Sacl
+    $entry.psbase.RefreshCache(@('nTSecurityDescriptor'))
+    $acl = $entry.psbase.ObjectSecurity
+    $rules = @($acl.GetAuditRules($true, $false, [Security.Principal.SecurityIdentifier]))
+    $full = [int][DirectoryServices.ActiveDirectoryRights]::GenericAll
+    $rights = 0
+    foreach ($ace in $rules) {
+        if ($ace.IdentityReference.Value -ne 'S-1-1-0' -or
+            -not ($ace.AuditFlags -band [Security.AccessControl.AuditFlags]::Failure) -or
+            $ace.ObjectType -ne [Guid]::Empty -or $ace.InheritedObjectType -ne [Guid]::Empty) { continue }
+        if ($ace.InheritanceType -eq 'All' -or
+            (-not $allDescendants -and $ace.InheritanceType -in @('None', 'SelfAndChildren'))) {
+            $rights = $rights -bor [int]$ace.ActiveDirectoryRights
+        }
+    }
+    if (($rights -band $full) -eq $full) {
+        return @{Valid=$true; Results="Everyone failure auditing covers full control on $dn. Review the required success entries."}
+    }
+    # Split, object-specific or complementary inheritance entries can need manual interpretation.
+    $failureEntries = @($rules | Where-Object {
+        $_.IdentityReference.Value -eq 'S-1-1-0' -and ($_.AuditFlags -band [Security.AccessControl.AuditFlags]::Failure)
+    })
+    return @{Valid=($failureEntries.Count -gt 0); Results="Explicit Everyone failure audit entries on $dn : $($failureEntries.Count). Review scope and success entries when present."}
+} catch {
+    return @{Valid=$true; Results="Manual audit review required: $($_.Exception.Message)"}
+}
+]]></ValidationCode><ValidTrueStatus>NR</ValidTrueStatus><ValidTrueComment>Review the explicit and inherited audit entries against the object-specific benchmark requirements.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Add the required explicit Everyone failure auditing entry through directory change control.</ValidFalseComment></Answer></AnswerKey></Vuln><Vuln ID="SV-278153r1182112_rule"><AnswerKey Name="DEFAULT"><Answer Index="1" ExpectedStatus="NR"><ValidationCode><![CDATA[$relativeDn = 'CN=RID Manager$,CN=System'
+$allDescendants = $false
+# The generated answer supplies the relative DN and required inheritance scope.
+try {
+    $ErrorActionPreference = 'Stop'
+    $domain = [string]([ADSI]'LDAP://localhost/RootDSE').defaultNamingContext.Value
+    if (-not $domain) { throw 'Domain naming context unavailable' }
+    $dn = if ($relativeDn) { "$relativeDn,$domain" } else { $domain }
+    $entry = [ADSI]("LDAP://localhost/" + $dn)
+    $entry.psbase.Options.SecurityMasks = [DirectoryServices.SecurityMasks]::Sacl
+    $entry.psbase.RefreshCache(@('nTSecurityDescriptor'))
+    $acl = $entry.psbase.ObjectSecurity
+    $rules = @($acl.GetAuditRules($true, $false, [Security.Principal.SecurityIdentifier]))
+    $full = [int][DirectoryServices.ActiveDirectoryRights]::GenericAll
+    $rights = 0
+    foreach ($ace in $rules) {
+        if ($ace.IdentityReference.Value -ne 'S-1-1-0' -or
+            -not ($ace.AuditFlags -band [Security.AccessControl.AuditFlags]::Failure) -or
+            $ace.ObjectType -ne [Guid]::Empty -or $ace.InheritedObjectType -ne [Guid]::Empty) { continue }
+        if ($ace.InheritanceType -eq 'All' -or
+            (-not $allDescendants -and $ace.InheritanceType -in @('None', 'SelfAndChildren'))) {
+            $rights = $rights -bor [int]$ace.ActiveDirectoryRights
+        }
+    }
+    if (($rights -band $full) -eq $full) {
+        return @{Valid=$true; Results="Everyone failure auditing covers full control on $dn. Review the required success entries."}
+    }
+    # Split, object-specific or complementary inheritance entries can need manual interpretation.
+    $failureEntries = @($rules | Where-Object {
+        $_.IdentityReference.Value -eq 'S-1-1-0' -and ($_.AuditFlags -band [Security.AccessControl.AuditFlags]::Failure)
+    })
+    return @{Valid=($failureEntries.Count -gt 0); Results="Explicit Everyone failure audit entries on $dn : $($failureEntries.Count). Review scope and success entries when present."}
+} catch {
+    return @{Valid=$true; Results="Manual audit review required: $($_.Exception.Message)"}
+}
+]]></ValidationCode><ValidTrueStatus>NR</ValidTrueStatus><ValidTrueComment>Review the explicit and inherited audit entries against the object-specific benchmark requirements.</ValidTrueComment><ValidFalseStatus>O</ValidFalseStatus><ValidFalseComment>Add the required explicit Everyone failure auditing entry through directory change control.</ValidFalseComment></Answer></AnswerKey></Vuln></STIGComments>

@@ -2,6 +2,7 @@
 from pathlib import Path
 import json
 import re
+import tarfile
 import hashlib
 import base64
 from lxml import etree as ET
@@ -35,6 +36,37 @@ def scoped_source(source, control):
     return header + '\n\n'.join(functions[n] for n in names) + '\n\n' + collector
 
 
+def domain_answer(rule, script, passed, failed):
+    vuln = ET.Element('Vuln', ID=rule)
+    key = ET.SubElement(vuln, 'AnswerKey', Name='DEFAULT')
+    answer = ET.SubElement(key, 'Answer', Index='1', ExpectedStatus='NR')
+    ET.SubElement(answer, 'ValidationCode').text = ET.CDATA((BASE / script).read_text())
+    ET.SubElement(answer, 'ValidTrueStatus').text = 'NF'
+    ET.SubElement(answer, 'ValidTrueComment').text = passed
+    ET.SubElement(answer, 'ValidFalseStatus').text = 'O'
+    ET.SubElement(answer, 'ValidFalseComment').text = failed
+    return vuln
+
+
+def evaluator_archive():
+    filename = 'evaluate-stig-1.2610.1.tar.gz'
+    return next(directory / filename for directory in (ROOT / 'files', ROOT.parent.parent / 'files')
+                   if (directory / filename).is_file())
+
+
+def standalone_rules(policies):
+    checklist = ROOT / 'files/cklbs/WIN25-CORE-V0_WinServer2025_V1R4_20261119-015833.cklb'
+    if checklist.exists():
+        rules = json.loads(checklist.read_text())['stigs'][0]['rules']
+        return {r['group_id']: r for r in rules if r['status'] == 'not_reviewed'}
+    with tarfile.open(evaluator_archive()) as package:
+        member = next(m for m in package.getmembers()
+                      if m.name.endswith('/U_MS_Windows_Server_2025_STIG_V1R4_Manual-xccdf.xml'))
+        xml = ET.parse(package.extractfile(member))
+    return {g.get('id'): {'rule_id_src': g.find('{*}Rule').get('id')}
+            for g in xml.findall('{*}Group') if g.get('id') in policies}
+
+
 def build():
     tree = ET.parse(str(BASE / 'WinServer2025_AnswerFile.xml'))
     root = tree.getroot()
@@ -44,8 +76,7 @@ def build():
     source = (BASE / 'manual/ManualChecks.ps1').read_text().strip()
     register = (BASE / 'manual/site-register.json').read_text().strip()
     policies = json.loads((BASE / 'manual/policies.json').read_text())
-    rules = json.loads((ROOT / 'files/cklbs/WIN25-CORE-V0_WinServer2025_V1R4_20261119-015833.cklb').read_text())['stigs'][0]['rules']
-    selected = {r['group_id']: r for r in rules if r['status'] == 'not_reviewed'}
+    selected = standalone_rules(policies)
     assert set(selected) == set(policies)
     scripts = {}
     for control, policy in policies.items():
@@ -64,6 +95,32 @@ def build():
         ET.SubElement(answer, 'ValidTrueComment').text = policy['procedure']
         ET.SubElement(answer, 'ValidFalseStatus').text = 'O'
         ET.SubElement(answer, 'ValidFalseComment').text = ('Required evidence did not pass; this is Open, not an approved exception. ' + policy['procedure'])
+    root.append(domain_answer('SV-278144r1182094_rule', 'Validate-DedicatedDc.ps1',
+                              'Review installed roles and applications after software changes. VirtIO guest tools support active virtual devices on this DC.',
+                              'Review additional roles and applications for operational necessity and remove unrelated workloads.'))
+    root.append(domain_answer('SV-278146r1268251_rule', 'Validate-AnonymousLdap.ps1',
+                              'Verify anonymous bind and rejection of domain naming context searches after directory access policy changes.',
+                              'Review anonymous access and repeat the domain naming context search.'))
+    root.append(domain_answer('SV-278159r1182124_rule', 'Validate-DcCertificate.ps1',
+                              'Verify that the personal certificate identifies the controller and renew it before expiration.',
+                              'Inspect the machine personal store and provision a valid certificate for this controller.'))
+    directory_objects = {
+        'SV-278149r1182104_rule': '',
+        'SV-278150r1211157_rule': 'CN=Infrastructure',
+        'SV-278151r1182108_rule': 'OU=Domain Controllers',
+        'SV-278152r1211160_rule': 'CN=AdminSDHolder,CN=System',
+        'SV-278153r1182112_rule': 'CN=RID Manager$,CN=System',
+    }
+    for rule, relative_dn in directory_objects.items():
+        node = domain_answer(rule, 'Review-DirectoryAudit.ps1',
+                             'Review the explicit and inherited audit entries against the object-specific benchmark requirements.',
+                             'Add the required explicit Everyone failure auditing entry through directory change control.')
+        answer = node.find('AnswerKey/Answer')
+        answer.find('ValidTrueStatus').text = 'NR'
+        descendants = '$true' if rule.startswith('SV-278151') else '$false'
+        code = answer.find('ValidationCode')
+        code.text = ET.CDATA(f"$relativeDn = '{relative_dn}'\n$allDescendants = {descendants}\n" + code.text)
+        root.append(node)
     for comment in tree.xpath('//comment()'):
         comment.text = ' Windows Server 2025 V1R4: conditional legal-notice check and scoped manual-control reviews. '
     tree.write(str(BASE / 'WinServer2025_AnswerFile.xml'), encoding='utf-8', xml_declaration=True, pretty_print=True)
