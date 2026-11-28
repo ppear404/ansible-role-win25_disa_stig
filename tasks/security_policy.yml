@@ -1,72 +1,72 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278033 - Include control tasks
+- name: CAT2 V-278033 - Include control tasks
   ansible.builtin.import_tasks: V-278033.yml
   tags:
     - V-278033
     - CAT2
   when: win25_stig_cat2 | bool
-- name: V-278034 - Include control tasks
+- name: CAT2 V-278034 - Include control tasks
   ansible.builtin.import_tasks: V-278034.yml
   tags:
     - V-278034
     - CAT2
   when: win25_stig_cat2 | bool
-- name: V-278035 - Include control tasks
+- name: CAT2 V-278035 - Include control tasks
   ansible.builtin.import_tasks: V-278035.yml
   tags:
     - V-278035
     - CAT2
   when: win25_stig_cat2 | bool
-- name: V-278036 - Include control tasks
+- name: CAT2 V-278036 - Include control tasks
   ansible.builtin.import_tasks: V-278036.yml
   tags:
     - V-278036
     - CAT2
   when: win25_stig_cat2 | bool
-- name: V-278037 - Include control tasks
+- name: CAT2 V-278037 - Include control tasks
   ansible.builtin.import_tasks: V-278037.yml
   tags:
     - V-278037
     - CAT2
   when: win25_stig_cat2 | bool
-- name: V-278038 - Include control tasks
+- name: CAT2 V-278038 - Include control tasks
   ansible.builtin.import_tasks: V-278038.yml
   tags:
     - V-278038
     - CAT2
   when: win25_stig_cat2 | bool
-- name: V-278039 - Include control tasks
+- name: CAT2 V-278039 - Include control tasks
   ansible.builtin.import_tasks: V-278039.yml
   tags:
     - V-278039
     - CAT2
   when: win25_stig_cat2 | bool
-- name: V-278040 - Include control tasks
+- name: CAT1 V-278040 - Include control tasks
   ansible.builtin.import_tasks: V-278040.yml
   tags:
     - V-278040
     - CAT1
   when: win25_stig_cat1 | bool
-- name: V-278195 - Include control tasks
+- name: CAT2 V-278195 - Include control tasks
   ansible.builtin.import_tasks: V-278195.yml
   tags:
     - V-278195
     - CAT2
   when: win25_stig_cat2 | bool
-- name: V-278197 - Include control tasks
+- name: CAT2 V-278197 - Include control tasks
   ansible.builtin.import_tasks: V-278197.yml
   tags:
     - V-278197
     - CAT2
   when: win25_stig_cat2 | bool
-- name: V-278198 - Include control tasks
+- name: CAT2 V-278198 - Include control tasks
   ansible.builtin.import_tasks: V-278198.yml
   tags:
     - V-278198
     - CAT2
   when: win25_stig_cat2 | bool
-- name: V-278215 - Include control tasks
+- name: CAT1 V-278215 - Include control tasks
   ansible.builtin.import_tasks: V-278215.yml
   tags:
     - V-278215

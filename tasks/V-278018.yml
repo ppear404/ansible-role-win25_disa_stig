@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278018 - Windows Server 2025 must not have Bluetooth enabled unless required by the organization.
+- name: CAT2 V-278018 - Windows Server 2025 must not have Bluetooth enabled unless required by the organization.
   when:
     - win25_stig_v_278018 | bool
     - not win25_stig_bluetooth_required
@@ -9,7 +9,7 @@
     - V-278018
     - CAT2
   block:
-    - name: Windows Server 2025 must not have Bluetooth enabled unless required by the organization.
+    - name: CAT2 V-278018 - Windows Server 2025 must not have Bluetooth enabled unless required by the organization.
       ansible.windows.win_powershell:
         script: |-
           [CmdletBinding(SupportsShouldProcess)]

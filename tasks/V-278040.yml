@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278040 - Windows Server 2025 reversible password encryption must be disabled.
+- name: CAT1 V-278040 - Windows Server 2025 reversible password encryption must be disabled.
   when:
     - win25_stig_v_278040 | bool
     - '''V-278040'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-278040
     - CAT1
   block:
-    - name: Windows Server 2025 reversible password encryption must be disabled.
+    - name: CAT1 V-278040 - Windows Server 2025 reversible password encryption must be disabled.
       community.windows.win_security_policy:
         section: System Access
         key: ClearTextPassword

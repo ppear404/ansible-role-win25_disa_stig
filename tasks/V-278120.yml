@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278120 - Windows Server 2025 must prevent users from changing installation options.
+- name: CAT2 V-278120 - Windows Server 2025 must prevent users from changing installation options.
   when:
     - win25_stig_v_278120 | bool
     - '''V-278120'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-278120
     - CAT2
   block:
-    - name: Windows Server 2025 must prevent users from changing installation options.
+    - name: CAT2 V-278120 - Windows Server 2025 must prevent users from changing installation options.
       ansible.windows.win_regedit:
         path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer
         name: EnableUserControl

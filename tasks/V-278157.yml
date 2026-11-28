@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278157 - Windows Server 2025 must be configured to audit DS Access - Directory Service Changes successes.
+- name: CAT2 V-278157 - Windows Server 2025 must be configured to audit DS Access - Directory Service Changes successes.
   when:
     - win25_stig_v_278157 | bool
     - win25_stig_is_dc
@@ -9,7 +9,7 @@
     - V-278157
     - CAT2
   block:
-    - name: Windows Server 2025 must be configured to audit DS Access - Directory Service Changes successes.
+    - name: CAT2 V-278157 - Windows Server 2025 must be configured to audit DS Access - Directory Service Changes successes.
       ansible.windows.win_audit_policy_system:
         subcategory: Directory Service Changes
         audit_type:

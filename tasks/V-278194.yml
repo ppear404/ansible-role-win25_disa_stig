@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278194 - Windows Server 2025 must have the US DoW CCEB Interoperability Root CA cross-certificates in
+- name: CAT2 V-278194 - Windows Server 2025 must have the US DoW CCEB Interoperability Root CA cross-certificates in
     the Untrusted Certificates Store on unclassified systems.
   when:
     - win25_stig_v_278194 | bool
@@ -10,11 +10,11 @@
     - V-278194
     - CAT2
   block:
-    - name: V-278194 - Prepare validated public certificates
+    - name: CAT2 V-278194 - Prepare validated public certificates
       ansible.builtin.import_tasks: certificates_prepare.yml
       vars:
         win25_stig_certificate_control: V-278194
-    - name: V-278194 - Remove managed cross-certificates from trusted stores
+    - name: CAT2 V-278194 - Remove managed cross-certificates from trusted stores
       ansible.windows.win_certificate_store:
         thumbprint: '{{ item.0.thumbprint }}'
         store_location: '{{ item.1 }}'
@@ -24,7 +24,7 @@
         | list }}'
       loop_control:
         label: '{{ item.0.file }} / {{ item.1 }} / {{ item.2 }}'
-    - name: V-278194 - Install certificates in the required stores
+    - name: CAT2 V-278194 - Install certificates in the required stores
       ansible.windows.win_certificate_store:
         path: '{{ win25_stig_certificate_directory }}\{{ item.0.file }}'
         store_location: '{{ item.1 }}'

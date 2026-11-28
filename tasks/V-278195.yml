@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278195 - Windows Server 2025 must have the built-in guest account disabled.
+- name: CAT2 V-278195 - Windows Server 2025 must have the built-in guest account disabled.
   when:
     - win25_stig_v_278195 | bool
     - '''V-278195'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-278195
     - CAT2
   block:
-    - name: Windows Server 2025 must have the built-in guest account disabled.
+    - name: CAT2 V-278195 - Windows Server 2025 must have the built-in guest account disabled.
       community.windows.win_security_policy:
         section: System Access
         key: EnableGuestAccount

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278012 - Windows Server 2025 must have a host-based firewall installed and enabled.
+- name: CAT2 V-278012 - Windows Server 2025 must have a host-based firewall installed and enabled.
   when:
     - win25_stig_v_278012 | bool
     - '''V-278012'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-278012
     - CAT2
   block:
-    - name: Preserve the active Ansible management port before enabling the firewall
+    - name: CAT2 V-278012 - Preserve the active Ansible management port before enabling the firewall
       ansible.windows.win_firewall_rule:
         name: Ansible STIG management connection
         description: Preserve the Ansible management connection during STIG remediation
@@ -22,7 +22,7 @@
         remoteip: '{{ win25_stig_management_remote_addresses }}'
         profiles: [domain, private, public]
         state: present
-    - name: Windows Server 2025 must have a host-based firewall installed and enabled.
+    - name: CAT2 V-278012 - Windows Server 2025 must have a host-based firewall installed and enabled.
       ansible.windows.win_firewall:
         state: enabled
         profiles:

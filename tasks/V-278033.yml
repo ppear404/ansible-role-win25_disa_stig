@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278033 - Windows Server 2025 account lockout duration must be configured to 15 minutes or greater.
+- name: CAT2 V-278033 - Windows Server 2025 account lockout duration must be configured to 15 minutes or greater.
   when:
     - win25_stig_v_278033 | bool
     - '''V-278033'' not in win25_stig_exceptions'
@@ -8,9 +8,28 @@
     - V-278033
     - CAT2
   block:
-    - name: Windows Server 2025 account lockout duration must be configured to 15 minutes or greater.
+    - name: CAT2 V-278033 - Windows Server 2025 account lockout duration must be configured to 15 minutes or greater.
       community.windows.win_security_policy:
         section: System Access
         key: LockoutDuration
         value: 15
       when: not win25_stig_is_dc
+    - name: CAT2 V-278033 - Configure domain LockoutDuration
+      ansible.windows.win_powershell:
+        error_action: stop
+        parameters:
+          Property: LockoutDuration
+        script: |
+          [CmdletBinding(SupportsShouldProcess)]
+          param([string]$Property)
+          $domain = Get-ADDomain -Server $env:COMPUTERNAME
+          $policy = Get-ADDefaultDomainPasswordPolicy -Identity $domain.DNSRoot -Server $domain.PDCEmulator
+          $desired = [TimeSpan]::FromMinutes(15)
+          $Ansible.Changed = $policy.$Property -ne $desired
+          if ($Ansible.Changed -and $PSCmdlet.ShouldProcess($domain.DNSRoot, $Property)) {
+              $settings = @{ $Property = $desired }
+              Set-ADDefaultDomainPasswordPolicy -Identity $domain.DNSRoot -Server $domain.PDCEmulator @settings
+          }
+      when:
+        - win25_stig_is_dc
+        - win25_stig_manage_domain_account_policy | bool

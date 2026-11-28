@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278078 - Windows Server 2025 must be configured to audit System - System Integrity successes.
+- name: CAT2 V-278078 - Windows Server 2025 must be configured to audit System - System Integrity successes.
   when:
     - win25_stig_v_278078 | bool
     - '''V-278078'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-278078
     - CAT2
   block:
-    - name: Windows Server 2025 must be configured to audit System - System Integrity successes.
+    - name: CAT2 V-278078 - Windows Server 2025 must be configured to audit System - System Integrity successes.
       ansible.windows.win_audit_policy_system:
         subcategory: System Integrity
         audit_type:

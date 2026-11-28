@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278199 - Windows Server 2025 must force audit policy subcategory settings to override audit policy category
+- name: CAT2 V-278199 - Windows Server 2025 must force audit policy subcategory settings to override audit policy category
     settings.
   when:
     - win25_stig_v_278199 | bool
@@ -9,7 +9,7 @@
     - V-278199
     - CAT2
   block:
-    - name: Windows Server 2025 must force audit policy subcategory settings to override audit policy category settings.
+    - name: CAT2 V-278199 - Windows Server 2025 must force audit policy subcategory settings to override audit policy category settings.
       ansible.windows.win_regedit:
         path: HKLM:\SYSTEM\CurrentControlSet\Control\Lsa
         name: SCENoApplyLegacyAuditPolicy

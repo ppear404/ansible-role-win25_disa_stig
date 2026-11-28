@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278164 - Windows Server 2025 domain controllers must be configured to allow reset of machine account passwords.
+- name: CAT2 V-278164 - Windows Server 2025 domain controllers must be configured to allow reset of machine account passwords.
   when:
     - win25_stig_v_278164 | bool
     - win25_stig_is_dc
@@ -9,7 +9,7 @@
     - V-278164
     - CAT2
   block:
-    - name: Windows Server 2025 domain controllers must be configured to allow reset of machine account passwords.
+    - name: CAT2 V-278164 - Windows Server 2025 domain controllers must be configured to allow reset of machine account passwords.
       ansible.windows.win_regedit:
         path: HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
         name: RefusePasswordChange

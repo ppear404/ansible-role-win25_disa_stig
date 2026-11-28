@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: CAT3 V-278147 - Limit idle directory service connections
+  when:
+    - win25_stig_is_dc
+    - win25_stig_v_278147 | bool
+    - win25_stig_manage_forest_ldap_policy | bool
+    - "'V-278147' not in win25_stig_exceptions"
+  tags:
+    - V-278147
+    - CAT3
+  block:
+    - name: CAT3 V-278147 - Configure MaxConnIdleTime on the default LDAP query policy
+      ansible.windows.win_powershell:
+        error_action: stop
+        script: |
+          [CmdletBinding(SupportsShouldProcess)]
+          param()
+          $server = $env:COMPUTERNAME
+          $root = Get-ADRootDSE -Server $server
+          $dn = 'CN=Default Query Policy,CN=Query-Policies,CN=Directory Service,CN=Windows NT,CN=Services,' +
+              $root.configurationNamingContext
+          $policy = Get-ADObject -Identity $dn -Server $server -Properties lDAPAdminLimits
+          $current = @($policy.lDAPAdminLimits | Where-Object { $_ -match '^MaxConnIdleTime=' })
+          $Ansible.Changed = $current.Count -ne 1 -or $current[0] -notmatch '^MaxConnIdleTime=([1-9]|[1-9][0-9]|[12][0-9]{2}|300)$'
+          if ($Ansible.Changed -and $PSCmdlet.ShouldProcess('Default LDAP query policy', 'Set MaxConnIdleTime')) {
+              $changes = @{ Add = @{ lDAPAdminLimits = 'MaxConnIdleTime=300' } }
+              if ($current.Count) {
+                  $changes.Remove = @{ lDAPAdminLimits = $current }
+              }
+              Set-ADObject -Identity $policy -Server $server @changes
+          }

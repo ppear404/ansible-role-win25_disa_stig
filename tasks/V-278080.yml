@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278080 - Windows Server 2025 must prevent the display of slide shows on the lock screen.
+- name: CAT2 V-278080 - Windows Server 2025 must prevent the display of slide shows on the lock screen.
   when:
     - win25_stig_v_278080 | bool
     - '''V-278080'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-278080
     - CAT2
   block:
-    - name: Windows Server 2025 must prevent the display of slide shows on the lock screen.
+    - name: CAT2 V-278080 - Windows Server 2025 must prevent the display of slide shows on the lock screen.
       ansible.windows.win_regedit:
         path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization
         name: NoLockScreenSlideshow

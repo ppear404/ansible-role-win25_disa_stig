@@ -9,6 +9,11 @@ win25_stig_bluetooth_required: false
 win25_stig_manage_defender: true
 win25_stig_manage_local_password_flags: false
 win25_stig_password_exempt_accounts: []
+win25_stig_manage_domain_password_flags: false
+win25_stig_manage_domain_account_policy: false
+win25_stig_manage_forest_ldap_policy: false
+win25_stig_kdc_strong_name_mappings: []
+win25_stig_vbs_platform_security: 1
 win25_stig_administrator_name: stig_local_admin
 win25_stig_guest_name: stig_guest_disabled
 win25_stig_transcript_directory: C:\ProgramData\PS_Transcript

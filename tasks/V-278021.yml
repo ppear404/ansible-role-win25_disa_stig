@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278021 - Windows Server 2025 must not have the Telnet Client installed.
+- name: CAT2 V-278021 - Windows Server 2025 must not have the Telnet Client installed.
   when:
     - win25_stig_v_278021 | bool
     - '''V-278021'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-278021
     - CAT2
   block:
-    - name: Windows Server 2025 must not have the Telnet Client installed.
+    - name: CAT2 V-278021 - Windows Server 2025 must not have the Telnet Client installed.
       ansible.windows.win_feature:
         name: '{{ item }}'
         state: absent

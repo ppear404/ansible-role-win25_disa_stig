@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: Validate the approved environment time source
+- name: CAT3 V-278029 - Validate the approved environment time source
   ansible.builtin.assert:
     that:
       - win25_stig_time_source is string
       - win25_stig_time_source is match('^[A-Za-z0-9][A-Za-z0-9.:-]*$')
     fail_msg: Set win25_stig_time_source to a single approved hostname or IP without flags or whitespace.
-- name: Configure the approved Windows NTP source and enable the NTP client
+- name: CAT3 V-278029 - Configure the approved Windows NTP source and enable the NTP client
   ansible.windows.win_regedit:
     path: '{{ item.path }}'
     name: '{{ item.name }}'
@@ -40,7 +40,7 @@
   notify: Restart Windows Time
   loop_control:
     label: '{{ item.path }} / {{ item.name }}'
-- name: Keep Windows Time enabled and running
+- name: CAT3 V-278029 - Keep Windows Time enabled and running
   ansible.windows.win_service:
     name: W32Time
     start_mode: auto

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278029 - The Windows Server 2025 time service must synchronize with an appropriate DoW time source.
+- name: CAT3 V-278029 - The Windows Server 2025 time service must synchronize with an appropriate DoW time source.
   when:
     - win25_stig_v_278029 | bool
     - '''V-278029'' not in win25_stig_exceptions'
@@ -8,11 +8,11 @@
     - V-278029
     - CAT3
   block:
-    - name: Configure the explicitly supplied NTP peer
+    - name: CAT3 V-278029 - Configure the explicitly supplied NTP peer
       ansible.builtin.import_tasks: configure_time_source.yml
       when:
         - not (win25_stig_uses_domain_time | bool)
         - win25_stig_time_source != ''
-    - name: Configure domain hierarchy synchronization
+    - name: CAT3 V-278029 - Configure domain hierarchy synchronization
       ansible.builtin.import_tasks: configure_domain_time.yml
       when: win25_stig_uses_domain_time | bool

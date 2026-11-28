@@ -1,47 +1,53 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278029 - Include control tasks
+- name: CAT3 V-278029 - Include control tasks
   ansible.builtin.import_tasks: V-278029.yml
   tags:
     - V-278029
     - CAT3
-- name: V-278082 - Include control tasks
+- name: CAT3 V-278082 - Include control tasks
   ansible.builtin.import_tasks: V-278082.yml
   tags:
     - V-278082
     - CAT3
-- name: V-278083 - Include control tasks
+- name: CAT3 V-278083 - Include control tasks
   ansible.builtin.import_tasks: V-278083.yml
   tags:
     - V-278083
     - CAT3
-- name: V-278084 - Include control tasks
+- name: CAT3 V-278084 - Include control tasks
   ansible.builtin.import_tasks: V-278084.yml
   tags:
     - V-278084
     - CAT3
-- name: V-278085 - Include control tasks
+- name: CAT3 V-278085 - Include control tasks
   ansible.builtin.import_tasks: V-278085.yml
   tags:
     - V-278085
     - CAT3
-- name: V-278098 - Include control tasks
+- name: CAT3 V-278098 - Include control tasks
   ansible.builtin.import_tasks: V-278098.yml
   tags:
     - V-278098
     - CAT3
-- name: V-278104 - Include control tasks
+- name: CAT3 V-278104 - Include control tasks
   ansible.builtin.import_tasks: V-278104.yml
   tags:
     - V-278104
     - CAT3
-- name: V-278110 - Include control tasks
+- name: CAT3 V-278110 - Include control tasks
   ansible.builtin.import_tasks: V-278110.yml
   tags:
     - V-278110
     - CAT3
-- name: V-278231 - Include control tasks
+- name: CAT3 V-278231 - Include control tasks
   ansible.builtin.import_tasks: V-278231.yml
   tags:
     - V-278231
+    - CAT3
+- name: CAT3 V-278147 - Include control tasks
+  ansible.builtin.import_tasks: V-278147.yml
+  when: win25_stig_domain_joined | bool
+  tags:
+    - V-278147
     - CAT3

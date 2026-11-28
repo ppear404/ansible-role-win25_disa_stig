@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: CAT2 V-278173 - Configure approved KDC certificate mappings
+  when:
+    - win25_stig_is_dc
+    - win25_stig_v_278173 | bool
+    - "'V-278173' not in win25_stig_exceptions"
+    - win25_stig_kdc_strong_name_mappings | length > 0
+  tags:
+    - V-278173
+    - CAT2
+  block:
+    - name: CAT2 V-278173 - Validate the approved mapping list
+      ansible.builtin.assert:
+        that:
+          - win25_stig_kdc_strong_name_mappings is sequence
+          - win25_stig_kdc_strong_name_mappings is not string
+          - win25_stig_kdc_strong_name_mappings is not mapping
+
+    - name: CAT2 V-278173 - Validate each certificate mapping tuple
+      ansible.builtin.assert:
+        that:
+          - item is string
+          - item is match(win25_stig_kdc_mapping_pattern)
+      vars:
+        win25_stig_kdc_oid: '[0-2](?:\.(?:0|[1-9][0-9]*))+'
+        win25_stig_kdc_method: '(?i:IssuerSubject|UpnSuffix=[a-z0-9-]+(?:\.[a-z0-9-]+)+)'
+        win25_stig_kdc_mapping_pattern: >-
+          ^[A-Fa-f0-9]{40}; *{{ win25_stig_kdc_oid }}(?: *, *{{ win25_stig_kdc_oid }})*;[ ]*{{ win25_stig_kdc_method }}(?: *, *{{ win25_stig_kdc_method }})*\Z
+      loop: '{{ win25_stig_kdc_strong_name_mappings }}'
+
+    - name: CAT2 V-278173 - Reject repeated certificate thumbprints
+      ansible.builtin.assert:
+        that:
+          - >-
+            win25_stig_kdc_strong_name_mappings | map('lower') | map('regex_replace', ';.*$', '')
+            | unique | length == win25_stig_kdc_strong_name_mappings | length
+
+    - name: CAT2 V-278173 - Set the approved KDC mapping rules
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\KDC\Parameters
+        name: StrongNameMatchesList
+        type: multistring
+        data: '{{ win25_stig_kdc_strong_name_mappings }}'
+
+    - name: CAT2 V-278173 - Enable name-based strong mappings
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\KDC\Parameters
+        name: UseStrongNameMatches
+        type: dword
+        data: 1

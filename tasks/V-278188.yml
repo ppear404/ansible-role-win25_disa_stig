@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278188 - The Windows Server 2025 "Deny log on through Remote Desktop Services" user right on domain-joined
+- name: CAT2 V-278188 - The Windows Server 2025 "Deny log on through Remote Desktop Services" user right on domain-joined
     member servers must be configured to prevent access from highly privileged domain accounts and all local accounts
     and from unauthenticated access on all systems.
   when:
@@ -13,7 +13,7 @@
     - V-278188
     - CAT2
   block:
-    - name: V-278188 - Configure member-server deny rights
+    - name: CAT2 V-278188 - Configure member-server deny rights
       ansible.windows.win_user_right:
         name: SeDenyRemoteInteractiveLogonRight
         users: '{{ [''S-1-5-32-546''] + (([win25_stig_domain_sid + ''-512'', win25_stig_forest_root_sid + ''-519'']

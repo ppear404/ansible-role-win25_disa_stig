@@ -62,7 +62,8 @@ class BenchmarkTests(unittest.TestCase):
                     category = {'high': 'CAT1', 'medium': 'CAT2', 'low': 'CAT3'}
                     self.assertIn(category[self.manifest[control]['severity']], task['tags'])
                     conditions = load('tasks/' + name)[0]['when']
-                    self.assertEqual(bool(DOMAIN_CONDITIONS.intersection(conditions)), joined_gate, control)
+                    self.assertEqual(bool(DOMAIN_CONDITIONS.intersection(conditions)),
+                                     joined_gate or task.get('when') == 'win25_stig_domain_joined | bool', control)
                 else:
                     verify_imports(name, joined_gate or task.get('when') == 'win25_stig_domain_joined | bool')
 
@@ -126,7 +127,7 @@ class BenchmarkTests(unittest.TestCase):
         for answer in answers:
             self.assertEqual(set(answer.attrib), {'ExpectedStatus', 'Index'})
             self.assertEqual(answer.findtext('ValidationCode').strip(), source)
-            self.assertEqual(answer.findtext('ValidTrueStatus'), '')
+            self.assertEqual(answer.findtext('ValidTrueStatus'), 'NF' if answer.attrib['ExpectedStatus'] == 'O' else '')
             self.assertEqual(answer.findtext('ValidFalseStatus'), '')
         approved = re.search(r"\$approved = @'\n(.*?)\n'@", source, re.S).group(1)
         self.assertEqual(approved, self.defaults['win25_stig_legal_notice'])
@@ -134,6 +135,21 @@ class BenchmarkTests(unittest.TestCase):
             schema = next(member for member in package
                           if member.name.endswith('/xml/Schema_AnswerFile.xsd'))
             etree.XMLSchema(etree.parse(package.extractfile(schema))).assertValid(etree.parse(str(path)))
+
+    def test_kdc_mapping_tuple_pattern(self):
+        task = load('tasks/V-278173.yml')[0]['block'][1]
+        variables = task['vars']
+        pattern = Environment().from_string(variables['win25_stig_kdc_mapping_pattern']).render(**variables)
+        thumbprint = 'a' * 40
+        self.assertRegex(f'{thumbprint};1.2.3;IssuerSubject', pattern)
+        self.assertRegex(f'{thumbprint}; 1.2.3, 2.5.29; UpnSuffix=example.test, IssuerSubject', pattern)
+        for invalid in (
+            f'{thumbprint};1.2.3;',
+            f'{thumbprint};IssuerSubject;1.2.3',
+            f'{thumbprint},{thumbprint};1.2.3;IssuerSubject',
+            f'{thumbprint};1.2.3;IssuerSubject\n',
+        ):
+            self.assertNotRegex(invalid, pattern)
 
     def test_domain_member_settings_skip_standalone_servers(self):
         for control in ['V-278178', 'V-278179', 'V-278181']:

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278179 - Windows Server 2025 local users on domain-joined member servers must not be enumerated.
+- name: CAT2 V-278179 - Windows Server 2025 local users on domain-joined member servers must not be enumerated.
   when:
     - win25_stig_v_278179 | bool
     - not win25_stig_is_dc
@@ -10,7 +10,7 @@
     - V-278179
     - CAT2
   block:
-    - name: Windows Server 2025 local users on domain-joined member servers must not be enumerated.
+    - name: CAT2 V-278179 - Windows Server 2025 local users on domain-joined member servers must not be enumerated.
       ansible.windows.win_regedit:
         path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\System
         name: EnumerateLocalUsers

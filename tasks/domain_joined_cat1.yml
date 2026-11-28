@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278190 - Include control tasks
+- name: CAT1 V-278190 - Include control tasks
   ansible.builtin.import_tasks: V-278190.yml
   tags:
     - V-278190

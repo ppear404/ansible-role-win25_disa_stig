@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278037 - Windows Server 2025 maximum password age must be configured to 180 days or less.
+- name: CAT2 V-278037 - Windows Server 2025 maximum password age must be configured to 180 days or less.
   when:
     - win25_stig_v_278037 | bool
     - '''V-278037'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-278037
     - CAT2
   block:
-    - name: Windows Server 2025 maximum password age must be configured to 180 days or less.
+    - name: CAT2 V-278037 - Windows Server 2025 maximum password age must be configured to 180 days or less.
       community.windows.win_security_policy:
         section: System Access
         key: MaximumPasswordAge

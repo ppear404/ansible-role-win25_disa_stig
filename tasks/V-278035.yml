@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278035 - Windows Server 2025 must have the period of time before the bad logon counter is reset configured
+- name: CAT2 V-278035 - Windows Server 2025 must have the period of time before the bad logon counter is reset configured
     to 15 minutes or greater.
   when:
     - win25_stig_v_278035 | bool
@@ -9,10 +9,29 @@
     - V-278035
     - CAT2
   block:
-    - name: Windows Server 2025 must have the period of time before the bad logon counter is reset configured to
+    - name: CAT2 V-278035 - Windows Server 2025 must have the period of time before the bad logon counter is reset configured to
         15 minutes or greater.
       community.windows.win_security_policy:
         section: System Access
         key: ResetLockoutCount
         value: 15
       when: not win25_stig_is_dc
+    - name: CAT2 V-278035 - Configure domain LockoutObservationWindow
+      ansible.windows.win_powershell:
+        error_action: stop
+        parameters:
+          Property: LockoutObservationWindow
+        script: |
+          [CmdletBinding(SupportsShouldProcess)]
+          param([string]$Property)
+          $domain = Get-ADDomain -Server $env:COMPUTERNAME
+          $policy = Get-ADDefaultDomainPasswordPolicy -Identity $domain.DNSRoot -Server $domain.PDCEmulator
+          $desired = [TimeSpan]::FromMinutes(15)
+          $Ansible.Changed = $policy.$Property -ne $desired
+          if ($Ansible.Changed -and $PSCmdlet.ShouldProcess($domain.DNSRoot, $Property)) {
+              $settings = @{ $Property = $desired }
+              Set-ADDefaultDomainPasswordPolicy -Identity $domain.DNSRoot -Server $domain.PDCEmulator @settings
+          }
+      when:
+        - win25_stig_is_dc
+        - win25_stig_manage_domain_account_policy | bool

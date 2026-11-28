@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278072 - Windows Server 2025 must be configured to audit System - IPsec Driver successes.
+- name: CAT2 V-278072 - Windows Server 2025 must be configured to audit System - IPsec Driver successes.
   when:
     - win25_stig_v_278072 | bool
     - '''V-278072'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-278072
     - CAT2
   block:
-    - name: Windows Server 2025 must be configured to audit System - IPsec Driver successes.
+    - name: CAT2 V-278072 - Windows Server 2025 must be configured to audit System - IPsec Driver successes.
       ansible.windows.win_audit_policy_system:
         subcategory: IPsec Driver
         audit_type:

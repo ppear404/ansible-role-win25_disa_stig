@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278241 - The Windows Server 2025 "Access Credential Manager as a trusted caller" user right must not be
+- name: CAT2 V-278241 - The Windows Server 2025 "Access Credential Manager as a trusted caller" user right must not be
     assigned to any groups or accounts.
   when:
     - win25_stig_v_278241 | bool
@@ -9,7 +9,7 @@
     - V-278241
     - CAT2
   block:
-    - name: The Windows Server 2025 "Access Credential Manager as a trusted caller" user right must not be assigned
+    - name: CAT2 V-278241 - The Windows Server 2025 "Access Credential Manager as a trusted caller" user right must not be assigned
         to any groups or accounts.
       ansible.windows.win_user_right:
         name: SeTrustedCredManAccessPrivilege

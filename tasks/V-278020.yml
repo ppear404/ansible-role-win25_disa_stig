@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278020 - Windows Server 2025 must not have Simple TCP/IP Services installed.
+- name: CAT2 V-278020 - Windows Server 2025 must not have Simple TCP/IP Services installed.
   when:
     - win25_stig_v_278020 | bool
     - '''V-278020'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-278020
     - CAT2
   block:
-    - name: Windows Server 2025 must not have Simple TCP/IP Services installed.
+    - name: CAT2 V-278020 - Windows Server 2025 must not have Simple TCP/IP Services installed.
       ansible.windows.win_feature:
         name: '{{ item }}'
         state: absent

@@ -170,7 +170,7 @@ administrative requirements.
 | V-278144 | II | manual | Windows Server 2025 domain controllers must run on a machine dedicated to that function. |
 | V-278145 | II | manual | Windows Server 2025 must use separate, NSA-approved (Type 1) cryptography to protect the directory data in transit for directory service implementations at a classified confidentiality level when replication data traverses a network cleared to a lower level than the data. |
 | V-278146 | I | manual | Windows Server 2025 directory data (outside the root DSE) of a nonpublic directory must be configured to prevent anonymous access. |
-| V-278147 | III | manual | Windows Server 2025 directory service must be configured to terminate LDAP-based network connections to the directory server after five minutes of inactivity. |
+| [V-278147](../tasks/V-278147.yml) | III | automated | Windows Server 2025 directory service must be configured to terminate LDAP-based network connections to the directory server after five minutes of inactivity. |
 | V-278148 | II | manual | Windows Server 2025 Active Directory Group Policy Objects (GPOs) must be configured with proper audit settings. |
 | V-278149 | II | manual | Windows Server 2025 Active Directory (AD) Domain object must be configured with proper audit settings. |
 | V-278150 | II | manual | Windows Server 2025 Active Directory (AD) Infrastructure object must be configured with proper audit settings. |
@@ -195,7 +195,7 @@ administrative requirements.
 | [V-278169](../tasks/V-278169.yml) | II | automated | The Windows Server 2025 "Deny log on as a batch job" user right on domain controllers must be configured to prevent unauthenticated access. |
 | [V-278170](../tasks/V-278170.yml) | II | automated | The Windows Server 2025 "Deny log on as a service" user right must be configured to include no accounts or groups (blank) on domain controllers. |
 | [V-278171](../tasks/V-278171.yml) | II | automated | The Windows Server 2025 "Deny log on locally" user right on domain controllers must be configured to prevent unauthenticated access. |
-| V-278173 | II | manual | Windows Server 2025 must be configured for name-based strong mappings for certificates. |
+| [V-278173](../tasks/V-278173.yml) | II | automated | Windows Server 2025 must be configured for name-based strong mappings for certificates. |
 | [V-278174](../tasks/V-278174.yml) | II | automated | The Windows Server 2025 "Deny log on through Remote Desktop Services" user right on domain controllers must be configured to prevent unauthenticated access. |
 | [V-278175](../tasks/V-278175.yml) | II | automated | The Windows Server 2025 "Enable computer and user accounts to be trusted for delegation" user right must only be assigned to the Administrators group on domain controllers. |
 | V-278176 | II | manual | The password for the krbtgt account on a domain must be reset at least every 180 days. |

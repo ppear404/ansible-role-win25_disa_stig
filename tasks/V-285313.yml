@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-285313 - Windows Server 2025 networked systems must have and implement OpenSSH to protect the confidentiality
+- name: CAT2 V-285313 - Windows Server 2025 networked systems must have and implement OpenSSH to protect the confidentiality
     and integrity of transmitted and received information, as well as information during preparation for transmission.
   when:
     - win25_stig_v_285313 | bool
@@ -9,7 +9,7 @@
     - V-285313
     - CAT2
   block:
-    - name: Windows Server 2025 networked systems must have and implement OpenSSH to protect the confidentiality
+    - name: CAT2 V-285313 - Windows Server 2025 networked systems must have and implement OpenSSH to protect the confidentiality
         and integrity of transmitted and received information, as well as information during preparation for transmission.
       ansible.windows.win_powershell:
         script: |-
@@ -23,13 +23,13 @@
                   Add-WindowsCapability -Online -Name $cap.Name | Out-Null
               }
           }
-    - name: Windows Server 2025 networked systems must have and implement OpenSSH to protect the confidentiality
+    - name: CAT2 V-285313 - Windows Server 2025 networked systems must have and implement OpenSSH to protect the confidentiality
         and integrity of transmitted and received information, as well as information during preparation for transmission.
       ansible.windows.win_service:
         name: sshd
         state: started
         start_mode: auto
-    - name: Permit required OpenSSH traffic before restricting other management transports
+    - name: CAT2 V-285313 - Permit required OpenSSH traffic before restricting other management transports
       ansible.windows.win_firewall_rule:
         name: Ansible STIG OpenSSH
         direction: in

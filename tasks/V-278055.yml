@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278055 - Windows Server 2025 must be configured to audit Logon/Logoff - Account Lockout successes.
+- name: CAT2 V-278055 - Windows Server 2025 must be configured to audit Logon/Logoff - Account Lockout successes.
   when:
     - win25_stig_v_278055 | bool
     - '''V-278055'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-278055
     - CAT2
   block:
-    - name: Windows Server 2025 must be configured to audit Logon/Logoff - Account Lockout successes.
+    - name: CAT2 V-278055 - Windows Server 2025 must be configured to audit Logon/Logoff - Account Lockout successes.
       ansible.windows.win_audit_policy_system:
         subcategory: Account Lockout
         audit_type:

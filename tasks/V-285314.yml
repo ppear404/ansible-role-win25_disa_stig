@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-285314 - Windows Server 2025 OpenSSH must display the Standard Mandatory DoW Notice and Consent Banner
+- name: CAT2 V-285314 - Windows Server 2025 OpenSSH must display the Standard Mandatory DoW Notice and Consent Banner
     before granting remote access to the system via an OpenSSH logon.
   when:
     - win25_stig_v_285314 | bool
@@ -9,12 +9,12 @@
     - V-285314
     - CAT2
   block:
-    - name: Windows Server 2025 OpenSSH must display the Standard Mandatory DoW Notice and Consent Banner before
+    - name: CAT2 V-285314 - Windows Server 2025 OpenSSH must display the Standard Mandatory DoW Notice and Consent Banner before
         granting remote access to the system via an OpenSSH logon.
       ansible.windows.win_copy:
         dest: C:\ProgramData\ssh\Banner.txt
         content: '{{ win25_stig_legal_notice }}'
-    - name: Windows Server 2025 OpenSSH must display the Standard Mandatory DoW Notice and Consent Banner before
+    - name: CAT2 V-285314 - Windows Server 2025 OpenSSH must display the Standard Mandatory DoW Notice and Consent Banner before
         granting remote access to the system via an OpenSSH logon.
       ansible.windows.win_powershell:
         script: |-

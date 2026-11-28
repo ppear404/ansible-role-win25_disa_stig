@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278060 - Windows Server 2025 must be configured to audit logon failures.
+- name: CAT2 V-278060 - Windows Server 2025 must be configured to audit logon failures.
   when:
     - win25_stig_v_278060 | bool
     - '''V-278060'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-278060
     - CAT2
   block:
-    - name: Windows Server 2025 must be configured to audit logon failures.
+    - name: CAT2 V-278060 - Windows Server 2025 must be configured to audit logon failures.
       ansible.windows.win_audit_policy_system:
         subcategory: Logon
         audit_type:

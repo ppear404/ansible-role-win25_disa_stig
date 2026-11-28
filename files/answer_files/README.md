@@ -7,9 +7,12 @@ value with the approved benchmark wording and checking that its type is
 `REG_SZ`. The comparison normalizes whitespace and checks the remaining text,
 including case and punctuation.
 
-The answer file adds a validation comment for native Open and Not a Finding
-results and preserves both statuses. Not Applicable and Not Reviewed findings
-have no matching answer entry.
+For native Open, the answer file changes status to Not a Finding only when the
+registry value passes both checks. The comment records the native Open status
+and the reason for the change. A failed or unavailable validation leaves the
+native status in place and records its result. Native Not a Finding receives a
+comment and retains its status. Not Applicable and Not Reviewed have no
+matching answer entry. Retain a separate native CKLB for comparison.
 
 ## Deploy and run
 

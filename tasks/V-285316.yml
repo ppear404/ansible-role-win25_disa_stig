@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-285316 - Windows Server 2025 OpenSSH must not allow blank passwords.
+- name: CAT1 V-285316 - Windows Server 2025 OpenSSH must not allow blank passwords.
   when:
     - win25_stig_v_285316 | bool
     - '''V-285316'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-285316
     - CAT1
   block:
-    - name: Windows Server 2025 OpenSSH must not allow blank passwords.
+    - name: CAT1 V-285316 - Windows Server 2025 OpenSSH must not allow blank passwords.
       ansible.windows.win_powershell:
         script: |-
           [CmdletBinding(SupportsShouldProcess)]

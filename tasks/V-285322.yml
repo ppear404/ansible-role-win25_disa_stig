@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-285322 - Windows Server 2025 OpenSSH public host key files must conform to minimum requirements.
+- name: CAT2 V-285322 - Windows Server 2025 OpenSSH public host key files must conform to minimum requirements.
   when:
     - win25_stig_v_285322 | bool
     - '''V-285322'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-285322
     - CAT2
   block:
-    - name: Windows Server 2025 OpenSSH public host key files must conform to minimum requirements.
+    - name: CAT2 V-285322 - Windows Server 2025 OpenSSH public host key files must conform to minimum requirements.
       ansible.windows.win_powershell:
         script: |-
           [CmdletBinding(SupportsShouldProcess)]

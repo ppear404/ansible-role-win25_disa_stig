@@ -1,7 +1,7 @@
 # Windows Server 2025 DISA STIG remediation
 
 This Ansible role applies technical controls from the Windows Server 2025
-V1R4 benchmark. It implements 221 of the benchmark's 291 controls, including
+V1R4 benchmark. It implements 223 of the benchmark's 291 controls, including
 conditional and opt-in remediation. The control manifest retains the original
 benchmark check and fix text. A successful play establishes which Ansible tasks
 ran. Run the unmodified upstream Evaluate-STIG separately to assess the
@@ -88,7 +88,6 @@ The available inputs and defaults are in [defaults/main.yml](defaults/main.yml).
 | `win25_stig_time_source` | Single NTP hostname or IP for standalone servers and the PDC emulator. A blank value leaves their time settings alone. Other domain-joined systems use NT5DS. |
 | `win25_stig_domain_sid`, `win25_stig_forest_root_sid` | Domain and forest-root SIDs without the group RID. Domain-member deny rights that reference these domains require both values. |
 | `win25_stig_administrator_name`, `win25_stig_guest_name` | Built-in account names. Defaults are `stig_local_admin` and `stig_guest_disabled`. |
-| `win25_stig_manage_local_password_flags`, `win25_stig_password_exempt_accounts` | Opt in to local password-flag remediation and identify accounts excluded from it. |
 | `win25_stig_manage_defender` | Defaults to true. Set false where an approved third-party product handles this control. |
 | `win25_stig_ftp_required`, `win25_stig_bluetooth_required` | Retain features needed by the host. Both default to false. |
 | `win25_stig_enable_virtualization_security`, `win25_stig_enable_credential_guard_uefi_lock`, `win25_stig_exchange_server` | Opt in to registry configuration for virtualization security and UEFI lock, or identify an Exchange server. All default to false. |
@@ -98,11 +97,61 @@ The available inputs and defaults are in [defaults/main.yml](defaults/main.yml).
 | `win25_stig_legal_notice` | Text applied to the legal-notice registry value. The V1R4 wording is the default. |
 | `win25_stig_reboot` | Permit a reboot when remediation marks a restart required. Defaults to false. |
 
+## Scoped account, directory, and platform controls
+
+Inventory variables configure the role from an external project. The per-control
+switches and documented exceptions apply to each remediation path.
+
+| Variable | Default | Scope and effect |
+| --- | --- | --- |
+| `win25_stig_manage_local_password_flags` | `false` | V-278004 for enabled local users on standalone servers and domain members. |
+| `win25_stig_manage_domain_password_flags` | `false` | V-278004 for enabled AD users on DCs. Updates are directed to the domain PDC emulator. |
+| `win25_stig_password_exempt_accounts` | `[]` | Local names or domain SAM account names for V-278004. Document exceptions separately. Evaluate-STIG still assesses these accounts. |
+| `win25_stig_manage_domain_account_policy` | `false` | V-278033/034/035/036/038. Applies 15-minute duration, threshold 1–3, 15-minute reset, history 24, and minimum age of at least one day to the AD default domain password policy through the PDC emulator. Local policy remains managed on non-DC hosts. |
+| `win25_stig_manage_forest_ldap_policy` | `false` | V-278147. On a writable DC, sets the forest default query policy idle limit to 300 seconds when missing or out of range. |
+| `win25_stig_kdc_strong_name_mappings` | `[]` | V-278173. Supply one owner-approved tuple string per issuer thumbprint to manage the effective KDC registry policy on DCs. An empty list skips remediation. |
+| `win25_stig_vbs_platform_security` | `1` | V-278090. Use `1` for Secure Boot or `3` for Secure Boot with DMA protection. Requires the existing `win25_stig_enable_virtualization_security` opt-in and domain membership. |
+
+For example, a project can opt domain members into local password flag
+remediation through group vars. A separately approved writable development DC
+can opt into the shared directory operations through host vars.
+
+```yaml
+# group_vars/windows_members.yml
+win25_stig_manage_local_password_flags: true
+```
+
+```yaml
+# host_vars/dev_dc.yml
+win25_stig_manage_domain_password_flags: true
+win25_stig_manage_domain_account_policy: true
+win25_stig_manage_forest_ldap_policy: true
+win25_stig_enable_virtualization_security: true
+win25_stig_vbs_platform_security: 3
+```
+
+A mapping tuple uses the syntax
+`thumbprint; policyOID[, policyOID]; IssuerSubject[, UpnSuffix=domain.example]`.
+Have the PKI owner supply and approve every tuple, then confirm the DC's
+effective settings and certificate sign-in. Domain GPO can supersede direct
+policy changes. Coordinate ownership with the Group Policy administrator and
+use the authoritative GPO if required. Fine-grained password policies and
+custom LDAP query policies require separate review.
+
+Run shared-directory changes against one approved writable DC per scope.
+Targeting the domain PDC emulator directly also avoids relying on remoting
+credential delegation. Review the effective lockout settings before applying
+them. Windows requires the reset interval to be at most the lockout duration.
+If the reset interval currently exceeds 15 minutes, apply V-278035 first,
+then apply V-278033. Validate VBS using the Device Guard CIM runtime state after
+any owner-approved maintenance reboot. Registry policy alone does not establish
+that VBS is running.
+
 ## Effective settings and operational limits
 
-- The role applies local security settings. Manage domain account and Kerberos
-  policy and directory ACLs through the authoritative domain administration
-  process. Domain GPO refresh can override settings applied locally.
+- Local security settings apply to the target host. The opt-in domain and forest
+  settings have a wider scope and require approval from the directory owner.
+  Use the authoritative GPO where it manages these settings.
 - Allow the Ansible management port and source network before enabling firewall
   enforcement. The role preserves existing SSH `Match` blocks. Its OpenSSH
   restart handler validates the configuration and verifies reconnection.
@@ -118,9 +167,10 @@ The available inputs and defaults are in [defaults/main.yml](defaults/main.yml).
 
 Use the upstream checks for the applicable benchmark revision and review the
 resulting CKLB. The optional bundled answer file adds a V-278207 legal-notice
-comment while preserving native finding statuses. System owners and reviewers
-handle declarations and administrative determinations through their existing
-assessment process. See the [answer-file instructions](files/answer_files/README.md)
+comment and can resolve native Open when the registry type and approved wording
+are verified. Keep the native CKLB and the answer-file CKLB as separate artifacts.
+System owners and reviewers handle declarations and administrative determinations
+through their existing assessment process. See the [answer-file instructions](files/answer_files/README.md)
 for running Evaluate-STIG directly or with the separate development playbook.
 
 When upgrading from the role-managed assessment workflow, update the calling
@@ -153,10 +203,27 @@ from the role directory.
 ```bash
 python tests/validate_controls.py
 python -m unittest discover -s tests -p 'validate*.py'
-ansible-playbook -i examples/inventory.yml tests/test.yml --syntax-check
+ansible-playbook -i examples/inventory/hosts.yml tests/test.yml --syntax-check
 ansible-lint --offline tasks handlers defaults vars meta tests/test.yml
 ```
 
 The live regression sequence is check mode, remediation, a second remediation
 run to verify idempotence, and an independently executed Evaluate-STIG scan.
 Use an explicit limit for each live run.
+
+### Validation status for the scoped changes
+
+The controller-side control validator passed 15 tests and full discovery
+passed 17. The remediation test play and the repository assessment play passed
+Ansible syntax checks. The answer file passed the upstream XML schema check.
+PowerShell parsed the changed scripts, and the legal-notice validator passed
+three positive and eight negative fixtures. Ansible lint passed for the
+changed YAML with `var-naming[no-role-prefix]` excluded for the existing
+`win25_stig_` namespace.
+
+The saved PDC baseline contains 13 Open findings, including all ten scoped
+controls, and 35 Not Reviewed findings. Live deployment, a second remediation
+run, and a fresh Evaluate-STIG assessment remain pending. The inventory lists
+`pdc` and `sdc`, and `--list-hosts --limit pdc` selected only `pdc`. The
+system owner still needs to designate an authorized development host, approve
+the shared directory changes, and supply the KDC mapping tuples.

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278181 - Windows Server 2025 must limit the caching of logon credentials to four or less on domain-joined
+- name: CAT2 V-278181 - Windows Server 2025 must limit the caching of logon credentials to four or less on domain-joined
     member servers.
   when:
     - win25_stig_v_278181 | bool
@@ -11,7 +11,7 @@
     - V-278181
     - CAT2
   block:
-    - name: Windows Server 2025 must limit the caching of logon credentials to four or less on domain-joined member
+    - name: CAT2 V-278181 - Windows Server 2025 must limit the caching of logon credentials to four or less on domain-joined member
         servers.
       ansible.windows.win_regedit:
         path: HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon

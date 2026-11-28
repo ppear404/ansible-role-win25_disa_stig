@@ -4534,7 +4534,7 @@ win25_stig_control_manifest:
     title: Windows Server 2025 directory service must be configured to terminate LDAP-based network connections
       to the directory server after five minutes of inactivity.
     severity: low
-    implementation: manual
+    implementation: automated
     conditions:
       - win25_stig_is_dc
     check: "This applies to domain controllers. It is not applicable for other systems.\n\nOpen an elevated command\
@@ -5965,7 +5965,7 @@ win25_stig_control_manifest:
   V-278173:
     title: Windows Server 2025 must be configured for name-based strong mappings for certificates.
     severity: medium
-    implementation: manual
+    implementation: automated
     conditions:
       - win25_stig_is_dc
     check: 'This applies to domain controllers. This is not applicable for member servers.

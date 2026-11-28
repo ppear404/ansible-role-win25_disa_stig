@@ -8,3 +8,9 @@
   ansible.builtin.import_tasks: cat2_3.yml
 - name: Include category 2 controls part 4
   ansible.builtin.import_tasks: cat2_4.yml
+- name: CAT2 V-278173 - Include control tasks
+  ansible.builtin.import_tasks: V-278173.yml
+  when: win25_stig_domain_joined | bool
+  tags:
+    - V-278173
+    - CAT2

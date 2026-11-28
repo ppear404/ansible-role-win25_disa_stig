@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278098 - Windows Server 2025 Application Compatibility Program Inventory must be prevented from collecting
+- name: CAT3 V-278098 - Windows Server 2025 Application Compatibility Program Inventory must be prevented from collecting
     data and sending the information to Microsoft.
   when:
     - win25_stig_v_278098 | bool
@@ -9,7 +9,7 @@
     - V-278098
     - CAT3
   block:
-    - name: Windows Server 2025 Application Compatibility Program Inventory must be prevented from collecting data
+    - name: CAT3 V-278098 - Windows Server 2025 Application Compatibility Program Inventory must be prevented from collecting data
         and sending the information to Microsoft.
       ansible.windows.win_regedit:
         path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat

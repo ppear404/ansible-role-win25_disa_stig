@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Windows Server 2025 V1R4 legal-notice validation. Native statuses are preserved. -->
+<!-- Windows Server 2025 V1R4 legal-notice validation. Verified wording can resolve a native Open result. -->
 <STIGComments Name="WinServer2025">
   <Vuln ID="SV-278207r1268215_rule">
     <AnswerKey Name="DEFAULT">
@@ -44,8 +44,8 @@ try {
     return @{ Valid = $false; Results = 'V-278207 independent validation failed: ' + $_.Exception.Message }
 }
 ]]></ValidationCode>
-        <ValidTrueStatus/>
-        <ValidTrueComment>The configured REG_SZ legal notice matches the approved wording after whitespace normalization.</ValidTrueComment>
+        <ValidTrueStatus>NF</ValidTrueStatus>
+        <ValidTrueComment>Native result was Open. The configured REG_SZ legal notice matches the approved benchmark wording after whitespace normalization.</ValidTrueComment>
         <ValidFalseStatus/>
         <ValidFalseComment>The configured REG_SZ legal notice could not be verified against the approved wording.</ValidFalseComment>
       </Answer>

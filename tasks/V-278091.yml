@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278091 - Windows Server 2025 Early Launch Antimalware, Boot-Start Driver Initialization Policy must prevent
+- name: CAT2 V-278091 - Windows Server 2025 Early Launch Antimalware, Boot-Start Driver Initialization Policy must prevent
     boot drivers identified as bad.
   when:
     - win25_stig_v_278091 | bool
@@ -9,7 +9,7 @@
     - V-278091
     - CAT2
   block:
-    - name: Windows Server 2025 Early Launch Antimalware, Boot-Start Driver Initialization Policy must prevent boot
+    - name: CAT2 V-278091 - Windows Server 2025 Early Launch Antimalware, Boot-Start Driver Initialization Policy must prevent boot
         drivers identified as bad.
       ansible.windows.win_regedit:
         path: HKLM:\SYSTEM\CurrentControlSet\Policies\EarlyLaunch

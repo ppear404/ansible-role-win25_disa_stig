@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278116 - Windows Server 2025 Remote Desktop Services must be configured with the client connection encryption
+- name: CAT2 V-278116 - Windows Server 2025 Remote Desktop Services must be configured with the client connection encryption
     set to High Level.
   when:
     - win25_stig_v_278116 | bool
@@ -9,7 +9,7 @@
     - V-278116
     - CAT2
   block:
-    - name: Windows Server 2025 Remote Desktop Services must be configured with the client connection encryption
+    - name: CAT2 V-278116 - Windows Server 2025 Remote Desktop Services must be configured with the client connection encryption
         set to High Level.
       ansible.windows.win_regedit:
         path: HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services

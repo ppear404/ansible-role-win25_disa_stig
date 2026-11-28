@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278084 - Windows Server 2025 must be configured to prevent Internet Control Message Protocol (ICMP) redirects
+- name: CAT3 V-278084 - Windows Server 2025 must be configured to prevent Internet Control Message Protocol (ICMP) redirects
     from overriding Open Shortest Path First (OSPF)-generated routes.
   when:
     - win25_stig_v_278084 | bool
@@ -9,7 +9,7 @@
     - V-278084
     - CAT3
   block:
-    - name: Windows Server 2025 must be configured to prevent Internet Control Message Protocol (ICMP) redirects
+    - name: CAT3 V-278084 - Windows Server 2025 must be configured to prevent Internet Control Message Protocol (ICMP) redirects
         from overriding Open Shortest Path First (OSPF)-generated routes.
       ansible.windows.win_regedit:
         path: HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters

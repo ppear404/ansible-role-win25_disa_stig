@@ -1,19 +1,19 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: Load pinned public certificate metadata
+- name: "CAT2 - Load pinned public certificate metadata ({{ win25_stig_certificate_control }})"
   ansible.builtin.include_vars: '{{ role_path }}/vars/certificates.yml'
-- name: Select certificates for this control
+- name: "CAT2 - Select certificates for this control ({{ win25_stig_certificate_control }})"
   ansible.builtin.set_fact:
     win25_stig_selected_certificates: >-
       {{ win25_stig_certificates | selectattr('control', 'equalto', win25_stig_certificate_control) | list }}
 # Public staging is allowed during check mode so native store modules can inspect the payload.
 # Store changes themselves retain normal check-mode semantics.
-- name: Create public certificate staging directory
+- name: "CAT2 - Create public certificate staging directory ({{ win25_stig_certificate_control }})"
   ansible.windows.win_file:
     path: '{{ win25_stig_certificate_directory }}'
     state: directory
   check_mode: false
-- name: Stage pinned public certificate payloads
+- name: "CAT2 - Stage pinned public certificate payloads ({{ win25_stig_certificate_control }})"
   ansible.windows.win_copy:
     src: 'certificates/{{ item.file }}'
     dest: '{{ win25_stig_certificate_directory }}\{{ item.file }}'
@@ -21,7 +21,7 @@
   loop_control:
     label: '{{ item.file }}'
   check_mode: false
-- name: Validate certificate identity validity and CA constraints before changing stores
+- name: "CAT2 - Validate certificate identity validity and CA constraints before changing stores ({{ win25_stig_certificate_control }})"
   check_mode: false
   ansible.windows.win_powershell:
     parameters:

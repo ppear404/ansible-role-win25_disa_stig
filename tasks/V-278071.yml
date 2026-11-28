@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278071 - Windows Server 2025 must be configured to audit Privilege Use - Sensitive Privilege Use failures.
+- name: CAT2 V-278071 - Windows Server 2025 must be configured to audit Privilege Use - Sensitive Privilege Use failures.
   when:
     - win25_stig_v_278071 | bool
     - '''V-278071'' not in win25_stig_exceptions'
@@ -8,7 +8,7 @@
     - V-278071
     - CAT2
   block:
-    - name: Windows Server 2025 must be configured to audit Privilege Use - Sensitive Privilege Use failures.
+    - name: CAT2 V-278071 - Windows Server 2025 must be configured to audit Privilege Use - Sensitive Privilege Use failures.
       ansible.windows.win_audit_policy_system:
         subcategory: Sensitive Privilege Use
         audit_type:

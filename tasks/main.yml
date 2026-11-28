@@ -4,7 +4,7 @@
   ansible.builtin.import_tasks: preflight.yml
   tags:
     - always
-- name: Install OpenSSH before configuring SSH controls
+- name: CAT2 V-285313 - Install OpenSSH before configuring SSH controls
   ansible.builtin.import_tasks: V-285313.yml
   when: (win25_stig_cat1 | bool and win25_stig_v_285316 | bool) or win25_stig_cat2 | bool
   tags:
@@ -25,7 +25,7 @@
 - name: Apply security-policy imports before registry and audit remediation
   ansible.builtin.import_tasks: security_policy.yml
 
-- name: Enforce advanced audit policy before configuring auditing
+- name: CAT2 V-278199 - Enforce advanced audit policy before configuring auditing
   ansible.builtin.import_tasks: V-278199.yml
   when: win25_stig_cat2 | bool
   tags:

@@ -1,23 +1,23 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278004 - Windows Server 2025 accounts must require passwords.
+- name: CAT2 V-278004 - Windows Server 2025 accounts must require passwords.
   when:
     - win25_stig_v_278004 | bool
-    - not win25_stig_is_dc
-    - win25_stig_manage_local_password_flags
     - '''V-278004'' not in win25_stig_exceptions'
   tags:
     - V-278004
     - CAT2
   block:
-    - name: Windows Server 2025 accounts must require passwords.
+    - name: CAT2 V-278004 - Windows Server 2025 accounts must require passwords.
       ansible.windows.win_powershell:
+        error_action: stop
+        parameters:
+          ExemptAccounts: '{{ win25_stig_password_exempt_accounts }}'
         script: |-
           [CmdletBinding(SupportsShouldProcess)]
-          param()
+          param([AllowEmptyCollection()][string[]]$ExemptAccounts)
           $Ansible.Changed = $false
-          $exceptions = @({{ win25_stig_password_exempt_accounts | map('to_json') | join(',') }})
-          Get-LocalUser | Where-Object { $_.Enabled -and $_.Name -notin $exceptions } | ForEach-Object {
+          Get-LocalUser | Where-Object { $_.Enabled -and $_.Name -notin $ExemptAccounts } | ForEach-Object {
               $user = $_
               $needsChange = $user.PasswordRequired -eq $false
               if ($needsChange) {
@@ -28,3 +28,28 @@
                   }
               }
           }
+      when:
+        - not win25_stig_is_dc
+        - win25_stig_manage_local_password_flags | bool
+    - name: CAT2 V-278004 - Require passwords for enabled domain user accounts
+      ansible.windows.win_powershell:
+        error_action: stop
+        parameters:
+          ExemptAccounts: '{{ win25_stig_password_exempt_accounts }}'
+        script: |
+          [CmdletBinding(SupportsShouldProcess)]
+          param([AllowEmptyCollection()][string[]]$ExemptAccounts)
+          $domain = Get-ADDomain -Server $env:COMPUTERNAME
+          $server = $domain.PDCEmulator
+          $Ansible.Changed = $false
+          Get-ADUser -Server $server -Filter {
+              PasswordNotRequired -eq $true -and Enabled -eq $true -and SamAccountType -ne '805306370'
+          } | Where-Object { $_.SamAccountName -notin $ExemptAccounts } | ForEach-Object {
+              $Ansible.Changed = $true
+              if ($PSCmdlet.ShouldProcess('Domain user account', 'Require password')) {
+                  Set-ADUser -Server $server -Identity $_ -PasswordNotRequired $false
+              }
+          }
+      when:
+        - win25_stig_is_dc
+        - win25_stig_manage_domain_password_flags | bool

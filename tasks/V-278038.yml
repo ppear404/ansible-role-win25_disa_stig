@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: V-278038 - Windows Server 2025 minimum password age must be configured to at least one day.
+- name: CAT2 V-278038 - Windows Server 2025 minimum password age must be configured to at least one day.
   when:
     - win25_stig_v_278038 | bool
     - '''V-278038'' not in win25_stig_exceptions'
@@ -8,9 +8,28 @@
     - V-278038
     - CAT2
   block:
-    - name: Windows Server 2025 minimum password age must be configured to at least one day.
+    - name: CAT2 V-278038 - Windows Server 2025 minimum password age must be configured to at least one day.
       community.windows.win_security_policy:
         section: System Access
         key: MinimumPasswordAge
         value: 1
       when: not win25_stig_is_dc
+    - name: CAT2 V-278038 - Configure domain MinPasswordAge
+      ansible.windows.win_powershell:
+        error_action: stop
+        parameters:
+          Property: MinPasswordAge
+        script: |
+          [CmdletBinding(SupportsShouldProcess)]
+          param([string]$Property)
+          $domain = Get-ADDomain -Server $env:COMPUTERNAME
+          $policy = Get-ADDefaultDomainPasswordPolicy -Identity $domain.DNSRoot -Server $domain.PDCEmulator
+          $desired = [TimeSpan]::FromDays(1)
+          $Ansible.Changed = $policy.MinPasswordAge -lt $desired
+          if ($Ansible.Changed -and $PSCmdlet.ShouldProcess($domain.DNSRoot, $Property)) {
+              $settings = @{ $Property = $desired }
+              Set-ADDefaultDomainPasswordPolicy -Identity $domain.DNSRoot -Server $domain.PDCEmulator @settings
+          }
+      when:
+        - win25_stig_is_dc
+        - win25_stig_manage_domain_account_policy | bool
